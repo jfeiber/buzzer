@@ -16,8 +16,21 @@ These instructions will get you a copy of the project up and running on your loc
 
 1. Clone this repo
 2. cd into the repo folder and run: `docker build -t ra-image .`
-3. To start the docker container run: `docker run -it --rm --name ra-instance -p 3000:3000 -v $(pwd):/go/src/restaur-anteater -w /go/src/restaur-anteater ra-image`
-4. Once the docker container has started, run: `gin`. This will start the web app on port 3000 (go to localhost:3000 to access). Everytime you make changes to server.go it will automatically be recompiled in the docker container and the webapp will be restarted.
+3. Start a Postgres container: `docker run --name ra-postgres -e POSTGRES_PASSWORD=password -e POSTGRES_USER=ra -d postgres`
+4. To start the docker container run: `docker run -it --rm --name ra-instance --link ra-postgres:postgres -p 3000:3000 -v $(pwd):/go/src/restaur-anteater -w /go/src/restaur-anteater ra-image`
+5. Once the docker container has started, run: `gin`. This will start the web app on port 3000 (go to localhost:3000 to access). Everytime you make changes to server.go it will automatically be recompiled in the docker container and the webapp will be restarted.
+
+### Using psql to interact with the DB
+
+Assumes you setup the Postgres container using the above instructions.
+
+1. Run: `docker run -it --rm --link ra-postgres:postgres postgres psql -h postgres -U ra`
+
+### Using migrations
+
+1. Start the docker container: `docker run -it --rm --name ra-instance --link ra-postgres:postgres -p 3000:3000 -v $(pwd):/go/src/restaur-anteater -w /go/src/restaur-anteater ra-image`.
+2. Run `goose -env dev up`. This will migrate the dev database (the Postgres db running in the Postgres docker container) to the latest migration. Migrations are in `db/migrations`. To migrate
+the production database, run `goose -env production up`.
 
 ### Adding external go dependencies
 
