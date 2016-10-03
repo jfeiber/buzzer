@@ -46,4 +46,3 @@ func main() {
   n.UseHandler(mux)
   log.Fatal(http.ListenAndServe(":"+port, n))
 }
-

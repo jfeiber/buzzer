@@ -2,12 +2,6 @@
 
 We are allowing restaurants to manage their clients better with a web app that displays analytics registered by proprietary restaurant pagers.
 
-## Milestone September 27
-* We created a simple back end in Go with the tutorial linked [here](http://thenewstack.io/make-a-restful-json-api-go/).
-* What I learned:
- * Something
-* What Didn't Work:
-
 
 ## Getting Started
 
@@ -15,48 +9,29 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisities
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+1. [Docker](https://docs.docker.com/docker-for-mac/)
+2.  You can install go locally if you really want but it's pretty annoying to get dependencies working properly.
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
+1. Clone this repo
+2. cd into the repo folder and run: `docker build -t ra-image .`
+3. To start the docker container run: `docker run -it --rm --name ra-instance -p 3000:3000 -v /local/path/to/repo:/go/src/restaur-anteater -w /go/src/restaur-anteater ra-image`. Replace /local/path/to/repo with the actual repo path.
+4. Once the docker container has started, run: `gin`. This will start the web app on port 3000 (go to localhost:3000 to access). Everytime you make changes to server.go it will automatically be recompiled in the docker container and the webapp will be restarted.
 
-Stay what the step will be
+### Adding external go dependencies
 
-```
-Give the example
-```
+1. Start the docker contain: `docker run -it --rm --name ra-instance -p 3000:3000 -v /local/path/to/repo:/go/src/restaur-anteater -w /go/src/restaur-anteater ra-image`.
+2. Run `godep restore`
+3. Run `go get dependency` where `dependency` is something you want to install (like `github.com/tools/godep`)
+4. Run `godep save`
+5. Exit the docker container and check (with `git diff` or something) that the changes to Godeps/Godeps.json didn't do anything crazy.
 
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Built With
-
-* ReactJs
-* Maven
-* Atom
-
-## Contributing
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
 
 ## Authors
 
-* **Kevin Neilson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Michael Machlin** -
+* **Kevin Neilson**
+* **Michael Machlin**
 * **Joon Cho**
 * **Mickey Alperin**
 * **Josh Feiber**
