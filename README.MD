@@ -16,7 +16,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 1. Clone this repo
 2. cd into the repo folder and run: `docker build -t ra-image .`
-3. To start the docker container run: `docker run -it --rm --name ra-instance -p 3000:3000 -v /local/path/to/repo:/go/src/restaur-anteater -w /go/src/restaur-anteater ra-image`. Replace /local/path/to/repo with the actual repo path.
+3. To start the docker container run: `docker run -it --rm --name ra-instance -p 3000:3000 -v $(pwd):/go/src/restaur-anteater -w /go/src/restaur-anteater ra-image`
 4. Once the docker container has started, run: `gin`. This will start the web app on port 3000 (go to localhost:3000 to access). Everytime you make changes to server.go it will automatically be recompiled in the docker container and the webapp will be restarted.
 
 ### Adding external go dependencies
