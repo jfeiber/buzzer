@@ -1,0 +1,7 @@
+dev:
+  driver: postgres
+  open: host=$POSTGRES_PORT_5432_TCP_ADDR user=ra dbname=ra password=password sslmode=disable
+
+production:
+  driver: postgres
+  open: postgres://wwvlunlbgjmvve:lPE95_5zrm0ZzSFeBUIiSEc41e@ec2-54-243-220-140.compute-1.amazonaws.com:5432/dvj0bg4274hai
