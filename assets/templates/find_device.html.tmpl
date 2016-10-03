@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Bootstrap 101 Template</title>
+    <title>Active Buzzers - restaur-anteater</title>
 
     <!-- Bootstrap -->
     <link href="/assets/static/css/bootstrap.min.css" rel="stylesheet">
@@ -19,11 +19,12 @@
   </head>
   <body>
     <div class="container">
-      <h1>Hello, {{.CustomerID}}!</h1>
+      <h1>Buzzer {{.CustomerID}} Info</h1>
       {{ range .Devices }}
-        <h1>Device: {{ .DeviceName }}</h1>
+        <h1>Party Name: {{ .DeviceName }}</h1>
+        <h1>Party Size: {{ .PartySize }}</h1>
       {{ end }}
-      <button type="button" class="btn btn-primary">I am a sweet boostrap button</button>
+      <button type="button" class="btn btn-primary">Table Ready</button>
     </div>
 
 
