@@ -21,7 +21,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Adding external go dependencies
 
-1. Start the docker contain: `docker run -it --rm --name ra-instance -p 3000:3000 -v /local/path/to/repo:/go/src/restaur-anteater -w /go/src/restaur-anteater ra-image`.
+1. Start the docker container: `docker run -it --rm --name ra-instance -p 3000:3000 -v $(pwd):/go/src/restaur-anteater -w /go/src/restaur-anteater ra-image`.
 2. Run `godep restore`
 3. Run `go get dependency` where `dependency` is something you want to install (like `github.com/tools/godep`)
 4. Run `godep save`
