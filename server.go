@@ -9,12 +9,12 @@ import (
     "github.com/urfave/negroni"
   )
 
-func RootSubdomainHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[RootSubdomainHandler] ")
-  log.Println("hallo from the root subdomain handler")
+func RandomURLHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[RandomURLHandler] ")
+  log.Println("hallo from the random URL handler")
   vars := mux.Vars(r)
-  subdomain := vars["subdomain"]
-  fmt.Fprintf(w, "Hello, %s", subdomain)
+  name := vars["name"]
+  fmt.Fprintf(w, "Hello, %s", name)
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,23 +26,17 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
   log.SetPrefix("[main] ")
   log.Println("hallo")
-  var domain, port string
-  if domain = os.Getenv("DOMAIN"); domain == ""{
-    domain = "localhost"
-  }
+  var port string
   if port = os.Getenv("PORT"); port == ""{
     port = "8000"
   }
-  log.Println("Using domain: " + domain)
   log.Println("Using port: " + port)
-  mux := mux.NewRouter()
-  subdomain_match := "{subdomain:[a-z0-9 -]+}." + domain
-  log.Println("Using subdomain match: " + subdomain_match)
+  router := mux.NewRouter()
+  router.HandleFunc("/", RootHandler)
+  router.HandleFunc("/test/{name}", RandomURLHandler)
 
-  mux.Host(domain).Path("/").HandlerFunc(RootHandler)
-  mux.Host(subdomain_match).Path("/").HandlerFunc(RootSubdomainHandler)
 
   n := negroni.Classic() // Includes some default middlewares
-  n.UseHandler(mux)
+  n.UseHandler(router)
   log.Fatal(http.ListenAndServe(":"+port, n))
 }
