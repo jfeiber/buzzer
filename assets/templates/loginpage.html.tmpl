@@ -2,6 +2,11 @@
 <html>
 <head>
 <title>Restaur-Anteater</title>
+<script src="https://unpkg.com/react@15.3.2/dist/react.js"></script>
+<script src="https://unpkg.com/react-dom@15.3.2/dist/react-dom.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+<script src="https://unpkg.com/jquery@3.1.0/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/remarkable@1.7.1/dist/remarkable.min.js"></script>
 
     <!-- Bootstrap -->
     <link href="/assets/static/css/bootstrap.min.css" rel="stylesheet">
@@ -70,7 +75,6 @@
 </nav>
 
 
-
 </head>
 <header>
 	<body>
@@ -90,7 +94,62 @@
 				</p>
 				<input type="submit" value="Login">
 			</form>
-
 		</div>
+		<div id="content"></div>
+
+
+	<script type="text/babel">
+	// tutorial1.js
+var CommentBox = React.createClass({
+	render: function() {
+		return (
+			<div className="commentBox">
+				<h1>Comments</h1>
+				<CommentList />
+				<CommentForm />
+			</div>
+    	);
+  	}
+});
+
+var CommentList = React.createClass({
+	render: function() {
+		return (
+			<div className="commentList">
+			<Comment author="Pete Hunt">This is one comment</Comment>
+			<Comment author="Jordan Walke">This is *another* comment</Comment>
+			</div>
+		);
+	}
+});
+
+var CommentForm = React.createClass({
+  render: function() {
+    return (
+      <div className="commentForm">
+        Hello, world! I am a CommentForm.
+      </div>
+    );
+  }
+});
+
+var Comment = React.createClass({
+  render: function() {
+    return (
+      <div className="comment">
+        <h2 className="commentAuthor">
+          {this.props.author}
+        </h2>
+        {this.props.children}
+      </div>
+    );
+  }
+});
+
+ReactDOM.render(
+  <CommentBox />,
+  document.getElementById('content')
+);
+     </script>
 	</body>
 </html>
