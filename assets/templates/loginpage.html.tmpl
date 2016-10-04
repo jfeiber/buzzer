@@ -2,6 +2,11 @@
 <html>
 <head>
 <title>Restaur-Anteater</title>
+<script src="https://unpkg.com/react@15.3.2/dist/react.js"></script>
+<script src="https://unpkg.com/react-dom@15.3.2/dist/react-dom.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+<script src="https://unpkg.com/jquery@3.1.0/dist/jquery.min.js"></script>
+<script src="https://unpkg.com/remarkable@1.7.1/dist/remarkable.min.js"></script>
 </head>
 <header>
 	<body>
@@ -21,7 +26,25 @@
 				</p>
 				<input type="submit" value="Login">
 			</form>
-
 		</div>
+		<div id="content"></div>
+
+
+	<script type="text/babel">
+	// tutorial1.js
+var CommentBox = React.createClass({
+  render: function() {
+    return (
+      <div className="commentBox">
+        Hello, world! I am a CommentBox.
+      </div>
+    );
+  }
+});
+ReactDOM.render(
+  <CommentBox />,
+  document.getElementById('content')
+);
+     </script>
 	</body>
 </html>
