@@ -9,6 +9,7 @@
 
     <!-- Bootstrap -->
     <link href="/assets/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/static/css/find_device.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -18,6 +19,8 @@
     <![endif]-->
   </head>
   <body>
+
+
 
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -74,39 +77,27 @@
 </nav>
 
     <div class="container">
-      <h1>Buzzer {{.CustomerID}} Info</h1>
-      {{ range .Devices }}
-        <h1>Party Name: {{ .DeviceName }}</h1>
-        <h1>Party Size: {{ .PartySize }}</h1>
-        <h1>Current Wait Time: {{ .WaitTime }}</h1>
-
-
-      {{ end }}
-      <form action="tel:555-555-5555">
-          <button type="submit" class="btn btn-primary" >Contact Restaurant</button>
-      </form>
-
-      <br>
-
-      <button onClick="cancelConfirm()" type="button" style= "background-color:red" class="btn btn-primary" >Cancel</button>
-
-    
-
-    </div>
-
-
-    <p id="demo"></p>
-    <script>
-    function cancelConfirm() {
-        var x;
-        if (confirm("Are you sure you want to give up your table?") == true) {
-            x = "      Your table has been relinquished. Please return your pager to the restaurant.";
-        } else {
-            x = "      You are still waiting for a table.";
-        }
-        document.getElementById("demo").innerHTML = x;
-    }
-    </script>
+      <h1>Customer {{.CustomerID}} Buzzer Management</h1>
+      <h2>Active Devices:</h2>
+        {{ range .Devices }}
+          {{ if .IsActive }}
+              <div class="bs-callout bs-callout-success">
+                <h4> {{ .DeviceName }}</h4>
+                <span class="glyphicon glyphicon-time"></span> {{ .WaitTime }} minutes <br>
+                <span class="glyphicon glyphicon-user"></span> {{ .PartySize }} people
+              </div>
+          {{ end }}
+        {{ end }}
+        <h2>Inactive Devices:</h2>
+        {{ range .Devices }}
+          {{ if not .IsActive }}
+              <div class="bs-callout bs-callout-danger">
+                <h4> {{ .DeviceName }}</h4>
+                <span class="glyphicon glyphicon-time"></span> {{ .WaitTime }} minutes <br>
+                <span class="glyphicon glyphicon-user"></span> {{ .PartySize }} people
+              </div>
+          {{ end }}
+        {{ end }}
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
