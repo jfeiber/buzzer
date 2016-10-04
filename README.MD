@@ -1,3 +1,8 @@
+# Hack-A-Thing 10/4
+Joon Cho: I built a comment box component in ReactJS using this tutorial: [ReactJs Tutorial](https://facebook.github.io/react/docs/tutorial.html).
+I learned that ReactJS is extremely flexible, is probably the best library for creating front end objects, and should be the standard. It was hard to createClass something beautiful in CSS because I can't just modify the HTML - I have to work within ReactJS guidelines.
+
+
 # Restaurant App
 
 We are allowing restaurants to manage their clients better with a web app that displays analytics registered by proprietary restaurant pagers.
