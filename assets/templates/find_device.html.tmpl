@@ -29,7 +29,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Restaur-Anteater</a>
+      <a class="navbar-brand" href="/">Restaur-Anteater</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -82,10 +82,31 @@
 
 
       {{ end }}
-      <button type="button" class="btn btn-primary">Table Ready</button>
-      <button type="button" class="btn btn-primary">Table So Ready</button>
+      <form action="tel:555-555-5555">
+          <button type="submit" class="btn btn-primary" >Contact Restaurant</button>
+      </form>
+
+      <br>
+
+      <button onClick="cancelConfirm()" type="button" style= "background-color:red" class="btn btn-primary" >Cancel</button>
+
+    
+
     </div>
 
+
+    <p id="demo"></p>
+    <script>
+    function cancelConfirm() {
+        var x;
+        if (confirm("Are you sure you want to give up your table?") == true) {
+            x = "      Your table has been relinquished. Please return your pager to the restaurant.";
+        } else {
+            x = "      You are still waiting for a table.";
+        }
+        document.getElementById("demo").innerHTML = x;
+    }
+    </script>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
