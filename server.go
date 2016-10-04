@@ -82,6 +82,13 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[NotFoundHandler] ")
+  log.Println("hit the not found handler")
+  t, _ := template.ParseFiles("assets/templates/404.html")
+  t.Execute(w, nil)
+}
+
 func main() {
   log.SetPrefix("[main] ")
 
@@ -112,6 +119,7 @@ func main() {
   router.HandleFunc("/test/{name}", RandomURLHandler)
   router.HandleFunc("/create_device/{customer_id}/{device_name}/{party_size}", CreateDeviceHandler)
   router.HandleFunc("/find_devices/{customer_id}", FindDevicesHandler)
+  router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files
   router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
