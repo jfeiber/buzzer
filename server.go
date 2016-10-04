@@ -70,15 +70,13 @@ func RandomURLHandler(w http.ResponseWriter, r *http.Request) {
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
   log.Println("hallo from the root handler")
-  vars := mux.Vars(r)
-  name := vars["name"]
   t, err := template.ParseFiles("assets/templates/loginpage.html.tmpl")
   if err != nil{
     //deal with 500s later
     log.Println("this is a problem")
     log.Fatal(err)
   } else {
-    t.Execute(w, map[string] string {"Name": name})
+    t.Execute(w, nil)
   }
 }
 
