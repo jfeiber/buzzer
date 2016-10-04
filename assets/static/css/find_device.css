@@ -1,10 +1,44 @@
+body {
+  margin-bottom: 200px;
+}
+
 .bs-callout {
     padding: 20px;
-    margin: 20px 0;
     border: 1px solid #eee;
     border-left-width: 5px;
     border-radius: 3px;
+    width: 210px;
+    margin-left: 10px;
+    margin-top: 15px;
+    display: block;
 }
+
+.test-class {
+  position: absolute;
+  bottom: -25px;
+  right: -145px;
+  /*margin-right: 100px;*/
+  background:none;
+    border:none;
+    box-shadow:none;
+}
+
+.nohover:active{
+  box-shadow: none;
+}
+
+.open>.dropdown-toggle.nohover{
+   background-color: transparent;
+   outline: none;
+   border: none;
+   gradient: none;
+   box-shadow: none;
+}
+
+li {
+    display: block;
+}
+
 .bs-callout h4 {
     margin-top: 0;
     margin-bottom: 5px;
