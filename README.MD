@@ -1,12 +1,19 @@
-# Hack-A-Thing 10/4
-Joon Cho: I built a comment box component in ReactJS using this tutorial: [ReactJs Tutorial](https://facebook.github.io/react/docs/tutorial.html).
-I learned that ReactJS is extremely flexible, is probably the best library for creating front end objects, and should be the standard. It was hard to createClass something beautiful in CSS because I can't just modify the HTML - I have to work within ReactJS guidelines.
-
-
 # Restaurant App
 
 We are allowing restaurants to manage their clients better with a web app that displays analytics registered by proprietary restaurant pagers.
 
+## Hack-A-Thing Interlude Update
+
+We decided to jump in and focus on the getting the core frameworks of our application set up for the Hack-A-Thing Interlude. 
+
+### What we built
+We established a git repo and selected our stack. Next, we set up Docker (www.docker.com) in order to easily package our builds for testing and developing on different platforms. We created an initial database schema using Postgres and GORM (a Go ORM library). Finally, we set up a front-end using HTML and CSS with the Bootstrap framework. We created a number of pages on our website to test client-server interaction, Bootstrap features such as navigation bars, and basic Buzzer functionality such as assigning a buzzer to a new party. 
+
+### What we learned
+We learned a lot about the different technologies and languages we played around with - Docker, Gin, Go, HTML, CSS, Bootstrap, and more. We learned about responsive web design and the powerful potential of Go.
+
+### What didn't work 
+We had some difficulty setting up Docker. One of our team members (whose identity will not be revealed) is using a vintage (2010) Apple MacBook Air with a processor that does not support virtualization. Docker requires virtualization, so we had to find a workaround involving boot2docker, which ironically uses a virtual machine to run Docker. We also had trouble with Gin (a tool to automatically compile and reload Go webapps), as it crashed often during our use. We are currently looking into Gin alternatives.
 
 ## Getting Started
 
