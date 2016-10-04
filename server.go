@@ -20,7 +20,7 @@ func CreateDeviceHandler(w http.ResponseWriter, r *http.Request) {
   vars := mux.Vars(r)
   CustomerID, _ := strconv.Atoi(vars["customer_id"])
   PartySize, _ := strconv.Atoi(vars["party_size"])
-  device := Device{CustomerID: CustomerID, DeviceName: vars["device_name"], IsActive: false, PartySize: PartySize}
+  device := Device{CustomerID: CustomerID, DeviceName: vars["device_name"], IsActive: true, PartySize: PartySize}
   db.NewRecord(device)
   db.Create(&device)
   fmt.Fprintln(w, "Device created!")

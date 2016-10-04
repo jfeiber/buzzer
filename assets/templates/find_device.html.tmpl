@@ -77,27 +77,69 @@
 </nav>
 
     <div class="container">
+      <div class="row">
       <h1>Customer {{.CustomerID}} Buzzer Management</h1>
+      </div>
+      <div class="row">
       <h2>Active Devices:</h2>
+      </div>
+        <div class="row">
+        <ul>
         {{ range .Devices }}
           {{ if .IsActive }}
-              <div class="bs-callout bs-callout-success">
+          <li>
+              <div class="col-sm-2 col-sm-offset-2 bs-callout bs-callout-success">
                 <h4> {{ .DeviceName }}</h4>
                 <span class="glyphicon glyphicon-time"></span> {{ .WaitTime }} minutes <br>
-                <span class="glyphicon glyphicon-user"></span> {{ .PartySize }} people
+                <span class="glyphicon glyphicon-user"></span> {{ .PartySize }} people <br>
+                <div class="btn-group">
+              <button type="button" class="btn nohover dropdown-toggle test-class" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="glyphicon glyphicon-cog"> </span><span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">Separated link</a></li>
+              </ul>
+            </div>
               </div>
+          </li>
           {{ end }}
         {{ end }}
+      </ul>
+        </div>
+        <div class="row">
         <h2>Inactive Devices:</h2>
+      </div>
+        <div class="row">
+        <ul>
         {{ range .Devices }}
           {{ if not .IsActive }}
-              <div class="bs-callout bs-callout-danger">
+          <li>
+              <div class="col-sm-2 col-sm-offset-2 bs-callout bs-callout-danger">
                 <h4> {{ .DeviceName }}</h4>
                 <span class="glyphicon glyphicon-time"></span> {{ .WaitTime }} minutes <br>
-                <span class="glyphicon glyphicon-user"></span> {{ .PartySize }} people
+                <span class="glyphicon glyphicon-user"></span> {{ .PartySize }} people <br>
+                <div class="btn-group">
+              <button type="button" class="btn nohover dropdown-toggle test-class" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="glyphicon glyphicon-cog"> </span><span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">Separated link</a></li>
+              </ul>
+            </div>
               </div>
+          </li>
           {{ end }}
         {{ end }}
+      </ul>
+      </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
