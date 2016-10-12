@@ -1,6 +1,8 @@
 package main
 
-import "time"
+import (
+    "time"
+)
 
 type Device struct {
     ID int
@@ -13,21 +15,16 @@ type Device struct {
     WaitTime int
 }
 
-type Buzzer struct {
-    gorm.Model
-
-    buzzerID uint
-    Restaurant restaurant
-    name string `gorm:"size:45"`
-    last_heartbeat time.Time
-    is_active bool
-    ActiveParty activePartyID
-
+type Restaurant struct {
+    restaurantID uint
+    name string `gorm:"size:99"`
+    dateCreated time.Time
 }
 
 type ActiveParty struct {
     activePartyID uint
-    Restaurant restaurant
+    restaurant Restaurant
+    restaurantID uint
     partyName string `gorm:"size:100"`
     partySize string `gorm:"size:100"`
     timeCreated time.Time
@@ -37,8 +34,11 @@ type ActiveParty struct {
     waitTimeCalculated time.Time
 }
 
-type Restaurant struct {
-    restaurantID uint
-    name string `gorm:"size:99"`
-    dateCreated time.Time
+type Buzzer struct {
+    buzzerID uint
+    restaurant Restaurant
+    name string `gorm:"size:45"`
+    last_heartbeat time.Time
+    is_active bool
+    activeParty ActiveParty
 }
