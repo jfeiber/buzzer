@@ -96,8 +96,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
            panic(err)
     }
 
-    params := r.PostFormValue("params")
-    log.Println(params)
+    username := r.PostFormValue("username")
+    password := r.PostFormValue("password")
+    log.Println(username)
+    log.Println(password)
 
     // type WebAppUser struct {
     //     WebAppUserID int
