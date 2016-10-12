@@ -1,3 +1,5 @@
+For embedded code see: https://github.com/jfeiber/buzzer-embedded
+
 # Restaurant App
 
 We are allowing restaurants to manage their clients better with a web app that displays analytics registered by proprietary restaurant pagers.
