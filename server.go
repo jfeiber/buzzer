@@ -87,6 +87,79 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   t.Execute(w, nil)
 }
 
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+
+    // log.Println(r)
+
+    err := r.ParseForm()
+    if err != nil{
+           panic(err)
+    }
+
+    params := r.PostFormValue("params")
+    log.Println(params)
+
+    // type WebAppUser struct {
+    //     WebAppUserID int
+    //     restaurant Restaurant
+    //     restaurantId int
+    //     username string `gorm:"size:100;not null"`
+    //     password string `gorm:"size:100; not null"`
+    //     passSalt string `gorm:"size:50; not null"`
+    //     dateCreated time.Time
+    // }
+    // webAppUser := WebAppUser{
+	// 	NotifyType:     notifyType,
+	// 	UserId:         userId,
+	// 	ActorId:        actorId,
+	// 	NotifyableType: notifyableType,
+	// 	NotifyableId:   notifyableId,
+	// }
+    //
+	// exitCount := 0
+	// db.Model(Notification{}).Where(
+	// 	"user_id = ? and actor_id = ? and notifyable_type = ? and notifyable_id = ?",
+	// 	userId, actorId, notifyableType, notifyableId).Count(&exitCount)
+	// if exitCount > 0 {
+	// 	return nil
+	// }
+    //
+	// err := db.Save(&note).Error
+    //
+	// go PushNotifyInfoToUser(userId, note, true)
+    //
+	// return err
+    //
+    //
+
+
+	// err := db.Save(n).Error
+	// if err != nil {
+	// 	v.Error("服务器异常创建失败")
+	// }
+
+    //redirect
+    //
+
+}
+
+func LoggedInHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[dickinButt]")
+    log.Println("Logged in bitch!!!!")
+
+    // TODO: If logged in then do something else
+
+    t, err := template.ParseFiles("assets/templates/loggedInPage.html.tmpl")
+    if err != nil{
+      //deal with 500s later
+      log.Println("this is a problem")
+      log.Fatal(err)
+    } else {
+      t.Execute(w, nil)
+    }
+}
+
+
 func main() {
   log.SetPrefix("[main] ")
 
@@ -117,6 +190,8 @@ func main() {
   router.HandleFunc("/test/{name}", RandomURLHandler)
   router.HandleFunc("/create_device/{customer_id}/{device_name}/{party_size}", CreateDeviceHandler)
   router.HandleFunc("/find_devices/{customer_id}", FindDevicesHandler)
+  router.HandleFunc("/loggedIn", LoggedInHandler)
+  router.HandleFunc("/register", RegisterHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files

@@ -49,7 +49,6 @@ type HistoricalParties struct {
     restaurantId int
     partyName string `gorm:"size:50;not null"`
     partySize int
-    dateCreated
     dateCreated time.Time
     dateSeated time.Time
     waitTimeExpected int
