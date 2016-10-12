@@ -12,3 +12,15 @@ type Device struct {
     PartySize int
     WaitTime int
 }
+
+type Buzzer struct {
+    gorm.Model
+
+    buzzerID uint
+    Restaurant []restaurants
+    name = string `gorm:"size:255"`
+    last_heartbeat time.Time
+    is_active bool
+    ActiveParty []activePartyIds
+
+}
