@@ -42,3 +42,26 @@ type Buzzer struct {
     is_active bool
     activeParty ActiveParty
 }
+
+type HistoricalParties struct {
+    historicalPartiesID int
+    restaurant Restaurant
+    restaurantId int
+    partyName string `gorm:"size:50;not null"`
+    partySize int
+    dateCreated
+    dateCreated time.Time
+    dateSeated time.Time
+    waitTimeExpected int
+    waitTimeCalc int
+}
+
+type WebAppUser struct {
+    WebAppUserID int
+    restaurant Restaurant
+    restaurantId int
+    username string `gorm:"size:100;not null"`
+    password string `gorm:"size:100; not null"`
+    passSalt string `gorm:"size:50; not null"`
+    dateCreated time.Time
+}
