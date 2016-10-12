@@ -17,10 +17,28 @@ type Buzzer struct {
     gorm.Model
 
     buzzerID uint
-    Restaurant []restaurants
-    name = string `gorm:"size:255"`
+    Restaurant restaurant
+    name string `gorm:"size:45"`
     last_heartbeat time.Time
     is_active bool
-    ActiveParty []activePartyIds
+    ActiveParty activePartyID
 
+}
+
+type ActiveParty struct {
+    activePartyID uint
+    Restaurant restaurant
+    partyName string `gorm:"size:100"`
+    partySize string `gorm:"size:100"`
+    timeCreated time.Time
+    timeSeated time.Time
+    phoneAhead bool
+    waitTimeExpected time.Time
+    waitTimeCalculated time.Time
+}
+
+type Restaurant struct {
+    restaurantID uint
+    name string `gorm:"size:99"`
+    dateCreated time.Time
 }
