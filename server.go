@@ -5,6 +5,7 @@ import (
     "log"
     "net/http"
     "os"
+    "time"
     "strconv"
     "html/template"
     "github.com/gorilla/mux"
@@ -88,35 +89,41 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-
-    // log.Println(r)
-
     err := r.ParseForm()
     if err != nil{
            panic(err)
     }
+
+    restaurantName := r.PostFormValue("restaurantName")
+
+    var restaurant = new(Restaurant)
+    db.Where(Restaurant{name: restaurantName}).Attrs(Restaurant{dateCreated: time.Now()}).FirstOrInit(&restaurant)
+    db.Create(&restaurant)
+
+    // if (restaurant == nil) {
+    //     restuarantId := restaurant.restaurantID
+    // } else {
+    //     restaurant := Restaurant{
+    //         name: "restaurantName",
+    //         dateCreated: time.Now(),
+    //     }
+    // }
 
     username := r.PostFormValue("username")
     password := r.PostFormValue("password")
     log.Println(username)
     log.Println(password)
 
-    // type WebAppUser struct {
-    //     WebAppUserID int
-    //     restaurant Restaurant
-    //     restaurantId int
-    //     username string `gorm:"size:100;not null"`
-    //     password string `gorm:"size:100; not null"`
-    //     passSalt string `gorm:"size:50; not null"`
-    //     dateCreated time.Time
-    // }
-    // webAppUser := WebAppUser{
-	// 	NotifyType:     notifyType,
-	// 	UserId:         userId,
-	// 	ActorId:        actorId,
-	// 	NotifyableType: notifyableType,
-	// 	NotifyableId:   notifyableId,
-	// }
+    webAppUser := WebAppUser{
+        restaurantId: restaurant.restaurantID,
+        username: username,
+        password: password,
+        passSalt: "sdasdasdsad",
+        dateCreated: time.Now(),
+    }
+
+    db.Create(&webAppUser)
+
     //
 	// exitCount := 0
 	// db.Model(Notification{}).Where(
@@ -133,8 +140,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	// return err
     //
     //
-
-
 	// err := db.Save(n).Error
 	// if err != nil {
 	// 	v.Error("服务器异常创建失败")
