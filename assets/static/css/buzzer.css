@@ -24,3 +24,8 @@ body {
 .btn-primary {
     background-color: #427BE7;
 }
+
+.form-login input {
+    display: block;
+    margin-bottom: 15px;
+}
