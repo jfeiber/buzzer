@@ -1,9 +1,26 @@
+/* Luscious slate background */
 body {
     background-color: #F1F4F6;
 }
+
+/* Blue navbar */
 .navbar-default {
     background-color: #427BE7;
 }
+
+/* Buzzer logo */
 .navbar-default .navbar-brand {
-  color: #FFFFFF;
+    color: #FFFFFF;
+}
+
+/* Center the login elements */
+.login {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+}
+
+.btn-primary {
+    background-color: #427BE7;
 }
