@@ -16,51 +16,52 @@ type Device struct {
 }
 
 type Restaurant struct {
-    restaurantID uint
-    name string `gorm:"size:99"`
-    dateCreated time.Time
+    restaurantID int
+    name string `gorm:"size:99; not null"`
+    dateCreated time.Time `gorm:"not null"`
 }
 
 type ActiveParty struct {
-    activePartyID uint
+    activePartyID int
     restaurant Restaurant
-    restaurantID uint
-    partyName string `gorm:"size:100"`
-    partySize string `gorm:"size:100"`
-    timeCreated time.Time
+    restaurantID int `gorm:"not null"`
+    partyName string `gorm:"size:50; not null"`
+    partySize int `gorm:"not null"`
+    timeCreated time.Time `gorm:"not null"`
     timeSeated time.Time
-    phoneAhead bool
+    phoneAhead bool `gorm:"not null"`
     waitTimeExpected time.Time
     waitTimeCalculated time.Time
 }
 
 type Buzzer struct {
-    buzzerID uint
+    buzzerID int
     restaurant Restaurant
-    name string `gorm:"size:45"`
-    last_heartbeat time.Time
-    is_active bool
+    buzzerName string `gorm:"size:45; not null"`
+    lastHeartbeat time.Time
+    isActive bool `gorm:"not null"`
     activeParty ActiveParty
+    activePartyID int `gorm:"not null"`
 }
 
 type HistoricalParties struct {
     historicalPartiesID int
     restaurant Restaurant
-    restaurantId int
+    restaurantId int `gorm:"not null"`
     partyName string `gorm:"size:50;not null"`
-    partySize int
-    dateCreated time.Time
-    dateSeated time.Time
-    waitTimeExpected int
-    waitTimeCalc int
+    partySize int `gorm:"not null"`
+    dateCreated time.Time `gorm:"not null"`
+    dateSeated time.Time `gorm:"not null"`
+    waitTimeExpected int `gorm:"not null"`
+    waitTimeCalculated int `gorm:"not null"`
 }
 
 type WebAppUser struct {
-    WebAppUserID int
+    webAppUserID int
     restaurant Restaurant
-    restaurantId int
+    restaurantId int `gorm:"not null"`
     username string `gorm:"size:100;not null"`
     password string `gorm:"size:100; not null"`
     passSalt string `gorm:"size:50; not null"`
-    dateCreated time.Time
+    dateCreated time.Time `gorm:"not null"`
 }
