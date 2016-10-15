@@ -15,57 +15,44 @@ import (
 
 var db *gorm.DB
 
-func CreateDeviceHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[CreateDeviceHandler] ")
-  vars := mux.Vars(r)
-  CustomerID, _ := strconv.Atoi(vars["customer_id"])
-  PartySize, _ := strconv.Atoi(vars["party_size"])
-  device := Device{CustomerID: CustomerID, DeviceName: vars["device_name"], IsActive: true, PartySize: PartySize}
-  db.NewRecord(device)
-  db.Create(&device)
-  fmt.Fprintln(w, "Device created!")
-}
+//Leaving this so people can still see the code but it won't work anymore with the Devices table removed.
 
-func FindDevicesHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[DisplayDeviceHandler] ")
-  vars := mux.Vars(r)
-  CustomerID, _ := strconv.Atoi(vars["customer_id"])
-  var devices []Device
-  db.Where("customer_id = ?", CustomerID).Find(&devices)
-  for _, device := range devices {
-    log.Println("Device name: " + device.DeviceName)
-  }
-  t, err := template.ParseFiles("assets/templates/find_device.html.tmpl")
-  if err != nil{
-    log.Println(err)
-    log.Fatal("fail")
-  } else {
-    //Use an anonymous struct to pass data to the template.
-    data := struct {
-      CustomerID int
-      Devices []Device
-    }{
-      CustomerID,
-      devices,
-    }
-    t.Execute(w, data)
-  }
-}
+// func CreateDeviceHandler(w http.ResponseWriter, r *http.Request) {
+//   log.SetPrefix("[CreateDeviceHandler] ")
+//   vars := mux.Vars(r)
+//   CustomerID, _ := strconv.Atoi(vars["customer_id"])
+//   PartySize, _ := strconv.Atoi(vars["party_size"])
+//   device := Device{CustomerID: CustomerID, DeviceName: vars["device_name"], IsActive: true, PartySize: PartySize}
+//   db.NewRecord(device)
+//   db.Create(&device)
+//   fmt.Fprintln(w, "Device created!")
+// }
 
-func RandomURLHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[RandomURLHandler] ")
-  log.Println("hallo from the random URL handler")
-  vars := mux.Vars(r)
-  name := vars["name"]
-  t, err := template.ParseFiles("assets/templates/index.html.tmpl")
-  if err != nil{
-    //deal with 500s later
-    log.Println("this is a problem")
-    log.Fatal(err)
-  } else {
-    t.Execute(w, map[string] string {"Name": name})
-  }
-}
+// func FindDevicesHandler(w http.ResponseWriter, r *http.Request) {
+//   log.SetPrefix("[DisplayDeviceHandler] ")
+//   vars := mux.Vars(r)
+//   CustomerID, _ := strconv.Atoi(vars["customer_id"])
+//   var devices []Device
+//   db.Where("customer_id = ?", CustomerID).Find(&devices)
+//   for _, device := range devices {
+//     log.Println("Device name: " + device.DeviceName)
+//   }
+//   t, err := template.ParseFiles("assets/templates/find_device.html.tmpl")
+//   if err != nil{
+//     log.Println(err)
+//     log.Fatal("fail")
+//   } else {
+//     //Use an anonymous struct to pass data to the template.
+//     data := struct {
+//       CustomerID int
+//       Devices []Device
+//     }{
+//       CustomerID,
+//       devices,
+//     }
+//     t.Execute(w, data)
+//   }
+// }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
@@ -114,9 +101,6 @@ func main() {
   //Setup the routes
   router := mux.NewRouter()
   router.HandleFunc("/", RootHandler)
-  router.HandleFunc("/test/{name}", RandomURLHandler)
-  router.HandleFunc("/create_device/{customer_id}/{device_name}/{party_size}", CreateDeviceHandler)
-  router.HandleFunc("/find_devices/{customer_id}", FindDevicesHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files

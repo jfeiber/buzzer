@@ -4,25 +4,14 @@ import (
     "time"
 )
 
-type Device struct {
-    ID int
-    CustomerID int `gorm:"not null"`
-    DeviceName string `gorm:"not null unique"`
-    LastHeartbeat time.Time
-    IsActive bool `gorm:"not null"`
-    PartyName string `gorm:"size:50"`
-    PartySize int
-    WaitTime int
-}
-
 type Restaurant struct {
-    restaurantID int
+    id int
     name string `gorm:"size:99; not null"`
     dateCreated time.Time `gorm:"not null"`
 }
 
 type ActiveParty struct {
-    activePartyID int
+    id int
     restaurant Restaurant
     restaurantID int `gorm:"not null"`
     partyName string `gorm:"size:50; not null"`
@@ -35,7 +24,7 @@ type ActiveParty struct {
 }
 
 type Buzzer struct {
-    buzzerID int
+    id int
     restaurant Restaurant
     buzzerName string `gorm:"size:45; not null"`
     lastHeartbeat time.Time
@@ -44,8 +33,8 @@ type Buzzer struct {
     activePartyID int `gorm:"not null"`
 }
 
-type HistoricalParties struct {
-    historicalPartiesID int
+type HistoricalParty struct {
+    id int
     restaurant Restaurant
     restaurantId int `gorm:"not null"`
     partyName string `gorm:"size:50;not null"`
@@ -56,8 +45,8 @@ type HistoricalParties struct {
     waitTimeCalculated int `gorm:"not null"`
 }
 
-type WebAppUser struct {
-    webAppUserID int
+type User struct {
+    id int
     restaurant Restaurant
     restaurantId int `gorm:"not null"`
     username string `gorm:"size:100;not null"`
