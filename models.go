@@ -39,7 +39,7 @@ type HistoricalParty struct {
     PartySize int `gorm:"not null"`
     DateCreated time.Time `gorm:"not null"`
     DateSeated time.Time `gorm:"not null"`
-    wWitTimeExpected int `gorm:"not null"`
+    WaitTimeExpected int `gorm:"not null"`
     WaitTimeCalculated int `gorm:"not null"`
 }
 
