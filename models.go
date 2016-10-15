@@ -5,52 +5,49 @@ import (
 )
 
 type Restaurant struct {
-    id int
-    name string `gorm:"size:99; not null"`
-    dateCreated time.Time `gorm:"not null"`
+    ID int
+    Name string `gorm:"size:99; not null"`
+    DateCreated time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp"`
 }
 
 type ActiveParty struct {
-    id int
-    restaurant Restaurant
-    restaurantID int `gorm:"not null"`
-    partyName string `gorm:"size:50; not null"`
-    partySize int `gorm:"not null"`
-    timeCreated time.Time `gorm:"not null"`
-    timeSeated time.Time
-    phoneAhead bool `gorm:"not null"`
-    waitTimeExpected time.Time
-    waitTimeCalculated time.Time
+    ID int
+    RestaurantID int `gorm:"not null"`
+    PartyName string `gorm:"size:50; not null"`
+    PartySize int `gorm:"not null"`
+    TimeCreated time.Time `gorm:"not null"`
+    TimeSeated time.Time
+    PhoneAhead bool `gorm:"not null"`
+    WaitTimeExpected int
+    WaitTimeCalculated int
 }
 
 type Buzzer struct {
-    id int
-    restaurant Restaurant
-    buzzerName string `gorm:"size:45; not null"`
-    lastHeartbeat time.Time
-    isActive bool `gorm:"not null"`
-    activeParty ActiveParty
-    activePartyID int `gorm:"not null"`
+    ID int
+    RestaurantID int `gorm:"not null"`
+    BuzzerName string `gorm:"size:45; not null"`
+    LastHeartbeat time.Time
+    IsActive bool `gorm:"not null"`
+    ActiveParty ActiveParty
+    ActivePartyID int `gorm:"not null"`
 }
 
 type HistoricalParty struct {
-    id int
-    restaurant Restaurant
-    restaurantId int `gorm:"not null"`
-    partyName string `gorm:"size:50;not null"`
-    partySize int `gorm:"not null"`
-    dateCreated time.Time `gorm:"not null"`
-    dateSeated time.Time `gorm:"not null"`
-    waitTimeExpected int `gorm:"not null"`
-    waitTimeCalculated int `gorm:"not null"`
+    ID int
+    RestaurantID int `gorm:"not null"`
+    PartyName string `gorm:"size:50;not null"`
+    PartySize int `gorm:"not null"`
+    DateCreated time.Time `gorm:"not null"`
+    DateSeated time.Time `gorm:"not null"`
+    wWitTimeExpected int `gorm:"not null"`
+    WaitTimeCalculated int `gorm:"not null"`
 }
 
 type User struct {
-    id int
-    restaurant Restaurant
-    restaurantId int `gorm:"not null"`
-    username string `gorm:"size:100;not null"`
-    password string `gorm:"size:100; not null"`
-    passSalt string `gorm:"size:50; not null"`
-    dateCreated time.Time `gorm:"not null"`
+    ID int
+    RestaurantID int `gorm:"not null"`
+    Username string `gorm:"size:100;not null"`
+    Password string `gorm:"size:100; not null"`
+    PassSalt string `gorm:"size:50; not null"`
+    DateCreated time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp"`
 }
