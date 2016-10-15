@@ -1,15 +1,19 @@
 package main
 
 import (
-    "fmt"
+    // "fmt"
     "log"
+    // "strconv"
     "net/http"
     "os"
-    "strconv"
+    // "time"
     "html/template"
     "github.com/gorilla/mux"
     "github.com/urfave/negroni"
     "github.com/jinzhu/gorm"
+    "golang.org/x/crypto/bcrypt"
+    // "github.com/gorilla/sessions"
+    "math/rand"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
@@ -54,10 +58,57 @@ var db *gorm.DB
 //   }
 // }
 
+func makeRandAlphaNumericStr(n int) string {
+  var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+  b := make([]rune, n)
+  for i := range b {
+      b[i] = letters[rand.Intn(len(letters))]
+  }
+  return string(b)
+}
+
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
   log.Println("hallo from the root handler")
   t, err := template.ParseFiles("assets/templates/loginpage.html.tmpl")
+  if err != nil{
+    //deal with 500s later
+    log.Println("this is a problem")
+    log.Fatal(err)
+  } else {
+    t.Execute(w, nil)
+  }
+}
+
+func AddUserHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[AddUserHandler] ")
+  log.Println(r.Method)
+  log.Println(makeRandAlphaNumericStr(50))
+  if r.Method == "POST" {
+    username := r.FormValue("username")
+    password := r.FormValue("password")
+    restaurantName := r.FormValue("restaurant_name")
+    if username != "" && password != "" && restaurantName != "" {
+      passSalt := makeRandAlphaNumericStr(50)
+      hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password+passSalt), bcrypt.DefaultCost)
+      if err != nil {
+        panic(err)
+      }
+      log.Println(string(hashedPassword))
+      log.Println(restaurantName)
+      var restaurant Restaurant;
+      db.First(&restaurant, "name = ?", restaurantName)
+      if restaurant == (Restaurant{}) {
+        restaurant = Restaurant{Name: restaurantName}
+        db.NewRecord(restaurant)
+        db.Create(&restaurant)
+      }
+      user := User{RestaurantID: restaurant.ID, Username: username, Password: string(hashedPassword), PassSalt: passSalt}
+      db.NewRecord(user)
+      db.Create(&user)
+    }
+  }
+  t, err := template.ParseFiles("assets/templates/adduser.html.tmpl")
   if err != nil{
     //deal with 500s later
     log.Println("this is a problem")
@@ -93,6 +144,7 @@ func main() {
   var err error
   db, err = gorm.Open("postgres", database_url)
   defer db.Close()
+  db.LogMode(true)
   if err != nil{
     log.Fatal(err)
     panic("error connecting to db")
@@ -101,6 +153,7 @@ func main() {
   //Setup the routes
   router := mux.NewRouter()
   router.HandleFunc("/", RootHandler)
+  router.HandleFunc("/add_user", AddUserHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files
