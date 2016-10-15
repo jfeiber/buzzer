@@ -1,24 +1,13 @@
 -- +goose Up
-CREATE TABLE Device (
-  id serial PRIMARY KEY,
-  customer_id int NOT NULL,
-  device_name VARCHAR(255) UNIQUE NOT NULL,
-  last_heartbeat timestamp,
-  is_active boolean NOT NULL,
-  party_name VARCHAR(50),
-  party_size int,
-  wait_time int DEFAULT 0
-);
-
 CREATE TABLE Restaurant (
-  restaurantID int PRIMARY KEY,
+  id serial PRIMARY KEY,
   name VARCHAR(99) NOT NULL,
   dateCreated timestamp NOT NULL
 );
 
 CREATE TABLE ActiveParty (
-  activePartyID int PRIMARY KEY,
-  restaurantID int REFERENCES Restaurant(restaurantID),
+  id serial PRIMARY KEY,
+  restaurantID int REFERENCES Restaurant(id),
   partyName VARCHAR(50) NOT NULL,
   partySize int NOT NULL,
   timeCreated timestamp NOT NULL,
@@ -29,17 +18,17 @@ CREATE TABLE ActiveParty (
 );
 
 CREATE TABLE Buzzer (
-  buzzerID serial PRIMARY KEY,
-  restaurantID int REFERENCES Restaurant(restaurantID),
+  id serial PRIMARY KEY,
+  restaurantID int REFERENCES Restaurant(id),
   buzzerName VARCHAR(45) NOT NULL,
   lastHeartbeat timestamp,
   isActive boolean NOT NULL,
-  activePartyID int REFERENCES ActiveParty(activePartyID)
+  activePartyID int REFERENCES ActiveParty(id)
 );
 
-CREATE TABLE HistoricalParties (
-  historicalPartiesID int PRIMARY KEY,
-  restaurantID int REFERENCES Restaurant(restaurantID),
+CREATE TABLE HistoricalParty (
+  id serial PRIMARY KEY,
+  restaurantID int REFERENCES Restaurant(id),
   partyName VARCHAR(50) NOT NULL,
   partySize int NOT NULL,
   dateCreated timestamp NOT NULL,
@@ -48,20 +37,18 @@ CREATE TABLE HistoricalParties (
   waitTimeCalculated timestamp NOT NULL
 );
 
-CREATE TABLE WebAppUser (
-  webAppUserID int PRIMARY KEY,
-  restaurantID int REFERENCES Restaurant(restaurantID),
+CREATE TABLE "User" (
+  id serial PRIMARY KEY,
+  restaurantID int REFERENCES Restaurant(id),
   username VARCHAR(100) NOT NULL,
   password VARCHAR(100) NOT NULL,
   passSalt VARCHAR(50) NOT NULL,
   dateCreated timestamp NOT NULL
 );
 
-
 -- +goose Down
-DROP TABLE Device;
 DROP TABLE Buzzer;
-DROP TABLE HistoricalParties;
-DROP TABLE WebAppUser;
+DROP TABLE HistoricalParty;
+DROP TABLE "User";
 DROP TABLE ActiveParty;
 DROP TABLE Restaurant;
