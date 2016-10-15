@@ -6,18 +6,19 @@ import (
     // "strconv"
     "net/http"
     "os"
-    // "time"
+    "time"
     "html/template"
     "github.com/gorilla/mux"
     "github.com/urfave/negroni"
     "github.com/jinzhu/gorm"
     "golang.org/x/crypto/bcrypt"
-    // "github.com/gorilla/sessions"
+    "github.com/gorilla/sessions"
     "math/rand"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
 var db *gorm.DB
+var sessionStore *sessions.CookieStore
 
 //Leaving this so people can still see the code but it won't work anymore with the Devices table removed.
 
@@ -82,39 +83,57 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 
 func AddUserHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[AddUserHandler] ")
-  log.Println(r.Method)
-  log.Println(makeRandAlphaNumericStr(50))
+  session, err := sessionStore.Get(r, "buzzer-session")
+  if err != nil {
+    log.Fatal("this is a problem")
+  }
   if r.Method == "POST" {
     username := r.FormValue("username")
     password := r.FormValue("password")
     restaurantName := r.FormValue("restaurant_name")
     if username != "" && password != "" && restaurantName != "" {
+
+      //salt and hash the password
       passSalt := makeRandAlphaNumericStr(50)
       hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password+passSalt), bcrypt.DefaultCost)
       if err != nil {
-        panic(err)
+        log.Fatal(err)
       }
-      log.Println(string(hashedPassword))
-      log.Println(restaurantName)
+
       var restaurant Restaurant;
       db.First(&restaurant, "name = ?", restaurantName)
+
+      //make a restaurant if there isn't one
       if restaurant == (Restaurant{}) {
         restaurant = Restaurant{Name: restaurantName}
         db.NewRecord(restaurant)
         db.Create(&restaurant)
       }
+
+      //add the user
       user := User{RestaurantID: restaurant.ID, Username: username, Password: string(hashedPassword), PassSalt: passSalt}
       db.NewRecord(user)
       db.Create(&user)
+      session.AddFlash("User successfully added")
+    } else {
+      session.AddFlash("Could not add user. Did you forget a field?")
     }
-  }
-  t, err := template.ParseFiles("assets/templates/adduser.html.tmpl")
-  if err != nil{
-    //deal with 500s later
-    log.Println("this is a problem")
-    log.Fatal(err)
+    session.Save(r, w)
+    http.Redirect(w, r, "/add_user", 302)
   } else {
-    t.Execute(w, nil)
+    template_data := map[string]interface{}{}
+    if flashes := session.Flashes(); len(flashes) > 0 {
+      template_data["flash"] = flashes[0]
+    }
+    session.Save(r, w)
+    t, err := template.ParseFiles("assets/templates/adduser.html.tmpl")
+    if err != nil{
+      //deal with 500s later
+      log.Println("this is a problem")
+      log.Fatal(err)
+    } else {
+      t.Execute(w, template_data)
+    }
   }
 }
 
@@ -127,6 +146,13 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
   log.SetPrefix("[main] ")
+  rand.Seed(time.Now().UnixNano())
+
+  authKey := os.Getenv("SESSION_AUTHENTICATION_KEY")
+  if authKey == "" {
+    log.Fatal("$SESSION_AUTHENTICATION_KEY needs to be set")
+  }
+  sessionStore = sessions.NewCookieStore([]byte(authKey))
 
   //Read the server port as an ENV variable
   var port string
