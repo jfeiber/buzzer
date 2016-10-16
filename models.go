@@ -6,7 +6,7 @@ import (
 
 type Restaurant struct {
     ID int
-    Name string `gorm:"size:99; not null"`
+    Name string `gorm:"size:99; not null unique"`
     DateCreated time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp"`
 }
 
@@ -46,7 +46,7 @@ type HistoricalParty struct {
 type User struct {
     ID int
     RestaurantID int `gorm:"not null"`
-    Username string `gorm:"size:100;not null"`
+    Username string `gorm:"size:100;not null unique"`
     Password string `gorm:"size:100; not null"`
     PassSalt string `gorm:"size:50; not null"`
     DateCreated time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp"`
