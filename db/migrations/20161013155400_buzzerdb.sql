@@ -1,67 +1,54 @@
 -- +goose Up
-CREATE TABLE Device (
+CREATE TABLE Restaurants (
   id serial PRIMARY KEY,
-  customer_id int NOT NULL,
-  device_name VARCHAR(255) UNIQUE NOT NULL,
+  name VARCHAR(99) NOT NULL,
+  date_created timestamp without time zone DEFAULT current_timestamp
+);
+
+CREATE TABLE ActiveParties (
+  id serial PRIMARY KEY,
+  restaurant_id int REFERENCES Restaurants(id),
+  party_name VARCHAR(50) NOT NULL,
+  party_size int NOT NULL,
+  time_created timestamp NOT NULL,
+  time_seated timestamp,
+  phone_ahead boolean NOT NULL,
+  wait_time_expected int,
+  wait_time_calculated int
+);
+
+CREATE TABLE Buzzers (
+  id serial PRIMARY KEY,
+  restaurant_id int REFERENCES Restaurants(id),
+  buzzer_name VARCHAR(45) NOT NULL,
   last_heartbeat timestamp,
   is_active boolean NOT NULL,
-  party_name VARCHAR(50),
-  party_size int,
-  wait_time int DEFAULT 0
-);
-
-CREATE TABLE Restaurant (
-  restaurantID int PRIMARY KEY,
-  name VARCHAR(99) NOT NULL,
-  dateCreated timestamp NOT NULL
-);
-
-CREATE TABLE ActiveParty (
-  activePartyID int PRIMARY KEY,
-  restaurantID int REFERENCES Restaurant(restaurantID),
-  partyName VARCHAR(50) NOT NULL,
-  partySize int NOT NULL,
-  timeCreated timestamp NOT NULL,
-  timeSeated timestamp,
-  phoneAhead boolean NOT NULL,
-  waitTimeExpected timestamp,
-  waitTimeCalculated timestamp
-);
-
-CREATE TABLE Buzzer (
-  buzzerID serial PRIMARY KEY,
-  restaurantID int REFERENCES Restaurant(restaurantID),
-  buzzerName VARCHAR(45) NOT NULL,
-  lastHeartbeat timestamp,
-  isActive boolean NOT NULL,
-  activePartyID int REFERENCES ActiveParty(activePartyID)
+  activePartyID int REFERENCES ActiveParties(id)
 );
 
 CREATE TABLE HistoricalParties (
-  historicalPartiesID int PRIMARY KEY,
-  restaurantID int REFERENCES Restaurant(restaurantID),
-  partyName VARCHAR(50) NOT NULL,
-  partySize int NOT NULL,
-  dateCreated timestamp NOT NULL,
-  dateSeated timestamp NOT NULL,
-  waitTimeExpected timestamp NOT NULL,
-  waitTimeCalculated timestamp NOT NULL
+  id serial PRIMARY KEY,
+  restaurant_id int REFERENCES Restaurants(id),
+  party_name VARCHAR(50) NOT NULL,
+  party_size int NOT NULL,
+  date_created timestamp NOT NULL,
+  date_seated timestamp NOT NULL,
+  wait_time_expected timestamp NOT NULL,
+  wait_time_calculated timestamp NOT NULL
 );
 
-CREATE TABLE WebAppUser (
-  webAppUserID int PRIMARY KEY,
-  restaurantID int REFERENCES Restaurant(restaurantID),
+CREATE TABLE Users (
+  id serial PRIMARY KEY,
+  restaurant_id int REFERENCES Restaurants(id),
   username VARCHAR(100) NOT NULL,
   password VARCHAR(100) NOT NULL,
-  passSalt VARCHAR(50) NOT NULL,
-  dateCreated timestamp NOT NULL
+  pass_salt VARCHAR(50) NOT NULL,
+  date_created timestamp without time zone DEFAULT current_timestamp
 );
 
-
 -- +goose Down
-DROP TABLE Device;
-DROP TABLE Buzzer;
+DROP TABLE Buzzers;
 DROP TABLE HistoricalParties;
-DROP TABLE WebAppUser;
-DROP TABLE ActiveParty;
-DROP TABLE Restaurant;
+DROP TABLE Users;
+DROP TABLE ActiveParties;
+DROP TABLE Restaurants;
