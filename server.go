@@ -82,6 +82,21 @@ func LoginURLHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+func oldLoginURLHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[LoginURLHandler] ")
+  log.Println("hallo from the Login URL handler")
+  vars := mux.Vars(r)
+  name := vars["name"]
+  t, err := template.ParseFiles("assets/templates/loginpage.html.tmpl")
+  if err != nil{
+    //deal with 500s later
+    log.Println("this is a problem")
+    log.Fatal(err)
+  } else {
+    t.Execute(w, map[string] string {"Name": name})
+  }
+}
+
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
@@ -131,6 +146,7 @@ func main() {
   router := mux.NewRouter()
   router.HandleFunc("/", RootHandler)
   router.HandleFunc("/test/{name}", RandomURLHandler)
+  router.HandleFunc("/oldlogin", oldLoginURLHandler)
   router.HandleFunc("/login", LoginURLHandler)
   router.HandleFunc("/create_device/{customer_id}/{device_name}/{party_size}", CreateDeviceHandler)
   router.HandleFunc("/find_devices/{customer_id}", FindDevicesHandler)
