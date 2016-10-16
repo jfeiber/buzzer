@@ -151,6 +151,32 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   t.Execute(w, nil)
 }
 
+func LoggedInHandler(w http.ResponseWriter, r *http.Request) {
+    t, err := template.ParseFiles("assets/templates/loggedInPage.html.tmpl")
+    if err != nil{
+        //deal with 500s later
+        log.Println("this is a problem")
+        log.Fatal(err)
+    } else {
+        username := r.FormValue("username")
+        password := r.FormValue("password")
+
+        var user User;
+        db.First(&user, "Username = ?", username)
+        if (user != (User{})) {
+            passSalt := user.PassSalt
+            if (bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password+passSalt)) == nil) {
+                log.Println("Logged in!")
+                log.Println(user.Username)
+            } else {
+                log.Println("Password not correct")
+                http.Redirect(w, r, "/", 302)
+            }
+        }
+        t.Execute(w, nil)
+    }
+}
+
 func main() {
   log.SetPrefix("[main] ")
   rand.Seed(time.Now().UnixNano())
@@ -186,6 +212,7 @@ func main() {
   //Setup the routes
   router := mux.NewRouter()
   router.HandleFunc("/", RootHandler)
+  router.HandleFunc("/loggedIn", LoggedInHandler)
   router.HandleFunc("/add_user", AddUserHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
