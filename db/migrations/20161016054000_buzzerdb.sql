@@ -23,7 +23,7 @@ CREATE TABLE Buzzers (
   buzzer_name VARCHAR(45) NOT NULL,
   last_heartbeat timestamp,
   is_active boolean NOT NULL,
-  activePartyID int REFERENCES ActiveParties(id)
+  active_parties_id int REFERENCES ActiveParties(id)
 );
 
 CREATE TABLE HistoricalParties (
