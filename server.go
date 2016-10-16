@@ -170,7 +170,6 @@ func LoggedInHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-
 func main() {
   log.SetPrefix("[main] ")
   rand.Seed(time.Now().UnixNano())
