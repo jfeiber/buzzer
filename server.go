@@ -100,6 +100,8 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
       }
 
+      log.Println("")
+
       var restaurant Restaurant;
       db.First(&restaurant, "name = ?", restaurantName)
 
@@ -156,9 +158,15 @@ func LoggedInHandler(w http.ResponseWriter, r *http.Request) {
 
         var user User;
         db.First(&user, "Username = ?", username)
-        if (user != (User{}) && user.Password == password) {
-            log.Println("Logged in!")
-            log.Println(user.Username)
+        if (user != (User{})) {
+            passSalt := user.PassSalt
+            if (bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password+passSalt)) == nil) {
+                log.Println("Logged in!")
+                log.Println(user.Username)
+            } else {
+                log.Println("Password not correct")
+                http.Redirect(w, r, "/", 302)
+            }
         }
         t.Execute(w, nil)
     }
