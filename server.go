@@ -114,6 +114,7 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
       user := User{RestaurantID: restaurant.ID, Username: username, Password: string(hashedPassword), PassSalt: passSalt}
       db.NewRecord(user)
       db.Create(&user)
+      log.Println("User added!!")
       session.AddFlash("User successfully added")
     } else {
       session.AddFlash("Could not add user. Did you forget a field?")
@@ -144,81 +145,25 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   t.Execute(w, nil)
 }
 
-// func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-//     err := r.ParseForm()
-//     if err != nil{
-//            panic(err)
-//     }
-//
-//     restaurantName := r.PostFormValue("restaurantName")
-//
-//     var restaurant = new(Restaurant)
-//     db.Where(Restaurant{name: restaurantName}).Attrs(Restaurant{dateCreated: time.Now()}).FirstOrInit(&restaurant)
-//     db.Create(&restaurant)
-//
-//     // if (restaurant == nil) {
-//     //     restuarantId := restaurant.restaurantID
-//     // } else {
-//     //     restaurant := Restaurant{
-//     //         name: "restaurantName",
-//     //         dateCreated: time.Now(),
-//     //     }
-//     // }
-//
-//     username := r.PostFormValue("username")
-//     password := r.PostFormValue("password")
-//     log.Println(username)
-//     log.Println(password)
-//
-//     webAppUser := WebAppUser{
-//         restaurantId: restaurant.restaurantID,
-//         username: username,
-//         password: password,
-//         passSalt: "sdasdasdsad",
-//         dateCreated: time.Now(),
-//     }
-//
-//     db.Create(&webAppUser)
-//
-//     //
-// 	// exitCount := 0
-// 	// db.Model(Notification{}).Where(
-// 	// 	"user_id = ? and actor_id = ? and notifyable_type = ? and notifyable_id = ?",
-// 	// 	userId, actorId, notifyableType, notifyableId).Count(&exitCount)
-// 	// if exitCount > 0 {
-// 	// 	return nil
-// 	// }
-//     //
-// 	// err := db.Save(&note).Error
-//     //
-// 	// go PushNotifyInfoToUser(userId, note, true)
-//     //
-// 	// return err
-//     //
-//     //
-// 	// err := db.Save(n).Error
-// 	// if err != nil {
-// 	// 	v.Error("服务器异常创建失败")
-// 	// }
-//
-//     //redirect
-//     //
-//
-// }
-
 func LoggedInHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[dickinButt]")
-    log.Println("Logged in bitch!!!!")
-
-    // TODO: If logged in then do something else
 
     t, err := template.ParseFiles("assets/templates/loggedInPage.html.tmpl")
     if err != nil{
-      //deal with 500s later
-      log.Println("this is a problem")
-      log.Fatal(err)
+        //deal with 500s later
+        log.Println("this is a problem")
+        log.Fatal(err)
     } else {
-      t.Execute(w, nil)
+        username := r.FormValue("username")
+        password := r.FormValue("password")
+
+        var user User;
+        db.First(&user, "Username = ?", username)
+        if (user != (User{}) && user.Password == password) {
+            log.Println("Logged in!")
+            log.Println(user.Username)
+        }
+        t.Execute(w, nil)
     }
 }
 
@@ -258,11 +203,7 @@ func main() {
   //Setup the routes
   router := mux.NewRouter()
   router.HandleFunc("/", RootHandler)
-  // router.HandleFunc("/test/{name}", RandomURLHandler)
-  // router.HandleFunc("/create_device/{customer_id}/{device_name}/{party_size}", CreateDeviceHandler)
-  // router.HandleFunc("/find_devices/{customer_id}", FindDevicesHandler)
-  // router.HandleFunc("/loggedIn", LoggedInHandler)
-  // router.HandleFunc("/register", RegisterHandler)
+  router.HandleFunc("/loggedIn", LoggedInHandler)
   router.HandleFunc("/add_user", AddUserHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
