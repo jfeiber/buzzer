@@ -1,6 +1,7 @@
 /* Luscious slate background */
 body {
     background-color: #F1F4F6;
+    font-family: 'Lato', sans-serif;
 }
 
 /* Blue navbar */
@@ -29,3 +30,6 @@ body {
     display: block;
     margin-bottom: 15px;
 }
+
+
+
