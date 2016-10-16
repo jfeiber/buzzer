@@ -110,11 +110,18 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
         db.Create(&restaurant)
       }
 
-      //add the user
-      user := User{RestaurantID: restaurant.ID, Username: username, Password: string(hashedPassword), PassSalt: passSalt}
-      db.NewRecord(user)
-      db.Create(&user)
-      session.AddFlash("User successfully added")
+      var user User
+      db.First(&user, "username = ?", username)
+
+      if user != (User{}) {
+        session.AddFlash("Username already exists")
+      } else {
+        //add the user
+        user = User{RestaurantID: restaurant.ID, Username: username, Password: string(hashedPassword), PassSalt: passSalt}
+        db.NewRecord(user)
+        db.Create(&user)
+        session.AddFlash("User successfully added")
+      }
     } else {
       session.AddFlash("Could not add user. Did you forget a field?")
     }
