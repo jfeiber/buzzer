@@ -86,7 +86,7 @@ func LoginURLHandler(w http.ResponseWriter, r *http.Request) {
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
   log.Println("hallo from the root handler")
-  t, err := template.ParseFiles("assets/templates/loginpage.html.tmpl")
+  t, err := template.ParseFiles("assets/templates/login.html")
   if err != nil{
     //deal with 500s later
     log.Println("this is a problem")
