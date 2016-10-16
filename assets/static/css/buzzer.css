@@ -12,6 +12,7 @@ body {
 /* Buzzer logo */
 .navbar-default .navbar-brand {
     color: #FFFFFF;
+    font-weight: light;
 }
 
 /* Center the login elements */
