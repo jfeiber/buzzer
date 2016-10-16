@@ -161,12 +161,12 @@ func LoggedInHandler(w http.ResponseWriter, r *http.Request) {
             if (bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password+passSalt)) == nil) {
                 log.Println("Logged in!")
                 log.Println(user.Username)
+                t.Execute(w, nil)
             } else {
                 log.Println("Password not correct")
                 http.Redirect(w, r, "/", 302)
             }
         }
-        t.Execute(w, nil)
     }
 }
 
