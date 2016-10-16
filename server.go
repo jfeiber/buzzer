@@ -114,7 +114,6 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
       user := User{RestaurantID: restaurant.ID, Username: username, Password: string(hashedPassword), PassSalt: passSalt}
       db.NewRecord(user)
       db.Create(&user)
-      log.Println("User added!!")
       session.AddFlash("User successfully added")
     } else {
       session.AddFlash("Could not add user. Did you forget a field?")
@@ -146,8 +145,6 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoggedInHandler(w http.ResponseWriter, r *http.Request) {
-    log.SetPrefix("[dickinButt]")
-
     t, err := template.ParseFiles("assets/templates/loggedInPage.html.tmpl")
     if err != nil{
         //deal with 500s later
