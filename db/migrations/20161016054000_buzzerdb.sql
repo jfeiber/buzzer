@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE Restaurants (
   id serial PRIMARY KEY,
-  name VARCHAR(99) NOT NULL,
+  name VARCHAR(99) UNIQUE NOT NULL,
   date_created timestamp without time zone DEFAULT current_timestamp
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE HistoricalParties (
 CREATE TABLE Users (
   id serial PRIMARY KEY,
   restaurant_id int REFERENCES Restaurants(id),
-  username VARCHAR(100) NOT NULL,
+  username VARCHAR(100) UNIQUE NOT NULL,
   password VARCHAR(100) NOT NULL,
   pass_salt VARCHAR(50) NOT NULL,
   date_created timestamp without time zone DEFAULT current_timestamp
