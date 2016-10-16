@@ -100,8 +100,6 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
       }
 
-      log.Println("")
-
       var restaurant Restaurant;
       db.First(&restaurant, "name = ?", restaurantName)
 
