@@ -38,5 +38,21 @@ body {
     margin-bottom: 15px;
 }
 
+.login-alert {
+    /* Horizontal */
+    display: block;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
 
+    /* Vertical */
+    position: relative;
+    top: 25%;
+    transform: translateY(25%);
+}
 
+.alert-danger {
+    color: #FFFFFF;
+    background-color: #DD2A17;
+}
