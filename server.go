@@ -131,7 +131,6 @@ func main() {
   router := mux.NewRouter()
   router.HandleFunc("/", RootHandler)
   router.HandleFunc("/test/{name}", RandomURLHandler)
-  router.HandleFunc("/oldlogin", oldLoginURLHandler)
   router.HandleFunc("/login", LoginURLHandler)
   router.HandleFunc("/create_device/{customer_id}/{device_name}/{party_size}", CreateDeviceHandler)
   router.HandleFunc("/find_devices/{customer_id}", FindDevicesHandler)
