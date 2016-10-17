@@ -68,10 +68,26 @@ func makeRandAlphaNumericStr(n int) string {
   return string(b)
 }
 
+func LoginURLHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[LoginURLHandler] ")
+  log.Println("hallo from the Login URL handler")
+  vars := mux.Vars(r)
+  name := vars["name"]
+  t, err := template.ParseFiles("assets/templates/login.html")
+  if err != nil{
+    //deal with 500s later
+    log.Println("this is a problem")
+    log.Fatal(err)
+  } else {
+    t.Execute(w, map[string] string {"Name": name})
+  }
+}
+
+
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
   log.Println("hallo from the root handler")
-  t, err := template.ParseFiles("assets/templates/loginpage.html.tmpl")
+  t, err := template.ParseFiles("assets/templates/login.html")
   if err != nil{
     //deal with 500s later
     log.Println("this is a problem")
@@ -212,6 +228,7 @@ func main() {
   //Setup the routes
   router := mux.NewRouter()
   router.HandleFunc("/", RootHandler)
+  router.HandleFunc("/login", LoginURLHandler)
   router.HandleFunc("/loggedIn", LoggedInHandler)
   router.HandleFunc("/add_user", AddUserHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
