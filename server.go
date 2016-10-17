@@ -20,46 +20,7 @@ import (
 var db *gorm.DB
 var sessionStore *sessions.CookieStore
 
-//Leaving this so people can still see the code but it won't work anymore with the Devices table removed.
-
-// func CreateDeviceHandler(w http.ResponseWriter, r *http.Request) {
-//   log.SetPrefix("[CreateDeviceHandler] ")
-//   vars := mux.Vars(r)
-//   CustomerID, _ := strconv.Atoi(vars["customer_id"])
-//   PartySize, _ := strconv.Atoi(vars["party_size"])
-//   device := Device{CustomerID: CustomerID, DeviceName: vars["device_name"], IsActive: true, PartySize: PartySize}
-//   db.NewRecord(device)
-//   db.Create(&device)
-//   fmt.Fprintln(w, "Device created!")
-// }
-
-// func FindDevicesHandler(w http.ResponseWriter, r *http.Request) {
-//   log.SetPrefix("[DisplayDeviceHandler] ")
-//   vars := mux.Vars(r)
-//   CustomerID, _ := strconv.Atoi(vars["customer_id"])
-//   var devices []Device
-//   db.Where("customer_id = ?", CustomerID).Find(&devices)
-//   for _, device := range devices {
-//     log.Println("Device name: " + device.DeviceName)
-//   }
-//   t, err := template.ParseFiles("assets/templates/find_device.html.tmpl")
-//   if err != nil{
-//     log.Println(err)
-//     log.Fatal("fail")
-//   } else {
-//     //Use an anonymous struct to pass data to the template.
-//     data := struct {
-//       CustomerID int
-//       Devices []Device
-//     }{
-//       CustomerID,
-//       devices,
-//     }
-//     t.Execute(w, data)
-//   }
-// }
-
-func makeRandAlphaNumericStr(n int) string {
+func MakeRandAlphaNumericStr(n int) string {
   var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
   b := make([]rune, n)
   for i := range b {
@@ -68,18 +29,61 @@ func makeRandAlphaNumericStr(n int) string {
   return string(b)
 }
 
-func LoginURLHandler(w http.ResponseWriter, r *http.Request) {
+func Handle500Error(w http.ResponseWriter) {
+  http.Error(w, http.StatusText(500), 500)
+}
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[LoginURLHandler] ")
-  log.Println("hallo from the Login URL handler")
-  vars := mux.Vars(r)
-  name := vars["name"]
-  t, err := template.ParseFiles("assets/templates/login.html")
+  session, err := sessionStore.Get(r, "buzzer-session")
+  if err != nil {
+    log.Println(err)
+    Handle500Error(w)
+  }
+  if r.Method == "POST" {
+    username := r.FormValue("username")
+    password := r.FormValue("password")
+
+    var user User;
+    db.First(&user, "Username = ?", username)
+    if (user != (User{})) {
+      passSalt := user.PassSalt
+      if (bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password+passSalt)) == nil) {
+          session.Values["username"] = username
+          session.Save(r, w)
+          http.Redirect(w, r, "/wait_list", 302)
+      }
+    } else {
+      session.AddFlash("Username or Password not correct")
+      session.Save(r, w)
+    }
+  }
+  t, err := template.ParseFiles("assets/templates/login.html.tmpl")
   if err != nil{
-    //deal with 500s later
-    log.Println("this is a problem")
-    log.Fatal(err)
+    log.Println(err)
+    Handle500Error(w)
+  }
+  t.Execute(w, nil)
+}
+
+func WaitListHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[WaitListHandler] ")
+  session, err := sessionStore.Get(r, "buzzer-session")
+  if err != nil {
+    log.Fatal("this is a problem")
+  }
+  username, found := session.Values["username"]
+  if !found || username == "" {
+    http.Redirect(w, r, "/login", 302)
+    log.Println("User not logged in")
+    return
+  }
+  t, err := template.ParseFiles("assets/templates/waitlist.html.tmpl")
+  if err != nil{
+    log.Println(err)
+    Handle500Error(w)
   } else {
-    t.Execute(w, map[string] string {"Name": name})
+    t.Execute(w, nil)
   }
 }
 
@@ -87,7 +91,7 @@ func LoginURLHandler(w http.ResponseWriter, r *http.Request) {
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
   log.Println("hallo from the root handler")
-  t, err := template.ParseFiles("assets/templates/login.html")
+  t, err := template.ParseFiles("assets/templates/login.html.tmpl")
   if err != nil{
     //deal with 500s later
     log.Println("this is a problem")
@@ -110,7 +114,7 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
     if username != "" && password != "" && restaurantName != "" {
 
       //salt and hash the password
-      passSalt := makeRandAlphaNumericStr(50)
+      passSalt := MakeRandAlphaNumericStr(50)
       hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password+passSalt), bcrypt.DefaultCost)
       if err != nil {
         log.Fatal(err)
@@ -167,32 +171,6 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   t.Execute(w, nil)
 }
 
-func LoggedInHandler(w http.ResponseWriter, r *http.Request) {
-    t, err := template.ParseFiles("assets/templates/loggedInPage.html.tmpl")
-    if err != nil{
-        //deal with 500s later
-        log.Println("this is a problem")
-        log.Fatal(err)
-    } else {
-        username := r.FormValue("username")
-        password := r.FormValue("password")
-
-        var user User;
-        db.First(&user, "Username = ?", username)
-        if (user != (User{})) {
-            passSalt := user.PassSalt
-            if (bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password+passSalt)) == nil) {
-                log.Println("Logged in!")
-                log.Println(user.Username)
-                t.Execute(w, nil)
-            } else {
-                log.Println("Password not correct")
-                http.Redirect(w, r, "/", 302)
-            }
-        }
-    }
-}
-
 func main() {
   log.SetPrefix("[main] ")
   rand.Seed(time.Now().UnixNano())
@@ -228,9 +206,9 @@ func main() {
   //Setup the routes
   router := mux.NewRouter()
   router.HandleFunc("/", RootHandler)
-  router.HandleFunc("/login", LoginURLHandler)
-  router.HandleFunc("/loggedIn", LoggedInHandler)
+  router.HandleFunc("/login", LoginHandler)
   router.HandleFunc("/add_user", AddUserHandler)
+  router.HandleFunc("/wait_list", WaitListHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files
