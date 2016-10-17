@@ -54,11 +54,11 @@
     </nav>
 
     <div class="container-fluid">
-      <!-- Invalid input alert
-      <div class="row login-alert">
-        <div class="alert alert-danger" role="alert">Danger: friends having fun</div>
-      </div>
-      -->
+      {{ if .failure_message }}
+        <div class="row login-alert">
+          <div class="alert alert-danger" role="alert">{{ .failure_message }}</div>
+        </div>
+      {{ end }}
       <div class="row login">
         <h2>Log In</h2>
         <form action="/login" method="POST" class="form-login">
