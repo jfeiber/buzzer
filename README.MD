@@ -1,23 +1,24 @@
 For embedded code see: https://github.com/jfeiber/buzzer-embedded
 
-# Restaurant App
+# Buzzer
 
 We are allowing restaurants to manage their clients better with a web app that displays analytics registered by proprietary restaurant pagers.
 
-## Hack-A-Thing Interlude Update
+### Login
+![Login Page](/Mockups/loginpage.png?raw=true)
 
-We decided to jump in and focus on the getting the core frameworks of our application set up for the Hack-A-Thing Interlude. 
+### Waitlist
+![Login Page](/Mockups/waitlist.png?raw=true)
 
-### What we built
-We established a git repo and selected our stack. Next, we set up Docker (www.docker.com) in order to easily package our builds for testing and developing on different platforms. We created an initial database schema using Postgres and GORM (a Go ORM library). Finally, we set up a front-end using HTML and CSS with the Bootstrap framework. We created a number of pages on our website to test client-server interaction, Bootstrap features such as navigation bars, and basic Buzzer functionality such as assigning a buzzer to a new party. 
+### Buzzer Management
+![Buzzer Management](/Mockups/buzzer_management.png?raw=true)
 
-### What we learned
-We learned a lot about the different technologies and languages we played around with - Docker, Gin, Go, HTML, CSS, Bootstrap, and more. We learned about responsive web design and the powerful potential of Go.
+### Analytics
+![Analytics](/Mockups/analytics.png?raw=true)
 
-### What didn't work 
-We had some difficulty setting up Docker. One of our team members (whose identity will not be revealed) is using a vintage (2010) Apple MacBook Air with a processor that does not support virtualization. Docker requires virtualization, so we had to find a workaround involving boot2docker, which ironically uses a virtual machine to run Docker. We also had trouble with Gin (a tool to automatically compile and reload Go webapps), as it crashed often during our use. We are currently looking into Gin alternatives.
+## Architecture
 
-## Getting Started
+## Setup and Deployment
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
@@ -55,7 +56,6 @@ the production database, run `goose -env production up`.
 4. Run `godep save`
 5. Exit the docker container and check (with `git diff` or something) that the changes to Godeps/Godeps.json didn't do anything crazy.
 
-
 ## Authors
 
 * **Kevin Neilson**
@@ -63,3 +63,5 @@ the production database, run `goose -env production up`.
 * **Joon Cho**
 * **Mickey Alperin**
 * **Josh Feiber**
+
+## Acknowledgements
