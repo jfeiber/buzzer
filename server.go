@@ -1,110 +1,30 @@
 package main
 
 import (
-    "fmt"
     "log"
     "net/http"
     "os"
-    "strconv"
-    "html/template"
+    "time"
     "github.com/gorilla/mux"
     "github.com/urfave/negroni"
     "github.com/jinzhu/gorm"
+    "github.com/gorilla/sessions"
+    "math/rand"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
 var db *gorm.DB
-
-func CreateDeviceHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[CreateDeviceHandler] ")
-  vars := mux.Vars(r)
-  CustomerID, _ := strconv.Atoi(vars["customer_id"])
-  PartySize, _ := strconv.Atoi(vars["party_size"])
-  device := Device{CustomerID: CustomerID, DeviceName: vars["device_name"], IsActive: true, PartySize: PartySize}
-  db.NewRecord(device)
-  db.Create(&device)
-  fmt.Fprintln(w, "Device created!")
-}
-
-func FindDevicesHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[DisplayDeviceHandler] ")
-  vars := mux.Vars(r)
-  CustomerID, _ := strconv.Atoi(vars["customer_id"])
-  var devices []Device
-  db.Where("customer_id = ?", CustomerID).Find(&devices)
-  for _, device := range devices {
-    log.Println("Device name: " + device.DeviceName)
-  }
-  t, err := template.ParseFiles("assets/templates/find_device.html.tmpl")
-  if err != nil{
-    log.Println(err)
-    log.Fatal("fail")
-  } else {
-    //Use an anonymous struct to pass data to the template.
-    data := struct {
-      CustomerID int
-      Devices []Device
-    }{
-      CustomerID,
-      devices,
-    }
-    t.Execute(w, data)
-  }
-}
-
-func RandomURLHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[RandomURLHandler] ")
-  log.Println("hallo from the random URL handler")
-  vars := mux.Vars(r)
-  name := vars["name"]
-  t, err := template.ParseFiles("assets/templates/index.html.tmpl")
-  if err != nil{
-    //deal with 500s later
-    log.Println("this is a problem")
-    log.Fatal(err)
-  } else {
-    t.Execute(w, map[string] string {"Name": name})
-  }
-}
-
-func LoginURLHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[LoginURLHandler] ")
-  log.Println("hallo from the Login URL handler")
-  vars := mux.Vars(r)
-  name := vars["name"]
-  t, err := template.ParseFiles("assets/templates/login.html")
-  if err != nil{
-    //deal with 500s later
-    log.Println("this is a problem")
-    log.Fatal(err)
-  } else {
-    t.Execute(w, map[string] string {"Name": name})
-  }
-}
-
-
-func RootHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[RootHandler] ")
-  log.Println("hallo from the root handler")
-  t, err := template.ParseFiles("assets/templates/login.html")
-  if err != nil{
-    //deal with 500s later
-    log.Println("this is a problem")
-    log.Fatal(err)
-  } else {
-    t.Execute(w, nil)
-  }
-}
-
-func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[NotFoundHandler] ")
-  log.Println("hit the not found handler")
-  t, _ := template.ParseFiles("assets/templates/404.html")
-  t.Execute(w, nil)
-}
+var sessionStore *sessions.CookieStore
 
 func main() {
   log.SetPrefix("[main] ")
+  rand.Seed(time.Now().UnixNano())
+
+  authKey := os.Getenv("SESSION_AUTHENTICATION_KEY")
+  if authKey == "" {
+    log.Fatal("$SESSION_AUTHENTICATION_KEY needs to be set")
+  }
+  sessionStore = sessions.NewCookieStore([]byte(authKey))
 
   //Read the server port as an ENV variable
   var port string
@@ -122,18 +42,17 @@ func main() {
   var err error
   db, err = gorm.Open("postgres", database_url)
   defer db.Close()
+  db.LogMode(true)
   if err != nil{
     log.Fatal(err)
-    panic("error connecting to db")
   }
 
   //Setup the routes
   router := mux.NewRouter()
   router.HandleFunc("/", RootHandler)
-  router.HandleFunc("/test/{name}", RandomURLHandler)
-  router.HandleFunc("/login", LoginURLHandler)
-  router.HandleFunc("/create_device/{customer_id}/{device_name}/{party_size}", CreateDeviceHandler)
-  router.HandleFunc("/find_devices/{customer_id}", FindDevicesHandler)
+  router.HandleFunc("/login", LoginHandler)
+  router.HandleFunc("/add_user", AddUserHandler)
+  router.HandleFunc("/wait_list", WaitListHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files
