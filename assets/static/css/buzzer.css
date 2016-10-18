@@ -9,6 +9,7 @@ body {
     background-color: #427BE7;
 }
 
+
 /* Buzzer logo */
 .navbar-default .navbar-brand {
     color: #FFFFFF;
@@ -36,6 +37,13 @@ body {
 .form-login input {
     display: block;
     margin-bottom: 15px;
+}
+
+.form-login input:focus {
+  -webkit-box-shadow: 0px 0px 5px 2px #426BE7;
+  box-shadow:         0px 0px 5px 2px #426BE7;
+  -moz-box-shadow:    0px 0px 5px 2px #426BE7;
+  border-color: white;
 }
 
 .login-alert {
