@@ -19,7 +19,7 @@ We are allowing restaurants to manage their clients better with a web app that d
 ## Architecture
 
 Web App Stack:
-Golang with [Gorilla Mux](https://github.com/gorilla/mux) for routing, [GORM](https://github.com/jinzhu/gorm) for the ORM, [Negroni](https://github.com/urfave/negroni) for the HTTP middleware, [Gorilla Sessions](https://github.com/gorilla/sessions) for session handling, and PostgreSQL for the database.
+Golang with [Gorilla Mux](https://github.com/gorilla/mux) for routing, [GORM](https://github.com/jinzhu/gorm) for the ORM, [Negroni](https://github.com/urfave/negroni) for the HTTP middleware, [Gorilla Sessions](https://github.com/gorilla/sessions) for session handling, and PostgreSQL for the database. Hosted on Heroku.
 
 Embedded Stack:
 All embedded code written in C++. 2 libraries are used, the [Adafruit 128x32 I2C display driver](https://github.com/adafruit/Adafruit_SSD1306) and the [Adafruit Graphics Library](https://github.com/adafruit/Adafruit-GFX-Library). 
@@ -61,6 +61,9 @@ the production database, run `goose -env production up`.
 3. Run `go get dependency` where `dependency` is something you want to install (like `github.com/tools/godep`)
 4. Run `godep save`
 5. Exit the docker container and check (with `git diff` or something) that the changes to Godeps/Godeps.json didn't do anything crazy.
+
+### Deploying to Heroku
+[Heroku Deployment Instructions](https://devcenter.heroku.com/articles/git). Ask Josh to add you as a contributor to the web app on Heroku if you need to deploy.
 
 ## Authors
 
