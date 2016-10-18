@@ -2,17 +2,23 @@
 body {
     background-color: #F1F4F6;
     font-family: 'Lato', sans-serif;
+    font-weight: 100;
 }
 
 /* Blue navbar */
 .navbar-default {
-    background-color: #427BE7;
+    background-color: #426BE7;
+    -webkit-box-shadow: 0px 2px 5px 0px #A9A9A9;
+    -moz-box-shadow: 0px 2px 5px 0px #A9A9A9;
+    box-shadow: 0px 2px 5px 0px #A9A9A9;
+    border: 0;
+    border-radius: 0;
 }
 
 /* Buzzer logo */
 .navbar-default .navbar-brand {
     color: #FFFFFF;
-    font-weight: light;
+    font-weight: 100;
 }
 
 /* Center the login elements */
@@ -30,7 +36,7 @@ body {
 }
 
 .btn-primary {
-    background-color: #427BE7;
+    background-color: #426BE7;
 }
 
 .form-login input {
