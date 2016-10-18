@@ -18,6 +18,12 @@ We are allowing restaurants to manage their clients better with a web app that d
 
 ## Architecture
 
+Web App Stack:
+Golang with [Gorilla Mux](https://github.com/gorilla/mux) for routing, [GORM](https://github.com/jinzhu/gorm) for the ORM, [Negroni](https://github.com/urfave/negroni) for the HTTP middleware, [Gorilla Sessions](https://github.com/gorilla/sessions) for session handling, and PostgreSQL for the database.
+
+Embedded Stack:
+All embedded code written in C++. 2 libraries are used, the [Adafruit 128x32 I2C display driver](https://github.com/adafruit/Adafruit_SSD1306) and the [Adafruit Graphics Library](https://github.com/adafruit/Adafruit-GFX-Library). 
+
 ## Setup and Deployment
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
