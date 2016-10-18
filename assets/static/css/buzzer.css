@@ -15,6 +15,16 @@ body {
     font-weight: light;
 }
 
+.active a {
+    color: #FFFFFF;
+    background-color: #427BE7 !important; 
+    font-weight: bold;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #FFFFFF;
+}
+
 /* Center the login elements */
 .login {
     /* Horizontal */
