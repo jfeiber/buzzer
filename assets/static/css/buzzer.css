@@ -57,6 +57,11 @@ body {
     background-color: #427BE7;
 }
 
+.btn-default {
+    background-color: #427BE7;
+}
+
+
 .form-login input {
     display: block;
     margin-bottom: 15px;
