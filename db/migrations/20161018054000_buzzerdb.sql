@@ -23,7 +23,7 @@ CREATE TABLE ActiveParties (
   phone_ahead boolean NOT NULL,
   wait_time_expected int,
   wait_time_calculated int,
-  buzzers_id int REFERENCES Buzzers(id)
+  buzzer_id int REFERENCES Buzzers(id)
 );
 
 CREATE TABLE HistoricalParties (
