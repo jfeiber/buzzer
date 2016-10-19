@@ -96,7 +96,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
 }
 
-func AssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+func isAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
     returnObj := map[string] interface{} {"status": false}
 
     if !IsUserLoggedIn(GetSession(w, r)) {
