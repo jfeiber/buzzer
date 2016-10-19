@@ -102,17 +102,27 @@ func AssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
       return
     }
 
+    returnObj := map[string] interface{} {"status": false}
+
     if r.Method == "POST" {
         active_party_id = r.FormValue("active_party_id")
-
         var activeparty ActiveParty
         db.First(&activeparty, active_party_id)
 
-        if activeparty.BuzzerID != nil:
-            return true
+        if (activeparty.BuzzerID != nil) {
+            returnObj["activeParty"] = activeparty
+            returnObj["status"] = true
+        } else {
+            returnObj["status"] = false
+        }
+    }
+    jsonObj, err := json.Marshal(returnObj)
+    if err != nil {
+        log.Println("sucks")
     }
 
-    return false
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(json_obj)
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
