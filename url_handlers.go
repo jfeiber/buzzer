@@ -97,25 +97,24 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func AssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
-    if !IsUserLoggedIn(GetSession(w, r)) {
-      http.Redirect(w, r, "/login", 302)
-      return
-    }
-
     returnObj := map[string] interface{} {"status": false}
 
-    if r.Method == "POST" {
+    if !IsUserLoggedIn(GetSession(w, r)) {
+        w.WriteHeader(401)
+        returnObj["error_message"] = "Request unauthorized"
+    } elif r.Method == "POST" {
         active_party_id = r.FormValue("active_party_id")
         var activeparty ActiveParty
         db.First(&activeparty, active_party_id)
 
         if (activeparty.BuzzerID != nil) {
-            returnObj["activeParty"] = activeparty
+            returnObj["active_party"] = activeparty
             returnObj["status"] = true
         } else {
             returnObj["status"] = false
         }
     }
+
     jsonObj, err := json.Marshal(returnObj)
     if err != nil {
         log.Println("sucks")
