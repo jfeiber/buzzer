@@ -7,16 +7,31 @@ body {
 /* Blue navbar */
 .navbar-default {
     background-color: #427BE7;
+    color: #FFFFFF;
 }
 
-/* Buzzer logo */
-.navbar-default .navbar-brand {
+.navbar-default .navbar- {
+    background-color: #427BE7; 
     color: #FFFFFF;
     font-weight: light;
 }
 
-.active a {
+/* Buzzer logo */
+.navbar-default .navbar-brand {
+    background-color: #427BE7; 
     color: #FFFFFF;
+    font-weight: light;
+}
+
+/* Buzzer logo */
+.navbar-default .navbar-header {
+    color: #000000;
+    font-weight: light;
+}
+
+
+.active a {
+    color: #000000;
     background-color: #427BE7 !important; 
     font-weight: bold;
 }
