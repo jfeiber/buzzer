@@ -96,12 +96,11 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
 }
 
-//responds with whether or not a party with the give active_party_id has been assigned a buzzer (edited)
 func AssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
-    // if !IsUserLoggedIn(GetSession(w, r)) {
-    //   http.Redirect(w, r, "/login", 302)
-    //   return
-    // }
+    if !IsUserLoggedIn(GetSession(w, r)) {
+      http.Redirect(w, r, "/login", 302)
+      return
+    }
 
     if r.Method == "POST" {
         active_party_id = r.FormValue("active_party_id")
@@ -115,7 +114,6 @@ func AssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
 
     return false
 }
-
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
