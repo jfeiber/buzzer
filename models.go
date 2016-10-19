@@ -28,7 +28,7 @@ type ActiveParty struct {
     PhoneAhead bool `gorm:"not null"`
     WaitTimeExpected int
     WaitTimeCalculated int
-    BuzzerID int `gorm:"not null"`
+    BuzzerID int
 }
 
 type HistoricalParty struct {
