@@ -96,29 +96,38 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
 }
 
-func isAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
-    returnObj := map[string] interface{} {"status": false}
+func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+    returnObj := map[string] interface{} {"status": "success"}
 
     if !IsUserLoggedIn(GetSession(w, r)) {
         w.WriteHeader(401)
+        returnObj["status"] = "error"
         returnObj["error_message"] = "Request unauthorized"
-    } elif r.Method == "POST" {
-        active_party_id = r.FormValue("active_party_id")
+    } else if r.Method == "POST" {
+        decoder := json.NewDecoder(r.Body)
         var activeparty ActiveParty
+        err := decoder.Decode(&activeparty)
+        if err != nil {
+             panic()
+        }
+        defer req.Body.Close()
+        // $json = $app->request->getBody();
+        // $data = json_decode($json, true); // p
+        active_party_id := activeparty.ID
         db.First(&activeparty, active_party_id)
 
         if (activeparty.BuzzerID != nil) {
-            returnObj["active_party"] = activeparty
-            returnObj["status"] = true
+            returnObj["is_party_assigned_buzzer"] = true
         } else {
-            returnObj["status"] = false
+            returnObj["is_party_assigned_buzzer"] = true
         }
     }
 
-    jsonObj, err := json.Marshal(returnObj)
     if err != nil {
-        log.Println("sucks")
+        returnObj["status"] = "error"
+        returnObj["error_message"] = "Json Marshall did not work"
     }
+    jsonObj, err := json.Marshal(returnObj)
 
     w.Header().Set("Content-Type", "application/json")
     w.Write(json_obj)
