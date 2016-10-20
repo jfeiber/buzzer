@@ -1,21 +1,21 @@
 -- +goose Up
-CREATE TABLE Restaurants (
+CREATE TABLE restaurants (
   id serial PRIMARY KEY,
   name VARCHAR(99) UNIQUE NOT NULL,
   date_created timestamp without time zone DEFAULT current_timestamp
 );
 
-CREATE TABLE Buzzers (
+CREATE TABLE buzzers (
   id serial PRIMARY KEY,
-  restaurant_id int REFERENCES Restaurants(id),
+  restaurant_id int REFERENCES restaurants(id),
   buzzer_name VARCHAR(45) NOT NULL,
   last_heartbeat timestamp,
   is_active boolean NOT NULL
 );
 
-CREATE TABLE ActiveParties (
+CREATE TABLE active_parties (
   id serial PRIMARY KEY,
-  restaurant_id int REFERENCES Restaurants(id),
+  restaurant_id int REFERENCES restaurants(id),
   party_name VARCHAR(50) NOT NULL,
   party_size int NOT NULL,
   time_created timestamp NOT NULL,
@@ -23,12 +23,12 @@ CREATE TABLE ActiveParties (
   phone_ahead boolean NOT NULL,
   wait_time_expected int,
   wait_time_calculated int,
-  buzzer_id int REFERENCES Buzzers(id)
+  buzzer_id int REFERENCES buzzers(id)
 );
 
-CREATE TABLE HistoricalParties (
+CREATE TABLE historical_parties (
   id serial PRIMARY KEY,
-  restaurant_id int REFERENCES Restaurants(id),
+  restaurant_id int REFERENCES restaurants(id),
   party_name VARCHAR(50) NOT NULL,
   party_size int NOT NULL,
   date_created timestamp NOT NULL,
@@ -37,9 +37,9 @@ CREATE TABLE HistoricalParties (
   wait_time_calculated timestamp NOT NULL
 );
 
-CREATE TABLE Users (
+CREATE TABLE users (
   id serial PRIMARY KEY,
-  restaurant_id int REFERENCES Restaurants(id),
+  restaurant_id int REFERENCES restaurants(id),
   username VARCHAR(100) UNIQUE NOT NULL,
   password VARCHAR(100) NOT NULL,
   pass_salt VARCHAR(50) NOT NULL,
@@ -47,8 +47,8 @@ CREATE TABLE Users (
 );
 
 -- +goose Down
-DROP TABLE HistoricalParties;
-DROP TABLE Users;
-DROP TABLE ActiveParties;
-DROP TABLE Buzzers;
-DROP TABLE Restaurants;
+DROP TABLE historical_parties;
+DROP TABLE users;
+DROP TABLE active_parties;
+DROP TABLE buzzers;
+DROP TABLE restaurants;
