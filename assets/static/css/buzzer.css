@@ -7,6 +7,7 @@ body {
 
 /* Blue navbar */
 .navbar-default {
+<<<<<<< HEAD
     background-color: #426BE7;
     -webkit-box-shadow: 0px 2px 5px 0px #A9A9A9;
     -moz-box-shadow: 0px 2px 5px 0px #A9A9A9;
@@ -15,11 +16,34 @@ body {
     border-radius: 0;
 }
 
+.navbar-default .navbar- {
+    background-color: #426BE7;
+    color: #FFFFFF;
+    font-weight: light;
+}
+
 
 /* Buzzer logo */
 .navbar-default .navbar-brand {
+    background-color: #426BE7;
     color: #FFFFFF;
     font-weight: 100;
+}
+
+/* Buzzer logo */
+.navbar-default .navbar-header {
+    font-weight: light;
+}
+
+
+.active a {
+    background-color: #426BE7 !important;
+    font-weight: bold;
+    color: #FFFFFF !important;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #FFFFFF;
 }
 
 /* Center the login elements */
@@ -59,6 +83,16 @@ body {
     box-shadow:         inset 0px 0px 2px 2px #000000;
     -moz-box-shadow:    inset 0px 0px 2px 2px #000000;
 }
+
+.btn-default {
+    background-color: #426BE7;
+}
+
+.btn btn-default dropdown-toggle
+{
+    background-color: #FFFFFF;
+}
+
 
 .form-login input {
     display: block;
