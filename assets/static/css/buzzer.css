@@ -61,6 +61,11 @@ body {
     background-color: #427BE7;
 }
 
+.btn btn-default dropdown-toggle
+{
+    background-color: #FFFFFF;
+}
+
 
 .form-login input {
     display: block;
