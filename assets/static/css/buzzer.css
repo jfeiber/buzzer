@@ -129,6 +129,11 @@ body {
     transform: translateY(25%);
 }
 
+/*.img-responsive{
+    width:5%;
+    height:5%;
+}
+*/
 .alert-danger {
     color: #FFFFFF;
     background-color: #DD2A17;
