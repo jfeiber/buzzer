@@ -2,7 +2,7 @@
 body {
     background-color: #F1F4F6;
     font-family: 'Lato', sans-serif;
-    font-weight: 100;
+    font-weight: light;
 }
 
 /* Blue navbar */
@@ -26,12 +26,17 @@ body {
 .navbar-default .navbar-brand {
     background-color: #426BE7;
     color: #FFFFFF;
-    font-weight: 100;
+    font-weight: light;
 }
 
 /* Buzzer logo */
 .navbar-default .navbar-header {
     font-weight: light;
+}
+
+.navbar-default .navbar-nav {
+    margin-top: 2px;
+    margin-left: 50px;
 }
 
 
