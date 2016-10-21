@@ -48,16 +48,16 @@
 
 <body>
 	<nav class="navbar navbar-default navbar-fixed-top">
-	  <div class="container-fluid">
-	    <div class="navbar-header">
-	      <a class="navbar-brand" href="#">Buzzer</a>
-	    </div>
-	    <ul class="nav navbar-nav">
-	      <li class="active"><a href="#">Waitlist</a></li>
-	      <li><a href="#">Devices</a></li>
-	      <li><a href="#">Analytics</a></li>
-	    </ul>
-        <ul class="nav navbar-nav navbar-right">
+     <div class="container-fluid">
+       <div class="navbar-header">
+         <a class="navbar-brand" href="#">Buzzer</a>
+     </div>
+     <ul class="nav navbar-nav">
+         <li class="active"><a href="#">Waitlist</a></li>
+         <li><a href="#">Devices</a></li>
+         <li><a href="#">Analytics</a></li>
+     </ul>
+     <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
           <a href="#" class="glyphicon glyphicon-cog white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
           <ul class="dropdown-menu">
@@ -66,160 +66,140 @@
             <li><a href="#">Something else here</a></li>
             <li role="separator" class="divider"></li>
             <li><a href="#">Separated link</a></li>
-          </ul>
-        </li>
-      </ul>
-	  </div>
-	</nav>
+        </ul>
+    </li>
+</ul>
+</div>
+</nav>
 
-	<br>
-	<br>
-	<br>
-	<br>
+<br>
+<br>
+<br>
+<br>
 
-	<div class="container">
-	  <div class="row">
-	    <div class="col-sm-3">
-	      <input type="text" class="form-control" placeholder="Party Name">
-	    </div>
-	    <div class="col-sm-2">
-		<div class="btn-group">
-		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		    Party Size <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu">
-		    <li><a href="#">0</a></li>
-		    <li><a href="#">1</a></li>
-		    <li><a href="#">2</a></li>
-		    <li><a href="#">4</a></li>
-		    <li><a href="#">5</a></li>
-		    <li><a href="#">6</a></li>
-		  </ul>
+<div class="container">
+ <div class="row">
+   <div class="col-sm-3">
+     <input type="text" class="form-control" placeholder="Party Name">
+ </div>
+ <div class="col-sm-2">
+  <div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Party Size <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+      <li><a href="#">0</a></li>
+      <li><a href="#">1</a></li>
+      <li><a href="#">2</a></li>
+      <li><a href="#">4</a></li>
+      <li><a href="#">5</a></li>
+      <li><a href="#">6</a></li>
+  </ul>
 
-		</div>
+</div>
+</div>
 
-<!-- 		  <ul class="pagination">
-			    <li>
-			      <a href="#" aria-label="Previous">
-			        <span aria-hidden="true">&laquo;</span>
-			      </a>
-			    </li>
-			    <li><a href="#">1</a></li>
-			    <li><a href="#">2</a></li>
-			    <li><a href="#">3</a></li>
-			    <li><a href="#">4</a></li>
-			    <li><a href="#">5</a></li>
-			    <li><a href="#">6</a></li>
-			    <li><a href="#">7</a></li>
-			    <li>
-			      <a href="#" aria-label="Next">
-			        <span aria-hidden="true">&raquo;</span>
-			      </a>
-			    </li>
-			  </ul> -->
-	    </div>
+<!-- Source: http://stackoverflow.com/questions/22362750/bootstrap-button-group-pre-select-button-with-html-only: -->
+<div class="col-sm-3">
+    <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default active">
+          <input type="radio" name="options" id="waiting" width="20"> Waiting
+      </label>
+      <label class="btn btn-default">
+          <input type="radio" name="options" id="phone"> Phone
+      </label>
+  </div>
+</div>
+<div class="col-sm-4">
 
-	    <!-- Source: http://stackoverflow.com/questions/22362750/bootstrap-button-group-pre-select-button-with-html-only: -->
-	     <div class="col-sm-3">
-	      	<div class="btn-group" data-toggle="buttons">
-		  <label class="btn btn-default active">
-		    <input type="radio" name="options" id="waiting" width="20"> Waiting
-		  </label>
-		  <label class="btn btn-default">
-		    <input type="radio" name="options" id="phone"> Phone
-		  </label>
-		</div>
-	    </div>
-	    <div class="col-sm-4">
-	      
-	    	<div class="btn-group">
-		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		    Hours <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu">
-		    <li><a href="#">0</a></li>
-		    <li><a href="#">1</a></li>
-		    <li><a href="#">2</a></li>
-		    <li><a href="#">3</a></li>
-		  </ul>
+  <div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Hours <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+      <li><a href="#">0</a></li>
+      <li><a href="#">1</a></li>
+      <li><a href="#">2</a></li>
+      <li><a href="#">3</a></li>
+  </ul>
 
-		</div>
+</div>
 
-	        <div class="btn-group">
-		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		    Minutes <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu">
-		    	<li><a href="#">00</a></li>
-		        <li><a href="#">05</a></li>
-		        <li><a href="#">10</a></li>
-		        <li><a href="#">15</a></li>
-		        <li><a href="#">20</a></li>
-		        <li><a href="#">25</a></li>
-		        <li><a href="#">30</a></li>
-		        <li><a href="#">35</a></li>
-		        <li><a href="#">40</a></li>
-		        <li><a href="#">45</a></li>
-			<li><a href="#">50</a></li>
-		        <li><a href="#">55</a></li>
-		  </ul>
-		</div>
+<div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Minutes <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+     <li><a href="#">00</a></li>
+     <li><a href="#">05</a></li>
+     <li><a href="#">10</a></li>
+     <li><a href="#">15</a></li>
+     <li><a href="#">20</a></li>
+     <li><a href="#">25</a></li>
+     <li><a href="#">30</a></li>
+     <li><a href="#">35</a></li>
+     <li><a href="#">40</a></li>
+     <li><a href="#">45</a></li>
+     <li><a href="#">50</a></li>
+     <li><a href="#">55</a></li>
+ </ul>
+</div>
 
-	<button class="btn btn-default" type="button">ADD</button>
+<button class="btn btn-default" type="button">ADD</button>
 
-	    </div>
-	  </div>
-	</div>
+</div>
+</div>
+</div>
 
-	<!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
-	<div class="container">
-	  <h2>The Waitlist</h2>
-	  <table class="table table-bordered">
-	    <thead>
-	      <tr>
-	        <th>Party Name</th>
-	        <th>Party Size</th>
-	        <th>Minutes Waiting</th>
-	        <th>Type</th>
-	        <th>Actions</th>
-	      </tr>
-	    </thead>
-	    <tbody>
-	      <tr>
-	        <td>Feiber</td>
-	        <td>4</td>
-	        <td>3</td>
-	        <td>Waiting</td>
-	      </tr>
-	      <tr>
-	        <td>Neilson</td>
-	        <td>2</td>
-	        <td>5</td>
-	        <td>Phone</td>
-	      </tr>
-	      <tr>
-	        <td>Mach Daddy</td>
-	        <td>3</td>
-	        <td>9</td>
-	        <td>Waiting</td>
-	      </tr>
-	      <tr>
-	        <td>Alperin</td>
-	        <td>3</td>
-	        <td>35</td>
-	        <td>Waiting</td>
-	      </tr>
-	      <tr>
-	        <td>Cho</td>
-	        <td>2</td>
-	        <td>55</td>
-	        <td>Waiting</td>
-	      </tr>
-	    </tbody>
-	  </table>
-	</div>
+<!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
+<div class="container">
+ <h2>The Waitlist</h2>
+ <table class="table table-bordered">
+   <thead>
+     <tr>
+       <th>Party Name</th>
+       <th>Party Size</th>
+       <th>Minutes Waiting</th>
+       <th>Type</th>
+       <th>Actions</th>
+   </tr>
+</thead>
+<tbody>
+ <tr>
+   <td>Feiber</td>
+   <td>4</td>
+   <td>3</td>
+   <td>Waiting</td>
+</tr>
+<tr>
+   <td>Neilson</td>
+   <td>2</td>
+   <td>5</td>
+   <td>Phone</td>
+</tr>
+<tr>
+   <td>Mach Daddy</td>
+   <td>3</td>
+   <td>9</td>
+   <td>Waiting</td>
+</tr>
+<tr>
+   <td>Alperin</td>
+   <td>3</td>
+   <td>35</td>
+   <td>Waiting</td>
+</tr>
+<tr>
+   <td>Cho</td>
+   <td>2</td>
+   <td>55</td>
+   <td>Waiting</td>
+</tr>
+</tbody>
+</table>
+</div>
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
 </body>
 </html>
