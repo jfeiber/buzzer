@@ -47,7 +47,6 @@
 </head>
 
 <body>
-
 	<nav class="navbar navbar-default navbar-fixed-top">
 	  <div class="container-fluid">
 	    <div class="navbar-header">
@@ -66,32 +65,62 @@
 	<br>
 	<br>
 
-	  <div class="col-lg-6">
-	    <div class="input-group">
+	<div class="container">
+	  <div class="row">
+	    <div class="col-sm-3">
 	      <input type="text" class="form-control" placeholder="Party Name">
-		  <ul class="pagination">
-		    <li>
-		      <a href="#" aria-label="Previous">
-		        <span aria-hidden="true">&laquo;</span>
-		      </a>
-		    </li>
+	    </div>
+	    <div class="col-sm-2">
+		<div class="btn-group">
+		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    Party Size <span class="caret"></span>
+		  </button>
+		  <ul class="dropdown-menu">
+		    <li><a href="#">0</a></li>
 		    <li><a href="#">1</a></li>
 		    <li><a href="#">2</a></li>
-		    <li><a href="#">3</a></li>
 		    <li><a href="#">4</a></li>
 		    <li><a href="#">5</a></li>
 		    <li><a href="#">6</a></li>
-		    <li><a href="#">7</a></li>
-		    <li>
-		      <a href="#" aria-label="Next">
-		        <span aria-hidden="true">&raquo;</span>
-		      </a>
-		    </li>
 		  </ul>
 
-	      <span style= "width: 50px;" class="input-group-btn">
-	    <!--   <span style= "width: 500px;" class="input-group-btn"> -->
-	        <div class="btn-group">
+		</div>
+
+<!-- 		  <ul class="pagination">
+			    <li>
+			      <a href="#" aria-label="Previous">
+			        <span aria-hidden="true">&laquo;</span>
+			      </a>
+			    </li>
+			    <li><a href="#">1</a></li>
+			    <li><a href="#">2</a></li>
+			    <li><a href="#">3</a></li>
+			    <li><a href="#">4</a></li>
+			    <li><a href="#">5</a></li>
+			    <li><a href="#">6</a></li>
+			    <li><a href="#">7</a></li>
+			    <li>
+			      <a href="#" aria-label="Next">
+			        <span aria-hidden="true">&raquo;</span>
+			      </a>
+			    </li>
+			  </ul> -->
+	    </div>
+
+	    <!-- Source: http://stackoverflow.com/questions/22362750/bootstrap-button-group-pre-select-button-with-html-only: -->
+	     <div class="col-sm-3">
+	      	<div class="btn-group" data-toggle="buttons">
+		  <label class="btn btn-default active">
+		    <input type="radio" name="options" id="waiting" width="20"> Waiting
+		  </label>
+		  <label class="btn btn-default">
+		    <input type="radio" name="options" id="phone"> Phone
+		  </label>
+		</div>
+	    </div>
+	    <div class="col-sm-4">
+	      
+	    	<div class="btn-group">
 		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		    Hours <span class="caret"></span>
 		  </button>
@@ -124,21 +153,11 @@
 		  </ul>
 		</div>
 
-		<!-- Source: http://stackoverflow.com/questions/22362750/bootstrap-button-group-pre-select-button-with-html-only: -->
-		<div class="btn-group" data-toggle="buttons">
-		  <label class="btn btn-default active">
-		    <input type="radio" name="options" id="waiting" width="20"> Waiting
-		  </label>
-		  <label class="btn btn-default">
-		    <input type="radio" name="options" id="phone"> Phone
-		  </label>
-		</div>
+	<button class="btn btn-default" type="button">ADD</button>
 
-		<button class="btn btn-default" type="button">ADD</button>
-	      </span>
-	    </div><!-- /input-group -->
-	  </div><!-- /.col-lg-6 -->
-	</div><!-- /.row -->
+	    </div>
+	  </div>
+	</div>
 
 	<!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
 	<div class="container">
@@ -187,10 +206,6 @@
 	    </tbody>
 	  </table>
 	</div>
-
-	<br>
-	<br>
-	<br>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
