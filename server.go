@@ -15,10 +15,13 @@ import (
 
 var db *gorm.DB
 var sessionStore *sessions.CookieStore
+var buzzerNameGenerator BuzzerNameGenerator
 
 func main() {
   log.SetPrefix("[main] ")
   rand.Seed(time.Now().UnixNano())
+
+  buzzerNameGenerator = NewBuzzerNameGenerator(time.Now().UnixNano())
 
   authKey := os.Getenv("SESSION_AUTHENTICATION_KEY")
   if authKey == "" {
@@ -53,6 +56,7 @@ func main() {
   router.HandleFunc("/login", LoginHandler)
   router.HandleFunc("/add_user", AddUserHandler)
   router.HandleFunc("/wait_list", WaitListHandler)
+  router.HandleFunc("/buzzer_api/get_new_buzzer_name", GetNewBuzzerNameHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files
