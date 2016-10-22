@@ -151,6 +151,82 @@ func AddErrorMessageToResponseObj(responseObj map[string] interface{}, err_messa
   responseObj["error_message"] = err_message
 }
 
+func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[AcceptPartyHandler] ")
+  responseObj := map[string] interface{} {"status": "success"}
+  body, err := ioutil.ReadAll(r.Body)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse request body."
+  }
+  reqBodyObj := map[string] interface{}{}
+  err = json.Unmarshal(body, &reqBodyObj)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse JSON."
+  } else {
+    partyID := reqBodyObj["party_id"]
+    buzzerName := reqBodyObj["buzzer_name"]
+    if partyID == nil || buzzerName == nil {
+      AddErrorMessageToResponseObj(responseObj, "Missing required fields.")
+    } else {
+      var activeParty ActiveParty
+      db.First(&activeParty, "id = ?", partyID)
+      if activeParty == (ActiveParty{}) {
+        AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+      } else {
+        var buzzer Buzzer
+        db.First(&buzzer, "buzzer_name = ?", buzzerName)
+        if buzzer == (Buzzer{}) {
+          AddErrorMessageToResponseObj(responseObj, "Buzzer with that name not found.")
+        } else {
+          db.Model(&activeParty).Update("buzzer_id", buzzer.ID)
+        }
+      }
+    }
+  }
+  RenderJSONFromMap(w, responseObj)
+}
+
+func GetAvailablePartyHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[GetAvailablePartyHandler] ")
+  responseObj := map[string] interface{} {"status": "success"}
+  body, err := ioutil.ReadAll(r.Body)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse request body."
+  }
+  reqBodyObj := map[string] interface{}{}
+  err = json.Unmarshal(body, &reqBodyObj)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse JSON."
+  } else {
+    buzzerName := reqBodyObj["buzzer_name"]
+    if buzzerName == nil {
+      AddErrorMessageToResponseObj(responseObj, "buzzer_name field required.")
+    } else {
+      var buzzer Buzzer
+      db.First(&buzzer, "buzzer_name = ?", buzzerName)
+      if buzzer == (Buzzer{}) {
+        AddErrorMessageToResponseObj(responseObj, "Buzzer with that name not found.")
+      } else {
+        var activeParty ActiveParty
+        db.First(&activeParty, "restaurant_id = ? and buzzer_id is null and phone_ahead is false", buzzer.RestaurantID)
+        responseObj["party_avail"] = true;
+        if activeParty != (ActiveParty{}) {
+          responseObj["party_name"] = activeParty.PartyName
+          responseObj["wait_time"] = activeParty.WaitTimeExpected
+          responseObj["party_id"] = activeParty.ID
+        } else {
+          responseObj["party_avail"] = false;
+        }
+      }
+    }
+  }
+  RenderJSONFromMap(w, responseObj)
+}
+
 func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[IsBuzzerRegisteredHandler] ")
   responseObj := map[string] interface{} {"status": "success"}
