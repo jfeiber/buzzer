@@ -3,11 +3,14 @@ package main
 import (
     "log"
     "net/http"
+    "errors"
     "html/template"
     "golang.org/x/crypto/bcrypt"
     "github.com/gorilla/sessions"
     "encoding/json"
     "math/rand"
+    "time"
+    "io/ioutil"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
@@ -15,14 +18,14 @@ func MakeRandAlphaNumericStr(n int) string {
   var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
   b := make([]rune, n)
   for i := range b {
-      b[i] = letters[rand.Intn(len(letters))]
+    b[i] = letters[rand.Intn(len(letters))]
   }
   return string(b)
 }
 
 func Handle500Error(w http.ResponseWriter, err error) {
   http.Error(w, http.StatusText(500), 500)
-  log.Fatal(err)
+  log.Println(err)
 }
 
 func GetSession(w http.ResponseWriter, r *http.Request) *sessions.Session {
@@ -112,6 +115,72 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/login.html.tmpl", nil)
 }
 
+func RegisterBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[RegisterBuzzerHandler] ")
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(GetSession(w, r)) {
+    http.Redirect(w, r, "/login", 302)
+  }
+  if r.Method == "POST" {
+    buzzerName := r.FormValue("buzzer_name")
+
+    var currUser User
+    db.First(&currUser, "username = ?", session.Values["username"])
+    if currUser == (User{}) {
+      Handle500Error(w, errors.New("Big problem: The user that is currently logged in does not have an entry in the users table."))
+    } else {
+      var buzzer Buzzer
+      db.First(&buzzer, "buzzer_name = ?", buzzerName)
+      if buzzer == (Buzzer{}) {
+        AddFlashToSession(w, r, "No buzzer with that name found.", session)
+      } else {
+        db.Model(&buzzer).Update("restaurant_id", currUser.RestaurantID)
+      }
+    }
+  }
+  templateData := map[string]interface{}{}
+  if flashes := session.Flashes(); len(flashes) > 0 {
+    templateData["failure_message"] = flashes[0]
+  }
+  session.Save(r, w)
+  RenderTemplate(w, "assets/templates/register_buzzer.html.tmpl", templateData)
+}
+
+func AddErrorMessageToResponseObj(responseObj map[string] interface{}, err_message string) {
+  responseObj["status"] = "failure"
+  responseObj["error_message"] = err_message
+}
+
+func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[IsBuzzerRegisteredHandler] ")
+  responseObj := map[string] interface{} {"status": "success"}
+  body, err := ioutil.ReadAll(r.Body)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse request body."
+  }
+  reqBodyObj := map[string] interface{}{}
+  err = json.Unmarshal(body, &reqBodyObj)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse JSON."
+  } else {
+    buzzerName := reqBodyObj["buzzer_name"]
+    if buzzerName == nil {
+      AddErrorMessageToResponseObj(responseObj, "buzzer_name field required.")
+    } else {
+      var buzzer Buzzer
+      db.First(&buzzer, "buzzer_name = ?", buzzerName)
+      if buzzer == (Buzzer{}) {
+        AddErrorMessageToResponseObj(responseObj, "Buzzer with that name not found.")
+      } else {
+        responseObj["is_buzzer_registered"] = buzzer.RestaurantID != 0
+      }
+    }
+  }
+  RenderJSONFromMap(w, responseObj)
+}
+
 func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[GenerateBuzzerNameHandler] ")
   buzzerName := buzzerNameGenerator.GenerateName()
@@ -120,6 +189,11 @@ func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   for buzzer != (Buzzer{}) {
     buzzerName = buzzerNameGenerator.GenerateName()
     db.First(&buzzer, "buzzer_name = ?", buzzerName)
+  }
+  buzzer = Buzzer{BuzzerName: buzzerName, LastHeartbeat: time.Now().UTC(), IsActive: false}
+  // db.NewRecord(buzzer)
+  if err := db.Create(&buzzer).Error; err != nil {
+    Handle500Error(w, err)
   }
   obj_map := map[string] interface{} {"status": "success", "buzzer_name": buzzerName}
   RenderJSONFromMap(w, obj_map)
