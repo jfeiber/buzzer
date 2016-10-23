@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+    <button onclick="testapi()">Test activeParty</button>
+</body>
+
+<script>
+
+    function testapi(element) {
+        var data = { "active_party_id" : "1" };
+        $.ajax({
+            type: "POST",
+            url: "/is_party_assigned_buzzer",
+            processData: false,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(r) {
+
+        });
+    }
+</script>
+
+</html>

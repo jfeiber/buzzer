@@ -97,6 +97,10 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
 }
 
+func ActiveAPITestHandler(w http.ResponseWriter, r *http.Request) {
+    RenderTemplate(w, "assets/templates/testapi.html.tmpl", nil)
+}
+
 func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
     returnObj := map[string] interface{} {"status": "success"}
 
@@ -107,15 +111,16 @@ func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
     } else if r.Method == "POST" {
         //http://stackoverflow.com/questions/15672556/handling-json-post-request-in-go
         decoder := json.NewDecoder(r.Body)
-        var activeparty ActiveParty
-        err := decoder.Decode(&activeparty)
+        var activePartyInfo map[string]int
+        err := decoder.Decode(&activePartyInfo)
         if err != nil {
             returnObj["status"] = "error"
             returnObj["error_message"] = "Decoding party json did not work"
         }
         defer r.Body.Close()
 
-        active_party_id := activeparty.ID
+        var activeparty ActiveParty
+        active_party_id := activePartyInfo["active_party_id"]
         db.First(&activeparty, active_party_id)
 
         if (activeparty.BuzzerID == 0) {

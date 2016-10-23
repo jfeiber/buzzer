@@ -54,6 +54,7 @@ func main() {
   router.HandleFunc("/add_user", AddUserHandler)
   router.HandleFunc("/wait_list", WaitListHandler)
   router.HandleFunc("/is_party_assigned_buzzer", isPartyAssignedBuzzerHandler)
+  router.HandleFunc("/active_api_test", ActiveAPITestHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files
