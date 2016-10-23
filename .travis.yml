@@ -1,5 +1,6 @@
 language: go
 
+install: go get github.com/tools/godep
 go:
   - 1.7.1
 script: godep go build
