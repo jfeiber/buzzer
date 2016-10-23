@@ -6,14 +6,14 @@ import (
 
 type Restaurant struct {
     ID int
-    Name string `gorm:"size:99; not null unique"`
+    Name string `gorm:"size:99; not null; unique"`
     DateCreated time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp"`
 }
 
 type Buzzer struct {
     ID int
     RestaurantID int `gorm:"not null"`
-    BuzzerName string `gorm:"size:45; not null"`
+    BuzzerName string `gorm:"size:45; not null; unique"`
     LastHeartbeat time.Time
     IsActive bool `gorm:"not null"`
 }
@@ -23,8 +23,7 @@ type ActiveParty struct {
     RestaurantID int `gorm:"not null"`
     PartyName string `gorm:"size:50; not null"`
     PartySize int `gorm:"not null"`
-    TimeCreated time.Time `gorm:"not null"`
-    TimeSeated time.Time
+    TimeCreated time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp"`
     PhoneAhead bool `gorm:"not null"`
     WaitTimeExpected int
     WaitTimeCalculated int
@@ -36,8 +35,8 @@ type HistoricalParty struct {
     RestaurantID int `gorm:"not null"`
     PartyName string `gorm:"size:50;not null"`
     PartySize int `gorm:"not null"`
-    DateCreated time.Time `gorm:"not null"`
-    DateSeated time.Time `gorm:"not null"`
+    TimeCreated time.Time `gorm:"not null"`
+    TimeSeated time.Time `gorm:"not null"`
     WaitTimeExpected int `gorm:"not null"`
     WaitTimeCalculated int `gorm:"not null"`
 }
