@@ -175,12 +175,58 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
       if activeParty == (ActiveParty{}) {
         AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
       } else {
-        var buzzer Buzzer
-        db.First(&buzzer, "buzzer_name = ?", buzzerName)
-        if buzzer == (Buzzer{}) {
-          AddErrorMessageToResponseObj(responseObj, "Buzzer with that name not found.")
+        if activeParty.BuzzerID == 0 {
+          var buzzer Buzzer
+          db.First(&buzzer, "buzzer_name = ?", buzzerName)
+          if buzzer == (Buzzer{}) {
+            AddErrorMessageToResponseObj(responseObj, "Buzzer with that name not found.")
+          } else {
+            db.Model(&activeParty).Update("buzzer_id", buzzer.ID)
+            db.Model(&buzzer).Update("is_active", true)
+          }
         } else {
-          db.Model(&activeParty).Update("buzzer_id", buzzer.ID)
+          AddErrorMessageToResponseObj(responseObj, "Can't accept a party that already has a buzzer")
+        }
+      }
+    }
+  }
+  RenderJSONFromMap(w, responseObj)
+}
+
+func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[HeartbeatHandler] ")
+  responseObj := map[string] interface{} {"status": "success"}
+  body, err := ioutil.ReadAll(r.Body)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse request body."
+  }
+  reqBodyObj := map[string] interface{}{}
+  err = json.Unmarshal(body, &reqBodyObj)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse JSON."
+  } else {
+    buzzerName := reqBodyObj["buzzer_name"]
+    if buzzerName == nil {
+      AddErrorMessageToResponseObj(responseObj, "buzzer_name field required.")
+    } else {
+      var buzzer Buzzer
+      db.First(&buzzer, "buzzer_name = ?", buzzerName)
+      if buzzer == (Buzzer{}) {
+        AddErrorMessageToResponseObj(responseObj, "Buzzer with that name not found.")
+      } else {
+        responseObj["is_active"] = buzzer.IsActive
+        if buzzer.IsActive {
+          db.Model(&buzzer).Update("last_heartbeat", time.Now().UTC())
+          var activeParty ActiveParty
+          db.First(&activeParty, "buzzer_id = ?", buzzer.ID)
+          if activeParty != (ActiveParty{}) {
+            responseObj["wait_time"] = activeParty.WaitTimeExpected
+            responseObj["buzz"] = activeParty.IsTableReady
+          } else {
+            AddErrorMessageToResponseObj(responseObj, "No active party with that buzzer id found and the buzzer is active.")
+          }
         }
       }
     }
