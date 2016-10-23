@@ -60,14 +60,11 @@
         </div>
       {{ end }}
       <div class="row login">
-        <h2>Log In</h2>
-        <form action="/login" method="POST" class="form-login">
-          <label for="username" class="sr-only">Username</label>
-          <input id="username" name="username" class="form-control" placeholder="Username" required autofocus>
-          <label for="inputPassword" class="sr-only">Password</label>
-          <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" required>
-          <button class="btn btn-lg btn-primary btn-block" type="submit">Go</button>
-
+        <h2>Register Buzzer</h2>
+        <form action="/register_buzzer" method="POST" class="form-login">
+          <label for="buzzer_name" class="sr-only">Buzzer Name</label>
+          <input id="buzzer_name" name="buzzer_name" class="form-control" placeholder="Buzzer Name" required autofocus>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Add</button>
         </form>
       </div>
     </div>
