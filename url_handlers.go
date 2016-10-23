@@ -6,6 +6,7 @@ import (
     "html/template"
     "golang.org/x/crypto/bcrypt"
     "github.com/gorilla/sessions"
+    "encoding/json"
     "math/rand"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
@@ -38,6 +39,15 @@ func RenderTemplate(w http.ResponseWriter, template_name string, template_params
     Handle500Error(w, err)
   }
   t.Execute(w, template_params)
+}
+
+func RenderJSONFromMap(w http.ResponseWriter, obj_map map[string] interface{}) {
+  json_obj, err := json.Marshal(obj_map)
+  if err != nil {
+    Handle500Error(w, err)
+  }
+  w.Header().Set("Content-Type", "application/json")
+  w.Write(json_obj)
 }
 
 func AddFlashToSession(w http.ResponseWriter, r *http.Request, flash string, session *sessions.Session) {
@@ -107,6 +117,19 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/login.html.tmpl", nil)
 }
 
+func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[GenerateBuzzerNameHandler] ")
+  buzzerName := buzzerNameGenerator.GenerateName()
+  var buzzer Buzzer
+  db.First(&buzzer, "buzzer_name = ?", buzzerName)
+  for buzzer != (Buzzer{}) {
+    buzzerName = buzzerNameGenerator.GenerateName()
+    db.First(&buzzer, "buzzer_name = ?", buzzerName)
+  }
+  obj_map := map[string] interface{} {"status": "success", "buzzer_name": buzzerName}
+  RenderJSONFromMap(w, obj_map)
+}
+
 func AddUserHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[AddUserHandler] ")
   session := GetSession(w, r)
@@ -123,7 +146,7 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
         log.Fatal(err)
       }
 
-      var restaurant Restaurant;
+      var restaurant Restaurant
       db.First(&restaurant, "name = ?", restaurantName)
 
       //make a restaurant if there isn't one
