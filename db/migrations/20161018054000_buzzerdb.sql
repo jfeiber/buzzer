@@ -22,6 +22,7 @@ CREATE TABLE active_parties (
   phone_ahead boolean NOT NULL,
   wait_time_expected int,
   wait_time_calculated int,
+  is_table_ready boolean NOT NULL DEFAULT false,
   buzzer_id int REFERENCES buzzers(id)
 );
 

@@ -25,6 +25,7 @@ type ActiveParty struct {
     PartySize int `gorm:"not null"`
     TimeCreated time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp"`
     PhoneAhead bool `gorm:"not null"`
+    IsTableReady bool `gorm:"not null" sql:"DEFAULT:false`
     WaitTimeExpected int
     WaitTimeCalculated int
     BuzzerID int
