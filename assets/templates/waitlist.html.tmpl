@@ -165,41 +165,18 @@
    </tr>
 </thead>
 <tbody>
- <tr>
-   <td>Feiber</td>
-   <td>4</td>
-   <td>3</td>
-   <td>Waiting</td>
-   	<td> <img src="https://s22.postimg.org/4vxadma4x/man.gif" class="img-responsive voc_list_preview_img" alt="" title=""></a> </td>
-</tr>
-<tr>
-   <td>Neilson</td>
-   <td>2</td>
-   <td>5</td>
-   <td>Phone</td>
-   	<td> <img src="https://s22.postimg.org/4vxadma4x/man.gif" class="img-responsive voc_list_preview_img" alt="" title=""></a> </td>
-</tr>
-<tr>
-   <td>Mach Daddy</td>
-   <td>3</td>
-   <td>9</td>
-   <td>Waiting</td>
-	<td> <img src="https://s22.postimg.org/4vxadma4x/man.gif" class="img-responsive voc_list_preview_img" alt="" title=""></a> </td>
-</tr>
-<tr>
-   <td>Alperin</td>
-   <td>3</td>
-   <td>35</td>
-   <td>Waiting</td>
-   <td> <img src="https://s10.postimg.org/hesjeltzd/15783867_phone_call_icon.jpg" class="img-responsive voc_list_preview_img" alt="" title=""></a> </td>
-</tr>
-<tr>
-   <td>Cho</td>
-   <td>2</td>
-   <td>55</td>
-   <td>Waiting</td>
-<td> <img src="https://s10.postimg.org/hesjeltzd/15783867_phone_call_icon.jpg" class="img-responsive voc_list_preview_img" alt="" title=""></a> </td>
-</tr>
+  {{range .waitlist_data}}
+           <tr>
+             <td>{{.PartyName}}</td>
+             <td>{{.PartySize}}</td>
+             <td>{{.WaitTimeExpected}}</td>
+             <td>{{.PhoneAhead}}</td>
+             <td>
+               <button type="button" onclick="alert('Something!')">Click Me!</button>
+               <button type="button" onclick="alert('Delete!')">Delete</button>
+             </td>
+           </tr>
+         {{end}}
 </tbody>
 </table>
 </div>

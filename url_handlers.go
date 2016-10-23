@@ -103,7 +103,15 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/login", 302)
     return
   }
-  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
+
+  var parties []ActiveParty
+  db.Find(&parties)
+
+  party_data := map[string]interface{}{}
+  party_data["waitlist_data"] = parties
+
+
+  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
 }
 
 func WaitListTempHandler(w http.ResponseWriter, r *http.Request) {
