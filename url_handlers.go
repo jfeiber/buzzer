@@ -3,7 +3,6 @@ package main
 import (
     "log"
     "net/http"
-    "encoding/json"
     "errors"
     "html/template"
     "golang.org/x/crypto/bcrypt"
@@ -122,15 +121,8 @@ func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
         returnObj["status"] = "error"
         returnObj["error_message"] = "Request unauthorized"
     } else if r.Method == "POST" {
-        //http://stackoverflow.com/questions/15672556/handling-json-post-request-in-go
-        decoder := json.NewDecoder(r.Body)
-        var activePartyInfo map[string]int
-        err := decoder.Decode(&activePartyInfo)
-        if err != nil {
-            returnObj["status"] = "error"
-            returnObj["error_message"] = "Decoding party json did not work"
-        }
-        defer r.Body.Close()
+        var activePartyInfo map[string] interface{}
+        ParseReqBody(r, returnObj, activePartyInfo)
 
         var activeparty ActiveParty
         active_party_id := activePartyInfo["active_party_id"]
