@@ -3,6 +3,7 @@ package main
 import (
     "log"
     "net/http"
+    "encoding/json"
     "html/template"
     "golang.org/x/crypto/bcrypt"
     "github.com/gorilla/sessions"
@@ -104,33 +105,34 @@ func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
         returnObj["status"] = "error"
         returnObj["error_message"] = "Request unauthorized"
     } else if r.Method == "POST" {
+        //http://stackoverflow.com/questions/15672556/handling-json-post-request-in-go
         decoder := json.NewDecoder(r.Body)
         var activeparty ActiveParty
         err := decoder.Decode(&activeparty)
         if err != nil {
-             panic()
+            returnObj["status"] = "error"
+            returnObj["error_message"] = "Decoding party json did not work"
         }
-        defer req.Body.Close()
-        // $json = $app->request->getBody();
-        // $data = json_decode($json, true); // p
+        defer r.Body.Close()
+
         active_party_id := activeparty.ID
         db.First(&activeparty, active_party_id)
 
-        if (activeparty.BuzzerID != nil) {
-            returnObj["is_party_assigned_buzzer"] = true
+        if (activeparty.BuzzerID == 0) {
+            returnObj["is_party_assigned_buzzer"] = false
         } else {
             returnObj["is_party_assigned_buzzer"] = true
         }
     }
 
+    jsonObj, err := json.Marshal(returnObj)
     if err != nil {
         returnObj["status"] = "error"
         returnObj["error_message"] = "Json Marshall did not work"
     }
-    jsonObj, err := json.Marshal(returnObj)
 
     w.Header().Set("Content-Type", "application/json")
-    w.Write(json_obj)
+    w.Write(jsonObj)
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
