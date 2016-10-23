@@ -4,23 +4,17 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 <body>
-
-    <form action="/login" method="POST" class="form-login">
-      <label for="username" class="sr-only">Username</label>
-      <input id="username" name="username" class="form-control" placeholder="Username" required autofocus>
-      <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" required>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Go</button>
-
-    </form>
     <form action="/create_activeparty" method="POST">
-        <input name="activeparty">
+        <input name="RestaurantID"></input>
+        <input name="PartyName"></input>
+        <input name="PartySize"></input>
+        <input name="PhoneAhead"></input>
+        <input name="IsTableReady"></input>
+        <button type="submit">Check ID</button>
     </form>
     <button onclick="testapi()">Test activeParty</button>
 </body>
-
 <script>
-
     function testapi(element) {
         var data = { "active_party_id" : "1" };
         $.ajax({
@@ -30,7 +24,8 @@
             contentType: 'application/json',
             data: JSON.stringify(data),
             success: function(r) {
-
+                console.log("success");
+            });
         });
     }
 </script>

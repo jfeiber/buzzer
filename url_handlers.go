@@ -9,6 +9,7 @@ import (
     "github.com/gorilla/sessions"
     "encoding/json"
     "math/rand"
+    "strconv"
     "time"
     "io/ioutil"
     _ "github.com/jinzhu/gorm/dialects/postgres"
@@ -107,6 +108,30 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
+}
+
+func CreateActivePartyHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method == "POST" {
+        err := r.ParseForm()
+        if err != nil {
+            // Handle error here via logging and then return
+        }
+        var activeparty ActiveParty
+        partysize, err :=  strconv.Atoi(r.PostFormValue("PartySize"))
+        phoneahead, err := strconv.ParseBool(r.PostFormValue("PhoneAhead"))
+        istableready, err := strconv.ParseBool(r.PostFormValue("IsTableReady"))
+        restaurantid, err := strconv.Atoi(r.PostFormValue("RestaurantID"))
+
+        activeparty = ActiveParty{RestaurantID: restaurantid,
+            PartyName: r.PostFormValue("PartyName"),
+            PartySize: partysize,
+            TimeCreated: time.Now(),
+            PhoneAhead: phoneahead,
+            IsTableReady: istableready,
+        }
+        db.NewRecord(activeparty)
+        db.Create(&activeparty)
+    }
 }
 
 func ActiveAPITestHandler(w http.ResponseWriter, r *http.Request) {
