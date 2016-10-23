@@ -2,7 +2,7 @@
 body {
     background-color: #F1F4F6;
     font-family: 'Lato', sans-serif;
-    font-weight: 100;
+    font-weight: light;
 }
 
 /* Blue navbar */
@@ -15,11 +15,43 @@ body {
     border-radius: 0;
 }
 
+.navbar-default .navbar- {
+    background-color: #426BE7;
+    color: #FFFFFF;
+    font-weight: light;
+}
+
 
 /* Buzzer logo */
 .navbar-default .navbar-brand {
+    background-color: #426BE7;
     color: #FFFFFF;
-    font-weight: 100;
+    font-weight: light;
+}
+
+/* Buzzer logo */
+.navbar-default .navbar-header {
+    font-weight: light;
+}
+
+.navbar-default .navbar-nav {
+    margin-top: 2px;
+    margin-left: 50px;
+}
+
+
+.active a {
+    background-color: #426BE7 !important;
+    font-weight: bold;
+    color: #FFFFFF !important;
+}
+
+.white, .white a {
+  color: #fff;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #FFFFFF;
 }
 
 /* Center the login elements */
@@ -60,6 +92,17 @@ body {
     -moz-box-shadow:    inset 0px 0px 2px 2px #000000;
 }
 
+.btn-default {
+    background-color: #426BE7;
+    color: #FFFFFF;
+}
+
+.btn-default dropdown-toggle
+{
+    background-color: #FFFFFF !important;
+}
+
+
 .form-login input {
     display: block;
     margin-bottom: 15px;
@@ -86,6 +129,11 @@ body {
     transform: translateY(25%);
 }
 
+/*.img-responsive{
+    width:5%;
+    height:5%;
+}
+*/
 .alert-danger {
     color: #FFFFFF;
     background-color: #DD2A17;
