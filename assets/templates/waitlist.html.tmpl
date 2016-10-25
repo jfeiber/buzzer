@@ -182,41 +182,18 @@
    </tr>
 </thead>
 <tbody>
- <tr>
-   <td>Feiber</td>
-   <td>4</td>
-   <td>3</td>
-   <td><i class="glyphicon glyphicon-user"></i></td>
-   	<td> </td>
-</tr>
-<tr>
-   <td>Neilson</td>
-   <td>2</td>
-   <td>5</td>
-   <td><i class="glyphicon glyphicon-earphone"></i></td>
-   	<td>  </td>
-</tr>
-<tr>
-  <td>Mach Daddy</td>
-   <td>3</td>
-   <td>9</td>
-   <td><i class="glyphicon glyphicon-earphone"></i></td>
-	<td> </td>
-</tr>
-<tr>
-   <td>Alperin</td>
-   <td>3</td>
-   <td>35</td>
-   <td><i class="glyphicon glyphicon-user"></i></td>
-   <td> </td>
-</tr>
-<tr>
-   <td>Cho</td>
-   <td>2</td>
-   <td>55</td>
-   <td><i class="glyphicon glyphicon-user"></i> </td>
-<td> </td>
-</tr>
+  {{range .waitlist_data}}
+           <tr>
+             <td>{{.PartyName}}</td>
+             <td>{{.PartySize}}</td>
+             <td>{{.WaitTimeExpected}}</td>
+             <td>{{.PhoneAhead}}</td>
+             <td>
+               <button type="button" onclick="alert('Something!')">Click Me!</button>
+               <button type="button" onclick="alert('Delete!')">Delete</button>
+             </td>
+           </tr>
+         {{end}}
 </tbody>
 </table>
 </div>
