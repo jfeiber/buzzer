@@ -12,7 +12,7 @@ type Restaurant struct {
 
 type Buzzer struct {
     ID int
-    RestaurantID int `gorm:"not null"`
+    RestaurantID int `sql:"DEFAULT:null"`
     BuzzerName string `gorm:"size:45; not null; unique"`
     LastHeartbeat time.Time
     IsActive bool `gorm:"not null"`
@@ -25,6 +25,7 @@ type ActiveParty struct {
     PartySize int `gorm:"not null"`
     TimeCreated time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp"`
     PhoneAhead bool `gorm:"not null"`
+    IsTableReady bool `gorm:"not null" sql:"DEFAULT:false`
     WaitTimeExpected int
     WaitTimeCalculated int
     BuzzerID int
