@@ -56,7 +56,6 @@ func main() {
   router.HandleFunc("/login", LoginHandler)
   router.HandleFunc("/add_user", AddUserHandler)
   router.HandleFunc("/wait_list", WaitListHandler)
-  router.HandleFunc("/wait_temp", WaitListTempHandler)
   router.HandleFunc("/buzzer_api/get_new_buzzer_name", GetNewBuzzerNameHandler)
   router.HandleFunc("/buzzer_api/is_buzzer_registered", IsBuzzerRegisteredHandler)
   router.HandleFunc("/buzzer_api/get_available_party", GetAvailablePartyHandler)

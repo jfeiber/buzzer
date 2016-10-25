@@ -117,15 +117,9 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
 }
 
-func WaitListTempHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[WaitListTempHandler] ")
-  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
-}
-
-
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
-  RenderTemplate(w, "assets/templates/login.html.tmpl", nil)
+  http.Redirect(w, r, "/login", 302)
 }
 
 func RegisterBuzzerHandler(w http.ResponseWriter, r *http.Request) {
