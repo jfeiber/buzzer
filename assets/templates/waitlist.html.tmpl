@@ -91,14 +91,14 @@
 <div class="container">
  <div class="row">
    <div class="col-sm-3">
-     <input type="text" class="form-control" placeholder="Party Name">
+     <input type="text" class="form-control" id="party-name-field" placeholder="Party Name">
  </div>
  <div class="col-sm-2">
   <div class="dropdown">
-    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
       Party Size <span class="caret"></span>
   </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+  <ul class="dropdown-menu">
       <li><a href="#">1</a></li>
       <li><a href="#">2</a></li>
       <li><a href="#">3</a></li>
@@ -118,7 +118,7 @@
 
 <!-- Source: http://stackoverflow.com/questions/22362750/bootstrap-button-group-pre-select-button-with-html-only: -->
 <div class="col-sm-3">
-    <div class="btn-group" data-toggle="buttons">
+    <div class="btn-group phone-ahead-toggle" data-toggle="buttons">
         <label class="btn btn-default active">
             <input type="radio" name="options" id="phone" width="20"><span class="glyphicon glyphicon-earphone"></span>
         </label>
@@ -130,10 +130,10 @@
 <div class="col-sm-4">
 
   <div class="btn-group dropdown">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="btn btn-default dropdown-toggle" id="hours-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value = "">
       Hours <span class="caret"></span>
   </button>
-  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+  <ul class="dropdown-menu">
       <li><a href="#">0</a></li>
       <li><a href="#">1</a></li>
       <li><a href="#">2</a></li>
@@ -143,7 +143,7 @@
 </div>
 <strong>:</strong>
 <div class="btn-group dropdown">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <button type="button" class="btn btn-default dropdown-toggle" id="minutes-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="">
       Minutes <span class="caret"></span>
   </button>
   <ul class="dropdown-menu">
@@ -162,7 +162,7 @@
  </ul>
 </div>
 
-<button class="btn btn-default" type="button">ADD</button>
+<button class="btn btn-default add-party-button" type="button">ADD</button>
 
 </div>
 </div>
