@@ -23,15 +23,15 @@ $(document).ready(function() {
       alert("Missing party size");
       return;
     } else if (waitHours === "") {
-      alert("Missing wait hours")
+      alert("Missing wait hours");
       return;
     } else if (waitMins === "") {
       alert("Missing wait mins");
       return;
     }
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
-    jsonObj = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead})
-    console.log(jsonObj)
+    jsonObj = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
+    console.log(jsonObj);
     $.ajax({
       url: "/frontend_api/create_new_party",
       type: "POST",
@@ -42,7 +42,7 @@ $(document).ready(function() {
         console.debug(error);
       },
       complete: function(data) {
-        console.log(data)
+        console.log(data);
       }
     });
     //in the future this will load this via an AJAX call. For now I am lazy.
