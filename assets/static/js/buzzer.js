@@ -29,8 +29,24 @@ $(document).ready(function() {
       alert("Missing wait mins");
       return;
     }
+    waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
+    jsonObj = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead})
+    console.log(jsonObj)
+    $.ajax({
+      url: "/frontend_api/create_new_party",
+      type: "POST",
+      data: jsonObj,
+      contentType: "application/json",
+      error: function(xhr, error){
+        console.debug(xhr);
+        console.debug(error);
+      },
+      complete: function(data) {
+        console.log(data)
+      }
+    });
     //in the future this will load this via an AJAX call. For now I am lazy.
-    location.reload(true);
+    // location.reload(true);
   });
 
   $(".dropdown-menu li a").click(function(){
