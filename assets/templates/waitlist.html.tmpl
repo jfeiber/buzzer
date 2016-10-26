@@ -28,8 +28,6 @@
   <link href="/assets/static/css/buzzer.css" rel="stylesheet">
 
   <!-- JQuery -->
-  <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script> -->
-
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
   <!-- Bootstrap -->
@@ -37,18 +35,6 @@
 
   <!-- Sitewide JS -->
   <script src="/assets/static/js/buzzer.js"></script>
-
-<!--   <script src="http://code.jquery.com/jquery-1.11.3.js"></script>
-
-  <script src="assets/js/bootstrap-dropdown.js" type="text/javascript"></script> -->
-
-<!--   <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></script>
-
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-
-  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
-  <script src="assets/js/bootstrap-dropdown.js" type="text/javascript"></script> -->
 
   <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
@@ -72,17 +58,16 @@
         <li class="dropdown">
           <a href="#" class="glyphicon glyphicon-cog white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
+            <li><a href="#">Help</a></li>
+            <li><a href="#">Contact Buzzer</a></li>
             <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
         </ul>
     </li>
 </ul>
 </div>
 </nav>
 
+<!-- Should remove this and overhaul header-->
 <br>
 <br>
 <br>
@@ -118,11 +103,11 @@
 
 <!-- Source: http://stackoverflow.com/questions/22362750/bootstrap-button-group-pre-select-button-with-html-only: -->
 <div class="col-sm-3">
-    <div class="btn-group" data-toggle="buttons">
-        <label class="btn btn-default active">
+    <div class="btn-group" data-toggle="buttons" id="btnrocker">
+        <label class="btn btn-default active" id="btnrocker">
             <input type="radio" name="options" id="phone" width="20"><span class="glyphicon glyphicon-earphone"></span>
         </label>
-        <label class="btn btn-default">
+        <label class="btn btn-default" id="btnrocker">
             <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
         </label>
     </div>
@@ -176,7 +161,7 @@
      <tr>
        <th>Party Name</th>
        <th>Party Size</th>
-       <th>Minutes Waiting</th>
+       <th>Estimated Wait</th>
        <th>Type</th>
        <th>Actions</th>
    </tr>
