@@ -331,12 +331,12 @@ func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
     HandleAuthErrorJson(responseObj)
   } else {
     if ParseReqBody(r, responseObj, reqBodyObj) {
+      log.Println(reqBodyObj)
       partyName := reqBodyObj["party_name"]
       partySize := reqBodyObj["party_size"]
-      waitHours := reqBodyObj["wait_hours"]
-      waitMins := reqBodyObj["wait_mins"]
+      waitTimeExpected := reqBodyObj["wait_time_expected"]
       phoneAhead := reqBodyObj["phone_ahead"]
-      if partyName == nil || partySize == nil || waitHours == nil || waitMins == nil || phoneAhead == nil {
+      if partyName == nil || partySize == nil || waitTimeExpected == nil || phoneAhead == nil {
         responseObj["status"] = "failure"
         responseObj["error_message"] = "Missing parameters."
       } else {
@@ -345,8 +345,7 @@ func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
         if restaurantID == -1 {
           Handle500Error(w, errors.New("Big problem: The user that is currently logged in does not have an entry in the users table."))
         } else {
-          waitTimeExpected := waitHours.(int) *60 + waitMins.(int)
-          activeParty := ActiveParty{RestaurantID: restaurantID, PartyName: partyName.(string), PartySize: partySize.(int), PhoneAhead: phoneAhead.(bool), WaitTimeExpected: waitTimeExpected}
+          activeParty := ActiveParty{RestaurantID: restaurantID, PartyName: partyName.(string), PartySize: int(partySize.(float64)), PhoneAhead: phoneAhead.(bool), WaitTimeExpected: int(waitTimeExpected.(float64))}
           db.Create(&activeParty)
           responseObj["status"] = "success"
           responseObj["active_party_id"] = activeParty.ID
