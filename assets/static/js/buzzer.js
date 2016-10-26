@@ -46,7 +46,6 @@ $(document).ready(function() {
       }
     });
     //in the future this will load this via an AJAX call. For now I am lazy.
-    // location.reload(true);
   });
 
   $(".dropdown-menu li a").click(function(){
