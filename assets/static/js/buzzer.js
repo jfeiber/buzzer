@@ -17,16 +17,16 @@ $(document).ready(function() {
     waitMins = $('.btn#minutes-dropdown').val();
     phoneAhead = $('.phone-ahead-toggle .active input').attr('id') === "phone" ? true : false;
     if (partyName === "") {
-      alert("Missing Party Name");
+        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party name</div>')
       return;
     } else if (partySize === "") {
-      alert("Missing party size");
+        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party size</div>')
       return;
     } else if (waitHours === "") {
-      alert("Missing wait hours");
+        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time hours</div>')
       return;
     } else if (waitMins === "") {
-      alert("Missing wait mins");
+        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>')
       return;
     }
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
@@ -40,11 +40,17 @@ $(document).ready(function() {
       error: function(xhr, error){
         console.debug(xhr);
         console.debug(error);
+        alert("Add party request failed");
+      },
+      success: function(xhr, success){
+        console.debug(xhr);
+        console.debug(success);
       },
       complete: function(data) {
         console.log(data);
       }
     });
+
     //in the future this will load this via an AJAX call. For now I am lazy.
   });
 
