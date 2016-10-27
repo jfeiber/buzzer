@@ -3,7 +3,6 @@ package main
 import (
     "log"
     "net/http"
-<<<<<<< HEAD
     "errors"
     "html/template"
     "golang.org/x/crypto/bcrypt"
@@ -13,12 +12,6 @@ import (
     "strconv"
     "time"
     "io/ioutil"
-=======
-    "html/template"
-    "golang.org/x/crypto/bcrypt"
-    "github.com/gorilla/sessions"
-    "math/rand"
->>>>>>> 07f52537fe09c4318d9c08d1856412af9534211f
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
@@ -26,22 +19,14 @@ func MakeRandAlphaNumericStr(n int) string {
   var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
   b := make([]rune, n)
   for i := range b {
-<<<<<<< HEAD
     b[i] = letters[rand.Intn(len(letters))]
-=======
-      b[i] = letters[rand.Intn(len(letters))]
->>>>>>> 07f52537fe09c4318d9c08d1856412af9534211f
   }
   return string(b)
 }
 
 func Handle500Error(w http.ResponseWriter, err error) {
   http.Error(w, http.StatusText(500), 500)
-<<<<<<< HEAD
   log.Println(err)
-=======
-  log.Fatal(err)
->>>>>>> 07f52537fe09c4318d9c08d1856412af9534211f
 }
 
 func GetSession(w http.ResponseWriter, r *http.Request) *sessions.Session {
@@ -60,7 +45,6 @@ func RenderTemplate(w http.ResponseWriter, template_name string, template_params
   t.Execute(w, template_params)
 }
 
-<<<<<<< HEAD
 func RenderJSONFromMap(w http.ResponseWriter, obj_map map[string] interface{}) {
   json_obj, err := json.Marshal(obj_map)
   if err != nil {
@@ -70,8 +54,6 @@ func RenderJSONFromMap(w http.ResponseWriter, obj_map map[string] interface{}) {
   w.Write(json_obj)
 }
 
-=======
->>>>>>> 07f52537fe09c4318d9c08d1856412af9534211f
 func AddFlashToSession(w http.ResponseWriter, r *http.Request, flash string, session *sessions.Session) {
   session.AddFlash(flash)
   session.Save(r, w)
