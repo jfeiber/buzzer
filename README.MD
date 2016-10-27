@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/jfeiber/buzzer.svg?branch=master)](https://travis-ci.org/jfeiber/buzzer)
-
 For embedded code see: https://github.com/jfeiber/buzzer-embedded
 
 # Buzzer
@@ -24,7 +23,7 @@ Web App Stack:
 Golang with [Gorilla Mux](https://github.com/gorilla/mux) for routing, [GORM](https://github.com/jinzhu/gorm) for the ORM, [Negroni](https://github.com/urfave/negroni) for the HTTP middleware, [Gorilla Sessions](https://github.com/gorilla/sessions) for session handling, and PostgreSQL for the database. Hosted on Heroku.
 
 Embedded Stack:
-All embedded code written in C++. 2 libraries are used, the [Adafruit 128x32 I2C display driver](https://github.com/adafruit/Adafruit_SSD1306) and the [Adafruit Graphics Library](https://github.com/adafruit/Adafruit-GFX-Library). 
+All embedded code written in C++. 2 libraries are used, the [Adafruit 128x32 I2C display driver](https://github.com/adafruit/Adafruit_SSD1306) and the [Adafruit Graphics Library](https://github.com/adafruit/Adafruit-GFX-Library).
 
 ## Setup and Deployment
 
