@@ -102,12 +102,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func WaitListHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[WaitListHandler] ")
-  if !IsUserLoggedIn(GetSession(w, r)) {
+    log.SetPrefix("[WaitListHandler] ")
+    if !IsUserLoggedIn(GetSession(w, r)) {
     http.Redirect(w, r, "/login", 302)
     return
-  }
-  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
+    }
+    var parties []ActiveParty
+    db.Find(&parties)
+
+    party_data := map[string]interface{}{}
+    party_data["waitlist_data"] = parties
+
+
+    RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
 }
 
 func CreateActivePartyHandler(w http.ResponseWriter, r *http.Request) {
@@ -177,7 +184,7 @@ func WaitListTempHandler(w http.ResponseWriter, r *http.Request) {
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
-  RenderTemplate(w, "assets/templates/login.html.tmpl", nil)
+  http.Redirect(w, r, "/login", 302)
 }
 
 func RegisterBuzzerHandler(w http.ResponseWriter, r *http.Request) {
@@ -364,6 +371,54 @@ func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   }
   obj_map := map[string] interface{} {"status": "success", "buzzer_name": buzzerName}
   RenderJSONFromMap(w, obj_map)
+}
+
+func HandleAuthErrorJson(responseObj map[string] interface{}) {
+  responseObj["status"] = "failure"
+  responseObj["error_message"] = "User not logged in."
+}
+
+func GetRestaurantIDFromUsername(username string) int {
+  var currUser User
+  db.First(&currUser, "username = ?", username)
+  if currUser == (User{}) {
+    return -1;
+  }
+  return currUser.RestaurantID
+}
+
+func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[CreateNewPartyHandler] ")
+  responseObj := map[string] interface{} {}
+  reqBodyObj := map[string] interface{}{}
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
+    HandleAuthErrorJson(responseObj)
+  } else {
+    if ParseReqBody(r, responseObj, reqBodyObj) {
+      log.Println(reqBodyObj)
+      partyName := reqBodyObj["party_name"]
+      partySize := reqBodyObj["party_size"]
+      waitTimeExpected := reqBodyObj["wait_time_expected"]
+      phoneAhead := reqBodyObj["phone_ahead"]
+      if partyName == nil || partySize == nil || waitTimeExpected == nil || phoneAhead == nil {
+        responseObj["status"] = "failure"
+        responseObj["error_message"] = "Missing parameters."
+      } else {
+        username, _ := session.Values["username"]
+        restaurantID := GetRestaurantIDFromUsername(username.(string))
+        if restaurantID == -1 {
+          Handle500Error(w, errors.New("Big problem: The user that is currently logged in does not have an entry in the users table."))
+        } else {
+          activeParty := ActiveParty{RestaurantID: restaurantID, PartyName: partyName.(string), PartySize: int(partySize.(float64)), PhoneAhead: phoneAhead.(bool), WaitTimeExpected: int(waitTimeExpected.(float64))}
+          db.Create(&activeParty)
+          responseObj["status"] = "success"
+          responseObj["active_party_id"] = activeParty.ID
+        }
+      }
+    }
+  }
+  RenderJSONFromMap(w, responseObj)
 }
 
 func AddUserHandler(w http.ResponseWriter, r *http.Request) {

@@ -28,7 +28,7 @@ type ActiveParty struct {
     IsTableReady bool `gorm:"not null" sql:"DEFAULT:false`
     WaitTimeExpected int
     WaitTimeCalculated int
-    BuzzerID int
+    BuzzerID int `sql:"DEFAULT:null"`
 }
 
 type HistoricalParty struct {
