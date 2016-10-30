@@ -107,6 +107,10 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
 
+func UpdateWaitlist(w http.ResponseWriter, r *http.Request) {
+  
+}
+
   var parties []ActiveParty
   db.Find(&parties)
 
