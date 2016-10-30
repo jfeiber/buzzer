@@ -104,7 +104,7 @@ body {
 
 #btndelete.btn-default:hover {
     color: #FFFFFF;
-    background-color: #DD2A17 !important;
+    background-color: #AA0000 !important;
     /*border-color: #426BE7; set the color you want here*/
 }
 
@@ -125,7 +125,7 @@ body {
 
 .btn-default:hover {
     color: #FFFFFF;
-    background-color: #426BE7 !important;
+    background-color: #0F48B4 !important;
     /*border-color: #426BE7; set the color you want here*/
 }
 
