@@ -29,12 +29,6 @@ type ActiveParty struct {
     WaitTimeExpected int
     WaitTimeCalculated int
     BuzzerID int `sql:"DEFAULT:null"`
-    TimeCreated time.Time `gorm:"not null"`
-    TimeSeated time.Time
-    PhoneAhead bool `gorm:"not null"`
-    WaitTimeExpected int
-    WaitTimeCalculated int
-    BuzzerID int
 }
 
 type HistoricalParty struct {
