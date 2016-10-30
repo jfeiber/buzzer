@@ -141,9 +141,7 @@ func CreateActivePartyHandler(w http.ResponseWriter, r *http.Request) {
         db.Create(&activeparty)
     }
 }
-/*
- * ActiveAPITestHandler Renders ActiveAPi Test page
- */
+// ActiveAPITestHandler Renders ActiveAPi Test page
 func ActiveAPITestHandler(w http.ResponseWriter, r *http.Request) {
     RenderTemplate(w, "assets/templates/testapi.html.tmpl", nil)
 }
@@ -179,9 +177,8 @@ func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     w.Write(jsonObj)
 }
-/*
- * WaitListTempHandler Renders the WaitListTemp page
- */
+
+// WaitListTempHandler Renders the WaitListTemp page
 func WaitListTempHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListTempHandler] ")
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
