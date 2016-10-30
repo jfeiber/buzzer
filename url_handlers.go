@@ -118,7 +118,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
- * Creates an active party
+ * CreateActivePartyHandler Creates an active party
  */
 func CreateActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "POST" {
@@ -144,7 +144,7 @@ func CreateActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 /*
- * Renders ActiveAPi Test page
+ * ActiveAPITestHandler Renders ActiveAPi Test page
  */
 func ActiveAPITestHandler(w http.ResponseWriter, r *http.Request) {
     RenderTemplate(w, "assets/templates/testapi.html.tmpl", nil)
