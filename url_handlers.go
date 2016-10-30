@@ -102,22 +102,36 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListHandler] ")
-  if !IsUserLoggedIn(GetSession(w, r)) {
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
     http.Redirect(w, r, "/login", 302)
     return
+  } else {
+    username, _ := session.Values["username"]
+    restaurantID := GetRestaurantIDFromUsername(username.(string))
   }
 
   var parties []ActiveParty
-  db.Find(&parties)
+  db.Find(&parties, "restaurant_id = ?", restaurantID)
 
   party_data := map[string]interface{}{}
   party_data["waitlist_data"] = parties
-
 
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
 }
 
 func UpdateWaitlist(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UpdateWaitlist] ")
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
+    HandleAuthErrorJson(responseObj)
+  } else {
+    username, _ := session.Values["username"]
+    restaurantID := GetRestaurantIDFromUsername(username.(string))
+  }
+
+
+
 
 }
 
