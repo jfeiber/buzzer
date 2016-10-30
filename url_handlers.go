@@ -117,6 +117,9 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
 }
 
+/*
+ * Creates an active party
+ */
 func CreateActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "POST" {
         err := r.ParseForm()
