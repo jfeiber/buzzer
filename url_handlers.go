@@ -107,10 +107,6 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-func UpdateWaitlist(w http.ResponseWriter, r *http.Request) {
-  
-}
-
   var parties []ActiveParty
   db.Find(&parties)
 
@@ -119,6 +115,10 @@ func UpdateWaitlist(w http.ResponseWriter, r *http.Request) {
 
 
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
+}
+
+func UpdateWaitlist(w http.ResponseWriter, r *http.Request) {
+
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
