@@ -162,8 +162,8 @@ func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
         ParseReqBody(r, returnObj, activePartyInfo)
 
         var activeparty ActiveParty
-        activePartyId := activePartyInfo["active_party_id"]
-        db.First(&activeparty, activePartyId)
+        activePartyID := activePartyInfo["active_party_id"]
+        db.First(&activeparty, activePartyID)
 
         if (activeparty.BuzzerID == 0) {
             returnObj["is_party_assigned_buzzer"] = false
@@ -182,7 +182,7 @@ func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
     w.Write(jsonObj)
 }
 /*
- * Renders the WaitListTemp page
+ * WaitListTempHandler Renders the WaitListTemp page
  */
 func WaitListTempHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListTempHandler] ")
