@@ -114,7 +114,7 @@ body {
 }
 
 #btnrocker.btn.active{
-    background-color: #426BE7;
+    background-color: #0F48B4; /*#426BE7;*/
     color: #FFFFFF;
 }
 
