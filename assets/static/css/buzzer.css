@@ -97,6 +97,11 @@ body {
     color: #FFFFFF;
 }
 
+#btndelete {
+    background-color: #DD2A17;
+    color: #FFFFFF;
+}
+
 #btnrocker{
     background-color: #F1F4F6;
     color: #000000;
