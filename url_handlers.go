@@ -445,7 +445,6 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
       }
 
       var restaurant Restaurant
-
       db.First(&restaurant, "name = ?", restaurantName)
 
       //make a restaurant if there isn't one
