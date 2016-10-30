@@ -4,19 +4,55 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 <body>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Restaurant ID</th>
+          <th>Party Name</th>
+          <th>Party Size</th>
+          <th>Phone Head</th>
+          <th>Is Table Ready</th>
+      </tr>
+   </thead>
+   <tbody>
+     {{range .waitlist_data}}
+              <tr>
+                <td>{{.RestaurantID}}</td>
+                <td>{{.PartyName}}</td>
+                <td>{{.PartySize}}</td>
+                <td>{{.PhoneAhead}}</td>
+                <td>{{.IsTableReady}}</td>
+                <td>
+                  <button type="button" onclick="alert('Something!')">Click Me!</button>
+                  <button type="button" onclick="alert('Delete!')">Delete</button>
+                </td>
+              </tr>
+            {{end}}
+   </tbody>
+   </table>
+
     <form action="/create_activeparty" method="POST">
+        <label for="RestaurantID" class="sr-only">RestaurantID</label>
         <input name="RestaurantID"></input>
+
+        <label for="PartyName" class="sr-only">PartyName</label>
         <input name="PartyName"></input>
+
+        <label for="PartySize" class="sr-only">PartySize</label>
         <input name="PartySize"></input>
+
+        <label for="PhoneAhead" class="sr-only">PhoneAhead</label>
         <input name="PhoneAhead"></input>
+
+        <label for="IsTableReady" class="sr-only">IsTableReady</label>
         <input name="IsTableReady"></input>
         <button type="submit">Check ID</button>
     </form>
-    <button onclick="testapi()">Test activeParty</button>
+    <button class="test">Test activeParty</button>
 </body>
 <script>
-    function testapi(element) {
-        var data = { "active_party_id" : "1" };
+    $('.test').click( function(element) {
+        var data = { "active_party_id" : "0" };
         $.ajax({
             type: "POST",
             url: "/is_party_assigned_buzzer",
@@ -25,9 +61,10 @@
             data: JSON.stringify(data),
             success: function(r) {
                 console.log("success");
-            });
+                console.log(r)
+            }
         });
-    }
+        });
 </script>
 
 </html>

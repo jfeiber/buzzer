@@ -67,7 +67,6 @@ func main() {
   router.HandleFunc("/create_activeparty", CreateActivePartyHandler)
   router.HandleFunc("/frontend_api/create_new_party", CreateNewPartyHandler)
   router.HandleFunc("/register_buzzer", RegisterBuzzerHandler)
-  router.HandleFunc("/admin_page", AdminPageHandler)
   router.HandleFunc("/is_party_assigned_buzzer", isPartyAssignedBuzzerHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 

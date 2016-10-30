@@ -143,7 +143,14 @@ func CreateActivePartyHandler(w http.ResponseWriter, r *http.Request) {
 }
 // ActiveAPITestHandler Renders ActiveAPi Test page
 func ActiveAPITestHandler(w http.ResponseWriter, r *http.Request) {
-    RenderTemplate(w, "assets/templates/testapi.html.tmpl", nil)
+
+    var parties []ActiveParty
+    db.Find(&parties)
+
+    partyData := map[string]interface{}{}
+    partyData["waitlist_data"] = parties
+
+    RenderTemplate(w, "assets/templates/testapi.html.tmpl", partyData)
 }
 
 func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
