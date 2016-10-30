@@ -143,7 +143,9 @@ func CreateActivePartyHandler(w http.ResponseWriter, r *http.Request) {
         db.Create(&activeparty)
     }
 }
-
+/*
+ * Renders ActiveAPi Test page
+ */
 func ActiveAPITestHandler(w http.ResponseWriter, r *http.Request) {
     RenderTemplate(w, "assets/templates/testapi.html.tmpl", nil)
 }
@@ -160,8 +162,8 @@ func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
         ParseReqBody(r, returnObj, activePartyInfo)
 
         var activeparty ActiveParty
-        active_party_id := activePartyInfo["active_party_id"]
-        db.First(&activeparty, active_party_id)
+        activePartyId := activePartyInfo["active_party_id"]
+        db.First(&activeparty, activePartyId)
 
         if (activeparty.BuzzerID == 0) {
             returnObj["is_party_assigned_buzzer"] = false
@@ -179,7 +181,9 @@ func isPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     w.Write(jsonObj)
 }
-
+/*
+ * Renders the WaitListTemp page
+ */
 func WaitListTempHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListTempHandler] ")
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", nil)
