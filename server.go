@@ -56,13 +56,14 @@ func main() {
   router.HandleFunc("/login", LoginHandler)
   router.HandleFunc("/add_user", AddUserHandler)
   router.HandleFunc("/wait_list", WaitListHandler)
+  router.HandleFunc("/register_buzzer", RegisterBuzzerHandler)
   router.HandleFunc("/buzzer_api/get_new_buzzer_name", GetNewBuzzerNameHandler)
   router.HandleFunc("/buzzer_api/is_buzzer_registered", IsBuzzerRegisteredHandler)
   router.HandleFunc("/buzzer_api/get_available_party", GetAvailablePartyHandler)
   router.HandleFunc("/buzzer_api/accept_party", AcceptPartyHandler)
   router.HandleFunc("/buzzer_api/heartbeat", HeartbeatHandler)
   router.HandleFunc("/frontend_api/create_new_party", CreateNewPartyHandler)
-  router.HandleFunc("/register_buzzer", RegisterBuzzerHandler)
+  router.HandleFunc("/frontend_api/is_party_assigned_buzzer", IsPartyAssignedBuzzerHandler)
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files
