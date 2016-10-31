@@ -11,6 +11,8 @@ import (
     "math/rand"
     "time"
     "io/ioutil"
+    "fmt"
+    "math"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
@@ -109,13 +111,19 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   var parties []ActiveParty
-  db.Find(&parties)
+  db.Order("time_created asc").Find(&parties)
 
-  party_data := map[string]interface{}{}
-  party_data["waitlist_data"] = parties
-
-
-  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
+  partyData := map[string]interface{}{}
+  partyData["waitlist_data"] = parties
+  //This function is called by the template to format the time an ActiveParty was created it in
+  //HH:MM form.
+  partyData["formatElapsedWaitingTime"] = func (partyCreatedTime time.Time) string {
+    duration := time.Now().Sub(partyCreatedTime)
+    hours := math.Floor(duration.Hours())
+    minutes := math.Floor((duration.Hours()-hours)*60)
+    return fmt.Sprintf("%02d:%02d", int(hours), int(minutes))
+  }
+  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
