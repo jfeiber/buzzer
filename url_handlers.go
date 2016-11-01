@@ -320,6 +320,35 @@ func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, responseObj)
 }
 
+// DeleteActivePartyHandler deletes the specificed active party ID
+func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[DeleteActivePartyHandler] ")
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    session := GetSession(w, r)
+
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["activePartyID"]
+        if activePartyID == nil {
+            responseObj["status"] = "failure"
+            responseObj["error_message"] = "Missing activepartyID parameter"
+        } else {
+            var activeparty ActiveParty
+            db.First(&activeparty, "ID=?", activePartyID)
+            dbInfo := db.Delete(&activeparty)
+
+            if dbInfo.Error == nil {
+                responseObj["status"] = "success"
+            } else {
+                responseObj["status"] = "failure"
+                responseObj["error_message"] = "db.Delete failed"
+            }
+        }
+    }
+    RenderJSONFromMap(w, responseObj)
+}
 func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[GenerateBuzzerNameHandler] ")
   buzzerName := buzzerNameGenerator.GenerateName()
