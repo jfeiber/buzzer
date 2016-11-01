@@ -70,7 +70,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[LoginURLHandler] ")
   session := GetSession(w, r)
   if IsUserLoggedIn(session) {
-    http.Redirect(w, r, "/wait_list", 302)
+    http.Redirect(w, r, "/waitlist", 302)
     return
   }
   if r.Method == "POST" {
@@ -88,7 +88,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         if (bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password+passSalt)) == nil) {
             session.Values["username"] = username
             session.Save(r, w)
-            http.Redirect(w, r, "/wait_list", 302)
+            http.Redirect(w, r, "/waitlist", 302)
             return
         }
       }
