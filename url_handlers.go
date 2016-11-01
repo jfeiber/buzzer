@@ -11,6 +11,8 @@ import (
     "math/rand"
     "time"
     "io/ioutil"
+    "fmt"
+    "math"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
@@ -24,6 +26,7 @@ func MakeRandAlphaNumericStr(n int) string {
 }
 
 func Handle500Error(w http.ResponseWriter, err error) {
+  w.WriteHeader(500)
   http.Error(w, http.StatusText(500), 500)
   log.Println(err)
 }
@@ -108,13 +111,19 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   var parties []ActiveParty
-  db.Find(&parties)
+  db.Order("time_created asc").Find(&parties)
 
-  party_data := map[string]interface{}{}
-  party_data["waitlist_data"] = parties
-
-
-  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
+  partyData := map[string]interface{}{}
+  partyData["waitlist_data"] = parties
+  //This function is called by the template to format the time an ActiveParty was created it in
+  //HH:MM form.
+  partyData["formatElapsedWaitingTime"] = func (partyCreatedTime time.Time) string {
+    duration := time.Now().Sub(partyCreatedTime)
+    hours := math.Floor(duration.Hours())
+    minutes := math.Floor((duration.Hours()-hours)*60)
+    return fmt.Sprintf("%02d:%02d", int(hours), int(minutes))
+  }
+  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
@@ -308,9 +317,10 @@ func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, obj_map)
 }
 
-func HandleAuthErrorJson(responseObj map[string] interface{}) {
+func HandleAuthErrorJson(w http.ResponseWriter, responseObj map[string] interface{}) {
+  w.WriteHeader(401)
   responseObj["status"] = "failure"
-  responseObj["error_message"] = "User not logged in."
+  responseObj["error_message"] = "User not logged in"
 }
 
 func GetRestaurantIDFromUsername(username string) int {
@@ -328,7 +338,7 @@ func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
   reqBodyObj := map[string] interface{}{}
   session := GetSession(w, r)
   if !IsUserLoggedIn(session) {
-    HandleAuthErrorJson(responseObj)
+    HandleAuthErrorJson(w, responseObj)
   } else {
     if ParseReqBody(r, responseObj, reqBodyObj) {
       log.Println(reqBodyObj)
@@ -406,6 +416,39 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
     session.Save(r, w)
     RenderTemplate(w, "assets/templates/adduser.html.tmpl", template_data)
   }
+}
+
+func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  returnObj := map[string] interface{} {"status": "success"}
+  if !IsUserLoggedIn(GetSession(w, r)) {
+    HandleAuthErrorJson(w, returnObj)
+  } else if r.Method == "POST" {
+    activePartyInfo := map[string] interface{}{}
+    ParseReqBody(r, returnObj, activePartyInfo)
+    var activeParty ActiveParty
+    log.Println(activePartyInfo)
+    activePartyID := activePartyInfo["active_party_id"]; if activePartyID == nil {
+      returnObj["status"] = "failure"
+      returnObj["error_message"] = "Missing active_party_id parameter"
+    } else {
+      db.First(&activeParty, activePartyID)
+      if activeParty == (ActiveParty{}) {
+        returnObj["status"] = "failure"
+        returnObj["error_message"] = "Party with the provided ID not found"
+      }
+      if (activeParty.BuzzerID == 0) {
+        returnObj["is_party_assigned_buzzer"] = false
+      } else {
+        returnObj["is_party_assigned_buzzer"] = true
+      }
+    }
+  }
+  jsonObj, err := json.Marshal(returnObj)
+  if err != nil {
+    Handle500Error(w, err)
+  }
+  w.Header().Set("Content-Type", "application/json")
+  w.Write(jsonObj)
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {

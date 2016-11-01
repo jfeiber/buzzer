@@ -18,16 +18,16 @@ $(document).ready(function() {
     waitMins = $('.btn#minutes-dropdown').val();
     phoneAhead = $('.phone-ahead-toggle .active input').attr('id') === "phone" ? true : false;
     if (partyName === "") {
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party name</div>')
+        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party name</div>');
       return;
     } else if (partySize === "") {
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party size</div>')
+        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party size</div>');
       return;
     } else if (waitHours === "") {
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time hours</div>')
+        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time hours</div>');
       return;
     } else if (waitMins === "") {
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>')
+        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>');
       return;
     }
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
