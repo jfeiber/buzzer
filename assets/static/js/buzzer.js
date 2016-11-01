@@ -38,6 +38,7 @@ $(document).ready(function() {
 
   $(".add-party-button").click(function(){
     // console.log("add party button handler.");
+    activePartyID = $('#party-name-field').id();
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown').val();
     waitHours = $('.btn#hours-dropdown').val();
