@@ -131,7 +131,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
 }
 
-func UpdateWaitlist(w http.ResponseWriter, r *http.Request) {
+func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[UpdateWaitlist] ")
   session := GetSession(w, r)
 
