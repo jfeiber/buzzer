@@ -173,24 +173,29 @@
      <tr>
        <th>Party Name</th>
        <th>Party Size</th>
-       <th>Estimated Wait</th>
+
+       <th>Time Spent Waiting</th>
        <th>Type</th>
        <th>Actions</th>
    </tr>
 </thead>
 <tbody>
   {{range .waitlist_data}}
-           <tr>
-             <td>{{.PartyName}}</td>
-             <td>{{.PartySize}}</td>
-             <td>{{.WaitTimeExpected}}</td>
-             <td>{{.PhoneAhead}}</td>
-             <td>
-               <button class="btn btn-default" type="button" onclick="alert('Something!')">Buzz!</button>
-               <button class="btn btn-default" type="button" id= "btndelete" onclick="alert('Delete!')">Delete</button>
-             </td>
-           </tr>
-         {{end}}
+          <tr>
+            <td>{{.PartyName}}</td>
+            <td>{{.PartySize}}</td>
+            <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
+            {{ if .PhoneAhead }}
+              <td><span class="glyphicon glyphicon-earphone"></span></td>
+            {{else}}
+              <td><span class="glyphicon glyphicon-user"></span></td>
+            {{end}}
+            <td>
+              <button type="button" onclick="alert('Something!')">Click Me!</button>
+              <button type="button" onclick="alert('Delete!')">Delete</button>
+            </td>
+          </tr>
+        {{end}}
 </tbody>
 </table>
 </div>
