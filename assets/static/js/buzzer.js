@@ -21,6 +21,7 @@ function addPartyErrorCallback(xhr, error) {
 function addPartySuccessCallback(xhr, success) {
   console.debug(xhr);
   console.debug(success);
+  location.reload();
 }
 
 function addPartyCompleteCallback(xhr, data) {
@@ -31,7 +32,6 @@ $(document).ready(function() {
   // AjaxJSONPOST("/frontend_api/get_active_parties", addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
   $(".add-party-button").click(function(){
     // console.log("add party button handler.");
-    activePartyID = $('#party-name-field').id();
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown').val();
     waitHours = $('.btn#hours-dropdown').val();
