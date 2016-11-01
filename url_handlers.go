@@ -70,7 +70,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[LoginURLHandler] ")
   session := GetSession(w, r)
   if IsUserLoggedIn(session) {
-    http.Redirect(w, r, "/wait_list", 302)
+    http.Redirect(w, r, "/waitlist", 302)
     return
   }
   if r.Method == "POST" {
@@ -88,7 +88,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         if (bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password+passSalt)) == nil) {
             session.Values["username"] = username
             session.Save(r, w)
-            http.Redirect(w, r, "/wait_list", 302)
+            http.Redirect(w, r, "/waitlist", 302)
             return
         }
       }
@@ -105,13 +105,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListHandler] ")
-  if !IsUserLoggedIn(GetSession(w, r)) {
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
     http.Redirect(w, r, "/login", 302)
     return
   }
 
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
   var parties []ActiveParty
-  db.Order("time_created asc").Find(&parties)
+
+  db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
   partyData := map[string]interface{}{}
   partyData["waitlist_data"] = parties
@@ -124,6 +129,22 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     return fmt.Sprintf("%02d:%02d", int(hours), int(minutes))
   }
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
+}
+
+func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UpdateWaitlist] ")
+  session := GetSession(w, r)
+
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  var parties []ActiveParty
+  db.Find(&parties, "restaurant_id = ?", restaurantID)
+
+  partyData := map[string]interface{}{}
+  partyData["waitlist_data"] = parties
+
+  RenderJSONFromMap(w, partyData);
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
