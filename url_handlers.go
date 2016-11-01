@@ -123,7 +123,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
 func UpdateWaitlist(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[UpdateWaitlist] ")
   session := GetSession(w, r)
-//  if !IsUserLoggedIn(session) {}
+
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
