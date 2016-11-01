@@ -114,10 +114,10 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   var parties []ActiveParty
   db.Find(&parties, "restaurant_id = ?", restaurantID)
 
-  party_data := map[string]interface{}{}
-  party_data["waitlist_data"] = parties
+  partyData := map[string]interface{}{}
+  partyData["waitlist_data"] = parties
 
-  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
+  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
 }
 
 func UpdateWaitlist(w http.ResponseWriter, r *http.Request) {
