@@ -1,6 +1,6 @@
 console.log("sup");
 
-function AjaxJSONPOST(url, errorCallback, successCallback, completeCallback) {
+function AjaxJSONPOST(url, jsonObj, errorCallback, successCallback, completeCallback) {
   $.ajax({
     url: url,
     type: "POST",
@@ -28,14 +28,7 @@ function addPartyCompleteCallback(xhr, data) {
 }
 
 $(document).ready(function() {
-	// $('.dropdown-menu').on('click', 'a', function(){
-
-	//   console.log("hit callback");
-	//   $(this).parents(".dropdown").find('.selection').text($(this).text());
-	//   $(this).parents(".dropdown").find('.selection').val($(this).text());
-
-	// });
-
+  // AjaxJSONPOST("/frontend_api/get_active_parties", addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
   $(".add-party-button").click(function(){
     // console.log("add party button handler.");
     activePartyID = $('#party-name-field').id();
@@ -60,7 +53,7 @@ $(document).ready(function() {
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
     jsonObj = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     console.log(jsonObj);
-    AjaxJSONPOST("/frontend_api/create_new_party", addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
+    AjaxJSONPOST("/frontend_api/create_new_party", jsonObj, addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
 
     //in the future this will load this via an AJAX call. For now I am lazy.
   });
