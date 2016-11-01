@@ -21,6 +21,12 @@ body {
     font-weight: light;
 }
 
+/*@media (max-width: 200px) {
+  .navbar-header {
+      float: none;
+  }
+}*/
+
 
 /* Buzzer logo */
 .navbar-default .navbar-brand {
