@@ -111,7 +111,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
-  var ies []ActiveParty
+  var parties []ActiveParty
   db.Find(&parties, "restaurant_id = ?", restaurantID)
 
   partyData := map[string]interface{}{}
