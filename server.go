@@ -64,7 +64,7 @@ func main() {
   router.HandleFunc("/buzzer_api/heartbeat", HeartbeatHandler)
   router.HandleFunc("/frontend_api/create_new_party", CreateNewPartyHandler)
   router.HandleFunc("/register_buzzer", RegisterBuzzerHandler)
-  router.HandleFunc("/update_waitlist", UpdateWaitlist)
+  router.HandleFunc("/update_waitlist", GetActivePartiesHandler)
   router.HandleFunc("/frontend_api/is_party_assigned_buzzer", IsPartyAssignedBuzzerHandler)
 
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
