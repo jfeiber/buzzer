@@ -40,8 +40,7 @@ $(document).ready(function() {
       error: function(xhr, error){
         console.debug(xhr);
         console.debug(error);
-        alert("Add party request failed");
-      },
+        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Add party request failed</div>')      },
       success: function(xhr, success){
         console.debug(xhr);
         console.debug(success);
