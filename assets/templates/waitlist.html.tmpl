@@ -192,7 +192,7 @@
             {{end}}
             <td>
               <button type="button" onclick="alert('Something!')">Click Me!</button>
-              <button type="button" onclick="alert('Delete!')">Delete</button>
+              <button class="delete" activePartyID="{{.ID}}" type="button" onclick="alert('Delete!')">Delete</button>
             </td>
           </tr>
         {{end}}
@@ -202,5 +202,23 @@
 
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+<script>
+    $('.delete').click(function() {
+        $.ajax({
+           url: '/frontend_api/delete_party',
+           data:  JSON.stringify(
+                {activePartyID: $(this).attr('activePartyID')}
+            ),
+           error: function(response) {
+              console.log(response);
+           },
+           dataType: 'jsonp',
+           success: function(data) {
+              console.log("Success delete!");
+           },
+           type: 'POST'
+       });
+    });
+</script>
 </body>
 </html>
