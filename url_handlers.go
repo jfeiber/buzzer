@@ -66,6 +66,18 @@ func IsUserLoggedIn(session *sessions.Session) bool {
   return found && username != ""
 }
 
+func AdminPageHandler(w http.ResponseWriter, r *http.Request) {
+
+    var users []User
+    db.Find(&users)
+    log.Println("Hey Micky")
+    template_data := map[string]interface{}{}
+    template_data["users"] = users
+    log.Println(users)
+    RenderTemplate(w, "assets/templates/adminPage.html.tmpl", template_data)
+
+}
+
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[LoginURLHandler] ")
   session := GetSession(w, r)
