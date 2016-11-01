@@ -111,7 +111,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
-  var parties []ActiveParty
+  var ies []ActiveParty
   db.Find(&parties, "restaurant_id = ?", restaurantID)
 
   partyData := map[string]interface{}{}
@@ -130,10 +130,10 @@ func UpdateWaitlist(w http.ResponseWriter, r *http.Request) {
   var parties []ActiveParty
   db.Find(&parties, "restaurant_id = ?", restaurantID)
 
-  party_data := map[string]interface{}{}
-  party_data["waitlist_data"] = parties
+  partyData := map[string]interface{}{}
+  partyData["waitlist_data"] = parties
 
-  RenderJSONFromMap(w, party_data);
+  RenderJSONFromMap(w, partyData);
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
