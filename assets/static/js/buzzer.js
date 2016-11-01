@@ -1,5 +1,32 @@
 console.log("sup");
 
+function AjaxJSONPOST(url, errorCallback, successCallback, completeCallback) {
+  $.ajax({
+    url: url,
+    type: "POST",
+    data: jsonObj,
+    contentType: "application/json",
+    error: errorCallback,
+    success: successCallback,
+    complete: completeCallback
+  });
+}
+
+function addPartyErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Add party request failed</div>');
+}
+
+function addPartySuccessCallback(xhr, success) {
+  console.debug(xhr);
+  console.debug(success);
+}
+
+function addPartyCompleteCallback(xhr, data) {
+  console.log(data);
+}
+
 $(document).ready(function() {
 	// $('.dropdown-menu').on('click', 'a', function(){
 
@@ -32,23 +59,7 @@ $(document).ready(function() {
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
     jsonObj = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     console.log(jsonObj);
-    $.ajax({
-      url: "/frontend_api/create_new_party",
-      type: "POST",
-      data: jsonObj,
-      contentType: "application/json",
-      error: function(xhr, error){
-        console.debug(xhr);
-        console.debug(error);
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Add party request failed</div>')      },
-      success: function(xhr, success){
-        console.debug(xhr);
-        console.debug(success);
-      },
-      complete: function(data) {
-        console.log(data);
-      }
-    });
+    AjaxJSONPOST("/frontend_api/create_new_party", addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
 
     //in the future this will load this via an AJAX call. For now I am lazy.
   });
