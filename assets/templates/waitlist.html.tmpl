@@ -44,44 +44,53 @@
 </head>
 
 <body>
-	<nav class="navbar navbar-default navbar-fixed-top">
-     <div class="container-fluid">
-       <div class="navbar-header">
-         <a class="navbar-brand" href="#">Buzzer</a>
-     </div>
-     <ul class="nav navbar-nav">
-         <li class="active"><a href="#">Waitlist</a></li>
-         <li><a href="#">Devices</a></li>
-         <li><a href="#">Analytics</a></li>
-     </ul>
-     <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">Buzzer</a>
+  </div>
+  <div class="collapse navbar-collapse" id="myNavBar">
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Waitlist</a></li>
+      <li><a href="#">Devices</a></li>
+      <li><a href="#">Analytics</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
           <a href="#" class="glyphicon glyphicon-cog white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
           <ul class="dropdown-menu">
             <li><a href="#">Help</a></li>
             <li><a href="#">Contact Buzzer</a></li>
             <li><a href="#">Something else here</a></li>
-        </ul>
-    </li>
-</ul>
+          </ul>
+      </li>
+    </ul>
+  </div>
 </div>
 </nav>
 
+
 <!-- Should remove this and overhaul header-->
+<!-- <br>
 <br>
-<br>
-<br>
+<br> -->
 <div class="row login-alert">
   <div id="alert_placeholder"></div>
 </div>
-<br>
+<!-- <br> -->
 
-<div class="container">
+<div class="container-fluid">
  <div class="row">
-   <div class="col-sm-3">
+   <div class="col-md-3 col-sm-3">
      <input type="text" class="form-control" id="party-name-field" placeholder="Party Name">
  </div>
- <div class="col-sm-2">
+ <div class="col-md-2 col-sm-3">
   <div class="dropdown">
     <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
       Party Size <span class="caret"></span>
@@ -105,7 +114,7 @@
 </div>
 
 <!-- Source: http://stackoverflow.com/questions/22362750/bootstrap-button-group-pre-select-button-with-html-only: -->
-<div class="col-sm-3">
+<div class="col-md-3 col-sm-3">
     <div class="btn-group phone-ahead-toggle" data-toggle="buttons" id="btnrocker">
         <label class="btn btn-default active" id="btnrocker">
             <input type="radio" name="options" id="phone" width="20"><span class="glyphicon glyphicon-earphone"></span>
@@ -115,7 +124,7 @@
         </label>
     </div>
 </div>
-<div class="col-sm-4">
+<div class="col-md-4 col-sm-3">
 
   <div class="btn-group dropdown">
     <button type="button" class="btn btn-default dropdown-toggle" id="hours-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value = "">
@@ -177,7 +186,7 @@
              <td>{{.WaitTimeExpected}}</td>
              <td>{{.PhoneAhead}}</td>
              <td>
-               <button class="btn btn-default" type="button" onclick="alert('Buzz!')">Buzz</button>
+               <button class="btn btn-default" type="button" onclick="alert('Something!')">Buzz!</button>
                <button class="btn btn-default" type="button" id= "btndelete" onclick="alert('Delete!')">Delete</button>
              </td>
            </tr>
