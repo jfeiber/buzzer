@@ -455,8 +455,7 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
     ParseReqBody(r, returnObj, activePartyInfo)
     var activeParty ActiveParty
     log.Println(activePartyInfo)
-    activePartyID := activePartyInfo["activePartyID"];
-    if activePartyID == nil {
+    activePartyID := activePartyInfo["active_party_id"]; if activePartyID == nil {
       returnObj["status"] = "failure"
       returnObj["error_message"] = "Missing active_party_id parameter"
     } else {
