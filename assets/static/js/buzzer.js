@@ -1,5 +1,3 @@
-console.log("sup");
-
 function AjaxJSONPOST(url, jsonObj, errorCallback, successCallback, completeCallback) {
   $.ajax({
     url: url,
