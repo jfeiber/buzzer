@@ -211,10 +211,6 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
   return true
 }
 
-func TestBuzz(w http.ResponseWriter, r *http.Request) {
-  RenderTemplate(w, "assets/templates/testpage.html.tmpl", nil)
-}
-
 func ActivateBuzzer(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[ActivateBuzzer]")
   session := GetSession(w, r)
