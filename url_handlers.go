@@ -211,8 +211,8 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
   return true
 }
 
-func ActivateBuzzer(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[ActivateBuzzer]")
+func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[ActivateBuzzer] ")
   session := GetSession(w, r)
   if r.Method == "POST" {
     responseObj := map[string] interface{} {}
@@ -220,23 +220,24 @@ func ActivateBuzzer(w http.ResponseWriter, r *http.Request) {
     if !IsUserLoggedIn(session) {
       HandleAuthErrorJson(w, responseObj)
     } else {
-        if ParseReqBody(r, responseObj, reqBodyObj) {
-          activePartyID := reqBodyObj["active_party_id"]
-          if activePartyID == nil {
-            AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else {
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
           } else {
-              var foundActiveParty ActiveParty
-              db.First(&foundActiveParty, "active_party_id = ?", activePartyID)
-            if foundActiveParty == (ActiveParty{}) {
-              AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
-            } else {
-                db.Model(&foundActiveParty).Update("is_table_ready", "true")
-            }
+              db.Model(&foundActiveParty).Update("is_table_ready", true)
           }
         }
       }
     }
+    RenderJSONFromMap(w, responseObj)
   }
+}
 
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
   buzzerName := reqBodyObj["buzzer_name"]
@@ -554,5 +555,6 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[NotFoundHandler] ")
+  w.WriteHeader(404)
   RenderTemplate(w, "assets/templates/404.html", nil)
 }
