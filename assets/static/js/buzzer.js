@@ -121,6 +121,7 @@ $(document).ready(function() {
         $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>');
       return;
     }
+    $('#alert_placeholder').html('');
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
