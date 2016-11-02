@@ -100,7 +100,7 @@ body {
 
 .btn-default {
     background-color: #426BE7;
-    color: #FFFFFF;
+    color: #FFFFFF !important;
 }
 
 #btndelete {
@@ -127,6 +127,7 @@ body {
 .btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
     outline: 0;
     background-color: #426BE7;
+    color: #FFFFFF;
 }
 
 .btn-default:hover {
