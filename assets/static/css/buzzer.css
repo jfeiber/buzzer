@@ -27,7 +27,6 @@ body {
   }
 }*/
 
-
 /* Buzzer logo */
 .navbar-default .navbar-brand {
     background-color: #426BE7;
@@ -44,7 +43,6 @@ body {
     margin-top: 2px;
     margin-left: 50px;
 }
-
 
 .active a {
     background-color: #426BE7 !important;
@@ -114,14 +112,18 @@ body {
     /*border-color: #426BE7; set the color you want here*/
 }
 
-#btnrocker{
+#btnrocker {
     background-color: #F1F4F6;
-    color: #000000;
+    color: #000000 !important;
 }
 
-#btnrocker.btn.active{
-    background-color: #0F48B4; /*#426BE7;*/
-    color: #FFFFFF;
+#btnrocker.btn:hover {
+    background-color: #426BE7 !important;
+}
+
+#btnrocker.btn.active {
+    background-color: #426BE7;
+    color: #FFFFFF !important;
 }
 
 .btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
@@ -136,8 +138,7 @@ body {
     /*border-color: #426BE7; set the color you want here*/
 }
 
-.btn-default dropdown-toggle
-{
+.btn-default dropdown-toggle {
     background-color: #FFFFFF !important;
 }
 
