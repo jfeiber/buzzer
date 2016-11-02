@@ -172,6 +172,17 @@ body {
     transform: translateY(25%);
 }
 
+#alert_placeholder {
+    display: block;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto;
+
+    /* Vertical */
+    transform: translateY(-40%);
+}
+
 /*.img-responsive{
     width:5%;
     height:5%;
