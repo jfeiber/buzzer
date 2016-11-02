@@ -139,7 +139,7 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/login", 302)
     return
   }
-  
+
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
@@ -211,11 +211,34 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
   return true
 }
 
+func TestBuzz(w http.ResponseWriter, r *http.Request) {
+  RenderTemplate(w, "assets/templates/testpage.html.tmpl", nil)
+}
+
 func ActivateBuzzer(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[ActivateBuzzer]")
+  responseObj := map[string] interface{} {}
+  reqBodyObj := map[string] interface{}{}
+  var foundActiveParty ActiveParty
   session := GetSession(w, r)
-
-
+  if !IsUserLoggedIn(session) {
+    HandleAuthErrorJson(w, responseObj)
+  } else {
+    if ParseReqBody(r, responseObj, reqBodyObj) {
+      log.Println(reqBodyObj)
+      activePartyID := reqBodyObj["active_party_id"]
+      if activePartyID == -1 {
+        AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+      } else {
+        db.First(&foundActiveParty, "active_party_id = ?", activePartyID)
+        if foundActiveParty == (ActiveParty{}) {
+          AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+        } else {
+          db.Model(&foundActiveParty).Update("is_table_ready", "true")
+        }
+      }
+    }
+  }
 }
 
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
