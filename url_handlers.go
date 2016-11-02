@@ -217,29 +217,30 @@ func TestBuzz(w http.ResponseWriter, r *http.Request) {
 
 func ActivateBuzzer(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[ActivateBuzzer]")
-  responseObj := map[string] interface{} {}
-  reqBodyObj := map[string] interface{}{}
-  var foundActiveParty ActiveParty
   session := GetSession(w, r)
-  if !IsUserLoggedIn(session) {
-    HandleAuthErrorJson(w, responseObj)
-  } else {
-    if ParseReqBody(r, responseObj, reqBodyObj) {
-      log.Println(reqBodyObj)
-      activePartyID := reqBodyObj["active_party_id"]
-      if activePartyID == -1 {
-        AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
-      } else {
-        db.First(&foundActiveParty, "active_party_id = ?", activePartyID)
-        if foundActiveParty == (ActiveParty{}) {
-          AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
-        } else {
-          db.Model(&foundActiveParty).Update("is_table_ready", "true")
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+        if ParseReqBody(r, responseObj, reqBodyObj) {
+          activePartyID := reqBodyObj["active_party_id"]
+          if activePartyID == nil {
+            AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+          } else {
+              var foundActiveParty ActiveParty
+              db.First(&foundActiveParty, "active_party_id = ?", activePartyID)
+            if foundActiveParty == (ActiveParty{}) {
+              AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+            } else {
+                db.Model(&foundActiveParty).Update("is_table_ready", "true")
+            }
+          }
         }
       }
     }
   }
-}
 
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
   buzzerName := reqBodyObj["buzzer_name"]
