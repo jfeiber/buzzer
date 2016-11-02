@@ -103,12 +103,12 @@ body {
     color: #FFFFFF;
 }
 
-#btndelete {
+.delete-party-button {
     background-color: #DD2A17;
     color: #FFFFFF;
 }
 
-#btndelete.btn-default:hover {
+.delete-party-button.btn-default:hover {
     color: #FFFFFF;
     background-color: #AA0000 !important;
     /*border-color: #426BE7; set the color you want here*/

@@ -21,9 +21,6 @@
   <!-- Bootstrap core CSS -->
   <link href="/assets/static/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <link href="/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
   <!-- Custom styles for this template -->
   <link href="/assets/static/css/buzzer.css" rel="stylesheet">
 
@@ -168,7 +165,7 @@
 <!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
 <div class="container">
  <h2>Waitlist</h2>
- <table class="table table-bordered">
+ <table class="table table-bordered" id="waitlist-table">
    <thead>
      <tr>
        <th>Party Name</th>
@@ -181,44 +178,24 @@
 </thead>
 <tbody>
   {{range .waitlist_data}}
-          <tr>
-            <td>{{.PartyName}}</td>
-            <td>{{.PartySize}}</td>
-            <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
-            {{ if .PhoneAhead }}
-              <td><span class="glyphicon glyphicon-earphone"></span></td>
-            {{else}}
-              <td><span class="glyphicon glyphicon-user"></span></td>
-            {{end}}
-            <td>
-              <button type="button" onclick="alert('Something!')">Click Me!</button>
-              <button class="delete" activePartyID="{{.ID}}" type="button" onclick="alert('Delete!')">Delete</button>
-            </td>
-          </tr>
-        {{end}}
+    <tr activePartyID="{{.ID}}">
+      <td>{{.PartyName}}</td>
+      <td>{{.PartySize}}</td>
+      <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
+      {{ if .PhoneAhead }}
+        <td><span class="glyphicon glyphicon-earphone"></span></td>
+      {{else}}
+        <td><span class="glyphicon glyphicon-user"></span></td>
+      {{end}}
+      <td>
+        <button class="btn btn-default buzz-button" type="button">Buzz!</button>
+        <button class="btn btn-default delete-party-button" type="button">Delete</button>
+      </td>
+    </tr>
+  {{end}}
 </tbody>
 </table>
 </div>
 
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
-<script>
-    $('.delete').click(function() {
-        $.ajax({
-           url: '/frontend_api/delete_party',
-           data:  JSON.stringify(
-                {activePartyID: $(this).attr('activePartyID')}
-            ),
-           error: function(response) {
-              console.log(response);
-           },
-           dataType: 'jsonp',
-           success: function(data) {
-              console.log("Success delete!");
-           },
-           type: 'POST'
-       });
-    });
-</script>
 </body>
 </html>
