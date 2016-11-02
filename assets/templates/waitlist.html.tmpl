@@ -159,7 +159,7 @@
 <!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
 <div class="container">
  <h2>Waitlist</h2>
- <table class="table table-bordered">
+ <table class="table table-bordered" id="waitlist-table">
    <thead>
      <tr>
        <th>Party Name</th>
@@ -172,23 +172,24 @@
 </thead>
 <tbody>
   {{range .waitlist_data}}
-          <tr>
-            <td>{{.PartyName}}</td>
-            <td>{{.PartySize}}</td>
-            <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
-            {{ if .PhoneAhead }}
-              <td><span class="glyphicon glyphicon-earphone"></span></td>
-            {{else}}
-              <td><span class="glyphicon glyphicon-user"></span></td>
-            {{end}}
-            <td>
-               <button class="btn btn-default" type="button" onclick="alert('Something!')">Buzz!</button>
-               <button class="btn btn-default" type="button" id= "btndelete" onclick="alert('Delete!')">Delete</button>
-             </td>
-          </tr>
-        {{end}}
+    <tr activePartyID="{{.ID}}">
+      <td>{{.PartyName}}</td>
+      <td>{{.PartySize}}</td>
+      <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
+      {{ if .PhoneAhead }}
+        <td><span class="glyphicon glyphicon-earphone"></span></td>
+      {{else}}
+        <td><span class="glyphicon glyphicon-user"></span></td>
+      {{end}}
+      <td>
+        <button class="btn btn-default buzz-button" type="button">Buzz!</button>
+        <button class="btn btn-default delete-party-button" type="button">Delete</button>
+      </td>
+    </tr>
+  {{end}}
 </tbody>
 </table>
 </div>
+
 </body>
 </html>
