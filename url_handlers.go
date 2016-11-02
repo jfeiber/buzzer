@@ -128,6 +128,16 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     minutes := math.Floor((duration.Hours()-hours)*60)
     return fmt.Sprintf("%02d:%02d", int(hours), int(minutes))
   }
+
+  //This function is called by the template to format the estimated waiting time into 
+  //HH:MM format.
+  //Kevin had fun making this with his friends.
+  partyData["formatEstimatedWaitingTime"] = func (duration int) string {
+    var hours = (duration/60)
+    var mins = (duration-(hours*60))
+    return fmt.Sprintf("%02d:%02d", int(hours), int(mins))
+  }
+
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
 }
 

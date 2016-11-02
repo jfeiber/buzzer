@@ -52,6 +52,15 @@ function parseTimeCreated(timeCreated) {
   return hours + ":" + min;
 }
 
+function parseEstimatedWait(estimatedWaitTime) {
+  // var hours = Math.floor(estimatedWaitTime/60);
+  // var minutes = estimatedWaitTime % 60;
+  // hours = hours < 10 ? '0' + hours : hours;
+  // minutes = minutes < 10 ? '0' + minutes : minutes;
+  // return hours + ":" + minutes;
+  return 6;
+}
+
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
   $('#waitlist-table').append('<tbody>');
