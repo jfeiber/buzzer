@@ -247,21 +247,22 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
     if !IsUserLoggedIn(session) {
       HandleAuthErrorJson(w, responseObj)
     } else {
-        if ParseReqBody(r, responseObj, reqBodyObj) {
-          activePartyID := reqBodyObj["active_party_id"]
-          if activePartyID == nil {
-            AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else {
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
           } else {
-              var foundActiveParty ActiveParty
-              db.First(&foundActiveParty, "id = ?", activePartyID)
-            if foundActiveParty == (ActiveParty{}) {
-              AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
-            } else {
                 db.Model(&foundActiveParty).Update("phone_ahead", false)
             }
           }
         }
       }
+
     RenderJSONFromMap(w, responseObj)
   }
 }
