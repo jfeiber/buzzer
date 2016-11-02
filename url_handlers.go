@@ -135,6 +135,11 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[UpdateWaitlist] ")
   session := GetSession(w, r)
 
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+  
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
@@ -204,6 +209,13 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
     return false
   }
   return true
+}
+
+func ActivateBuzzer(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[ActivateBuzzer]")
+  session := GetSession(w, r)
+
+
 }
 
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
