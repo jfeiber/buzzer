@@ -12,19 +12,29 @@ function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCall
   });
 }
 
+function errorAlert(errorStr) {
+  $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">'+errorStr+'/div>');
+}
+
 function addPartyErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
-  $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Add party request failed</div>');
+  errorAlert("Add party request failed");
 }
 
-function addPartySuccessCallback(xhr, success) {
+function deletePartyErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Delete party request failed");
+}
+
+function repopulateWaitlistSuccessCallback(xhr, success) {
   console.debug(xhr);
   console.debug(success);
-  AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, addPartyCompleteCallback);
+  AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
 }
 
-function addPartyCompleteCallback(xhr, data) {
+function completeCallback(xhr, data) {
   console.log(data);
 }
 
@@ -46,7 +56,7 @@ function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
   $('#waitlist-table').append('<tbody>');
   for (i in activeParties) {
-    htmlStr = "<tr>";
+    htmlStr = "<tr activePartyID="+ activeParties[i].ID + ">";
     htmlStr += "<td>" + activeParties[i].PartyName + "</td>";
     htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
     htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
@@ -55,15 +65,31 @@ function repopulateTable(activeParties) {
     } else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
     }
-    htmlStr += "<td><button type=\"button\" onclick=\"alert('Something!')\">Click Me!</button><button type=\"button\" onclick=\"alert('Delete!')\">Delete</button></td>"
+    htmlStr += '<td><button class="btn btn-default buzz-button" type="button">Buzz!</button><button class="btn btn-default delete-party-button" type="button">Delete</button></td>'
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
   }
   $('#waitlist-table').append('</tbody>');
+  registerDeletePartyClickHandlers();
+  registerBuzzClickHandlers();
 }
 
 function updateWaitlistSuccessCallback(xhr, data) {
   repopulateTable(xhr["waitlist_data"]);
+}
+
+function registerDeletePartyClickHandlers() {
+  $(".delete-party-button").click(function(){
+    console.log($(this).closest('tr').attr('activePartyID'));
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
+  });
+}
+
+function registerBuzzClickHandlers() {
+  $(".buzz-button").click(function(){
+    alert("bzzzzzzzzzzzzzzz");
+  });
 }
 
 $(document).ready(function() {
@@ -89,14 +115,11 @@ $(document).ready(function() {
     }
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
-    AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
+    AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
   });
 
-  $(".delete-party-button").click(function(){
-    console.log($(this).closest('tr').attr('activePartyID'));
-    activePartyID = $(this).closest('tr').attr('activePartyID');
-    AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"activePartyID": activePartyID}), addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
-  });
+  registerDeletePartyClickHandlers();
+  registerBuzzClickHandlers()
 
   $(".dropdown-menu li a").click(function(){
     console.log("in handler");
