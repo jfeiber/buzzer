@@ -168,7 +168,7 @@
 <!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
 <div class="container">
  <h2>Waitlist</h2>
- <table class="table table-bordered">
+ <table class="table table-bordered" id="waitlist-table">
    <thead>
      <tr>
        <th>Party Name</th>
@@ -181,7 +181,6 @@
 </thead>
 <tbody>
   {{range .waitlist_data}}
-          <tr>
             <td>{{.PartyName}}</td>
             <td>{{.PartySize}}</td>
             <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
