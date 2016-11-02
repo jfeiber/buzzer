@@ -21,9 +21,6 @@
   <!-- Bootstrap core CSS -->
   <link href="/assets/static/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <link href="/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
   <!-- Custom styles for this template -->
   <link href="/assets/static/css/buzzer.css" rel="stylesheet">
 
@@ -190,16 +187,13 @@
               <td><span class="glyphicon glyphicon-user"></span></td>
             {{end}}
             <td>
-              <button type="button" onclick="alert('Something!')">Click Me!</button>
-              <button type="button" onclick="alert('Delete!')">Delete</button>
-            </td>
+               <button class="btn btn-default" type="button" onclick="alert('Something!')">Buzz!</button>
+               <button class="btn btn-default" type="button" id= "btndelete" onclick="alert('Delete!')">Delete</button>
+             </td>
           </tr>
         {{end}}
 </tbody>
 </table>
 </div>
-
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
 </body>
 </html>

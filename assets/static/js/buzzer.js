@@ -69,7 +69,10 @@ function updateWaitlistSuccessCallback(xhr, data) {
 $(document).ready(function() {
   $(".add-party-button").click(function(){
     // console.log("add party button handler.");
+<<<<<<< HEAD
     // activePartyID = $('#party-name-field').id();
+=======
+>>>>>>> origin/mm/waitlist
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown').val();
     waitHours = $('.btn#hours-dropdown').val();
