@@ -144,6 +144,13 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   partyData := map[string]interface{}{}
   partyData["waitlist_data"] = parties
 
+  partyData["formatElapsedWaitingTime"] = func (partyCreatedTime time.Time) string {
+    duration := time.Now().Sub(partyCreatedTime)
+    hours := math.Floor(duration.Hours())
+    minutes := math.Floor((duration.Hours()-hours)*60)
+    return fmt.Sprintf("%02d:%02d", int(hours), int(minutes))
+  }
+
   RenderJSONFromMap(w, partyData);
 }
 
