@@ -68,11 +68,7 @@ function updateWaitlistSuccessCallback(xhr, data) {
 
 $(document).ready(function() {
   $(".add-party-button").click(function(){
-    // console.log("add party button handler.");
-<<<<<<< HEAD
     // activePartyID = $('#party-name-field').id();
-=======
->>>>>>> origin/mm/waitlist
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown').val();
     waitHours = $('.btn#hours-dropdown').val();
@@ -94,6 +90,12 @@ $(document).ready(function() {
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
+  });
+
+  $(".delete-party-button").click(function(){
+    console.log($(this).closest('tr').attr('activePartyID'));
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"activePartyID": activePartyID}), addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
   });
 
   $(".dropdown-menu li a").click(function(){

@@ -178,22 +178,24 @@
 </thead>
 <tbody>
   {{range .waitlist_data}}
-            <td>{{.PartyName}}</td>
-            <td>{{.PartySize}}</td>
-            <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
-            {{ if .PhoneAhead }}
-              <td><span class="glyphicon glyphicon-earphone"></span></td>
-            {{else}}
-              <td><span class="glyphicon glyphicon-user"></span></td>
-            {{end}}
-            <td>
-               <button class="btn btn-default" type="button" onclick="alert('Something!')">Buzz!</button>
-               <button class="btn btn-default" type="button" id= "btndelete" onclick="alert('Delete!')">Delete</button>
-             </td>
-          </tr>
-        {{end}}
+    <tr activePartyID="{{.ID}}">
+      <td>{{.PartyName}}</td>
+      <td>{{.PartySize}}</td>
+      <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
+      {{ if .PhoneAhead }}
+        <td><span class="glyphicon glyphicon-earphone"></span></td>
+      {{else}}
+        <td><span class="glyphicon glyphicon-user"></span></td>
+      {{end}}
+      <td>
+        <button class="btn btn-default" type="button" onclick="alert('Something!')">Buzz!</button>
+        <button class="btn btn-default delete-party-button" id= "btndelete" activePartyID="{{.ID}}" type="button">Delete</button>
+      </td>
+    </tr>
+  {{end}}
 </tbody>
 </table>
 </div>
+
 </body>
 </html>
