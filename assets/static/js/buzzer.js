@@ -19,7 +19,6 @@ function addPartyErrorCallback(xhr, error) {
 function addPartySuccessCallback(xhr, success) {
   console.debug(xhr);
   console.debug(success);
-  location.reload();
 }
 
 function addPartyCompleteCallback(xhr, data) {
@@ -48,6 +47,7 @@ $(document).ready(function() {
         $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>');
       return;
     }
+    $('#alert_placeholder').html('');
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
     jsonObj = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     console.log(jsonObj);
