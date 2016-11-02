@@ -139,7 +139,7 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
   var parties []ActiveParty
-  db.Find(&parties, "restaurant_id = ?", restaurantID)
+  db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
   partyData := map[string]interface{}{}
   partyData["waitlist_data"] = parties
