@@ -28,6 +28,12 @@ function deletePartyErrorCallback(xhr, error) {
   errorAlert("Delete party request failed");
 }
 
+function buzzPartyErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Buzz party request failed");
+}
+
 function repopulateWaitlistSuccessCallback(xhr, success) {
   console.debug(xhr);
   console.debug(success);
@@ -88,7 +94,9 @@ function registerDeletePartyClickHandlers() {
 
 function registerBuzzClickHandlers() {
   $(".buzz-button").click(function(){
-    alert("bzzzzzzzzzzzzzzz");
+    console.log($(this).closest('tr').attr('activePartyID'));
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/activate_buzzer', JSON.stringify({"active_party_id": activePartyID}), buzzPartyErrorCallback, completeCallback, completeCallback);
   });
 }
 
