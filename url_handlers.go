@@ -114,7 +114,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
-  var parties []ActiveParty
+  var parties []eParty
 
   db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
@@ -235,8 +235,35 @@ func ActivateBuzzer(w http.ResponseWriter, r *http.Request) {
           }
         }
       }
-    }
   }
+}
+
+func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UpdatePhoneAheadStatusHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+        if ParseReqBody(r, responseObj, reqBodyObj) {
+          activePartyID := reqBodyObj["active_party_id"]
+          if activePartyID == nil {
+            AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+          } else {
+              var foundActiveParty ActiveParty
+              db.First(&foundActiveParty, "id = ?", activePartyID)
+            if foundActiveParty == (ActiveParty{}) {
+              AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+            } else {
+                db.Model(&foundActiveParty).Update("phone_ahead", false)
+            }
+          }
+        }
+      }
+  }
+}
 
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
   buzzerName := reqBodyObj["buzzer_name"]
