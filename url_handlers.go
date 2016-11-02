@@ -114,7 +114,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
-  var parties []ActiveParty
+  var parties []eParty
 
   db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
@@ -211,8 +211,8 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
   return true
 }
 
-func ActivateBuzzer(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[ActivateBuzzer]")
+func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[ActivateBuzzer] ")
   session := GetSession(w, r)
   if r.Method == "POST" {
     responseObj := map[string] interface{} {}
@@ -220,21 +220,21 @@ func ActivateBuzzer(w http.ResponseWriter, r *http.Request) {
     if !IsUserLoggedIn(session) {
       HandleAuthErrorJson(w, responseObj)
     } else {
-        if ParseReqBody(r, responseObj, reqBodyObj) {
-          activePartyID := reqBodyObj["active_party_id"]
-          if activePartyID == nil {
-            AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else {
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
           } else {
-              var foundActiveParty ActiveParty
-              db.First(&foundActiveParty, "active_party_id = ?", activePartyID)
-            if foundActiveParty == (ActiveParty{}) {
-              AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
-            } else {
-                db.Model(&foundActiveParty).Update("is_table_ready", "true")
-            }
+              db.Model(&foundActiveParty).Update("is_table_ready", true)
           }
         }
       }
+    RenderJSONFromMap(w, responseObj)
   }
 }
 
@@ -262,6 +262,7 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
           }
         }
       }
+    RenderJSONFromMap(w, responseObj)
   }
 }
 
@@ -581,5 +582,6 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[NotFoundHandler] ")
+  w.WriteHeader(404)
   RenderTemplate(w, "assets/templates/404.html", nil)
 }
