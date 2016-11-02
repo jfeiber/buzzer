@@ -253,6 +253,15 @@ func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[st
   return true
 }
 
+func GetBuzzerObjFromID(buzzerID int, responseObj map[string] interface{}, buzzer *Buzzer) bool {
+  db.First(buzzer, "id = ?", buzzerID)
+  if *buzzer == (Buzzer{}) {
+    AddErrorMessageToResponseObj(responseObj, "Buzzer with that ID not found.")
+    return false
+  }
+  return true
+}
+
 func GetActivePartyFromBuzzerID(responseObj map[string] interface{}, buzzer Buzzer, activeParty *ActiveParty) bool {
   db.First(activeParty, "buzzer_id = ?", buzzer.ID)
   if *activeParty == (ActiveParty{}) {
@@ -353,6 +362,7 @@ func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteActivePartyHandler deletes the specificed active party ID
+//TODO: Move the active parties into historical parties.
 func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[DeleteActivePartyHandler] ")
     responseObj := map[string] interface{} {}
@@ -366,15 +376,25 @@ func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
             responseObj["status"] = "failure"
             responseObj["error_message"] = "Missing active_party_id parameter"
         } else {
-            var activeparty ActiveParty
-            db.First(&activeparty, "ID=?", activePartyID)
-            dbInfo := db.Delete(&activeparty)
-
-            if dbInfo.Error == nil {
-                responseObj["status"] = "success"
-            } else {
-                responseObj["status"] = "failure"
-                responseObj["error_message"] = "db.Delete failed"
+            var activeParty ActiveParty
+            db.First(&activeParty, "ID=?", activePartyID)
+            failedBuzzerUpdate := false
+            if (activeParty.BuzzerID != 0) {
+              var buzzer Buzzer
+              if GetBuzzerObjFromID(activeParty.BuzzerID, responseObj, &buzzer) {
+                db.Model(&buzzer).Update("is_active", false)
+              } else {
+                failedBuzzerUpdate = true
+              }
+            }
+            if !failedBuzzerUpdate {
+              dbInfo := db.Delete(&activeParty)
+              if dbInfo.Error == nil {
+                  responseObj["status"] = "success"
+              } else {
+                  responseObj["status"] = "failure"
+                  responseObj["error_message"] = "db.Delete failed"
+              }
             }
         }
     }

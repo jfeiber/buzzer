@@ -13,7 +13,7 @@ function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCall
 }
 
 function errorAlert(errorStr) {
-  $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">'+errorStr+'/div>');
+  $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">'+errorStr+'</div>');
 }
 
 function addPartyErrorCallback(xhr, error) {
