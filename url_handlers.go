@@ -139,7 +139,7 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
   var parties []ActiveParty
-  db.Find(&parties, "restaurant_id = ?", restaurantID)
+  db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
   partyData := map[string]interface{}{}
   partyData["waitlist_data"] = parties
@@ -326,14 +326,13 @@ func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     responseObj := map[string] interface{} {}
     reqBodyObj := map[string] interface{}{}
     session := GetSession(w, r)
-
     if !IsUserLoggedIn(session) {
       HandleAuthErrorJson(w, responseObj)
     } else if ParseReqBody(r, responseObj, reqBodyObj) {
-        activePartyID := reqBodyObj["activePartyID"]
+        activePartyID := reqBodyObj["active_party_id"]
         if activePartyID == nil {
             responseObj["status"] = "failure"
-            responseObj["error_message"] = "Missing activepartyID parameter"
+            responseObj["error_message"] = "Missing active_party_id parameter"
         } else {
             var activeparty ActiveParty
             db.First(&activeparty, "ID=?", activePartyID)
