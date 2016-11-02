@@ -21,6 +21,7 @@ function addPartyErrorCallback(xhr, error) {
 function addPartySuccessCallback(xhr, success) {
   console.debug(xhr);
   console.debug(success);
+  AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, addPartyCompleteCallback);
 }
 
 function addPartyCompleteCallback(xhr, data) {
@@ -31,7 +32,7 @@ function parseTimeCreated(timeCreated) {
   var timeCreatedDate = new Date(timeCreated);
   var elapsedTime = Date.now()-timeCreatedDate;
   var hours = Math.floor(elapsedTime/3600000);
-  var min = Math.floor( (elapsedTime-(hours*3600000))/60000 )
+  var min = Math.floor( (elapsedTime-(hours*3600000))/60000 );
   if (min < 10) {
     min = "0" + min;
   }
@@ -41,19 +42,34 @@ function parseTimeCreated(timeCreated) {
   return hours + ":" + min;
 }
 
-function updateWaitlistSuccessCallback(xhr, data) {
-  console.log(xhr["waitlist_data"]);
-  // console.log(data);
-  for (party in xhr["waitlist_data"]) {
-    console.log(parseTimeCreated(xhr["waitlist_data"][party].TimeCreated));
+function repopulateTable(activeParties) {
+  $('#waitlist-table tbody').remove();
+  $('#waitlist-table').append('<tbody>');
+  for (i in activeParties) {
+    htmlStr = "<tr>";
+    htmlStr += "<td>" + activeParties[i].PartyName + "</td>";
+    htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
+    htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
+    if (activeParties[i].PhoneAhead) {
+      htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
+    } else {
+      htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
+    }
+    htmlStr += "<td><button type=\"button\" onclick=\"alert('Something!')\">Click Me!</button><button type=\"button\" onclick=\"alert('Delete!')\">Delete</button></td>"
+    htmlStr += "</tr>";
+    $('#waitlist-table').append(htmlStr);
   }
+  $('#waitlist-table').append('</tbody>');
+}
+
+function updateWaitlistSuccessCallback(xhr, data) {
+  repopulateTable(xhr["waitlist_data"]);
 }
 
 $(document).ready(function() {
-  // AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, addPartyCompleteCallback);
   $(".add-party-button").click(function(){
     // console.log("add party button handler.");
-    activePartyID = $('#party-name-field').id();
+    // activePartyID = $('#party-name-field').id();
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown').val();
     waitHours = $('.btn#hours-dropdown').val();
@@ -74,10 +90,7 @@ $(document).ready(function() {
     }
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
-    console.log(jsonObj);
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
-
-    //in the future this will load this via an AJAX call. For now I am lazy.
   });
 
   $(".dropdown-menu li a").click(function(){
