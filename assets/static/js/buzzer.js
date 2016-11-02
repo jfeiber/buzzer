@@ -1,10 +1,10 @@
 console.log("sup");
 
-function AjaxJSONPOST(url, jsonObj, errorCallback, successCallback, completeCallback) {
+function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCallback) {
   $.ajax({
     url: url,
     type: "POST",
-    data: jsonObj,
+    data: jsonStr,
     contentType: "application/json",
     error: errorCallback,
     success: successCallback,
@@ -27,8 +27,30 @@ function addPartyCompleteCallback(xhr, data) {
   console.log(data);
 }
 
+function parseTimeCreated(timeCreated) {
+  var timeCreatedDate = new Date(timeCreated);
+  var elapsedTime = Date.now()-timeCreatedDate;
+  var hours = Math.floor(elapsedTime/3600000);
+  var min = Math.floor( (elapsedTime-(hours*3600000))/60000 )
+  if (min < 10) {
+    min = "0" + min;
+  }
+  if (hours < 10) {
+    hours = "0" + hours;
+  }
+  return hours + ":" + min;
+}
+
+function updateWaitlistSuccessCallback(xhr, data) {
+  console.log(xhr["waitlist_data"]);
+  // console.log(data);
+  for (party in xhr["waitlist_data"]) {
+    console.log(parseTimeCreated(xhr["waitlist_data"][party].TimeCreated));
+  }
+}
+
 $(document).ready(function() {
-  // AjaxJSONPOST("/frontend_api/get_active_parties", addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
+  // AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, addPartyCompleteCallback);
   $(".add-party-button").click(function(){
     // console.log("add party button handler.");
     activePartyID = $('#party-name-field').id();
@@ -51,9 +73,9 @@ $(document).ready(function() {
       return;
     }
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
-    jsonObj = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
+    jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     console.log(jsonObj);
-    AjaxJSONPOST("/frontend_api/create_new_party", jsonObj, addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
+    AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, addPartySuccessCallback, addPartyCompleteCallback);
 
     //in the future this will load this via an AJAX call. For now I am lazy.
   });
