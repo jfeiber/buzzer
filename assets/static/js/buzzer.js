@@ -55,7 +55,7 @@ function parseTimeCreated(timeCreated) {
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
   $('#waitlist-table').append('<tbody>');
-  for (i in activeParties) {
+  for (var i in activeParties) {
     htmlStr = "<tr activePartyID="+ activeParties[i].ID + ">";
     htmlStr += "<td>" + activeParties[i].PartyName + "</td>";
     htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
@@ -65,7 +65,7 @@ function repopulateTable(activeParties) {
     } else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
     }
-    htmlStr += '<td><button class="btn btn-default buzz-button" type="button">Buzz!</button><button class="btn btn-default delete-party-button" type="button">Delete</button></td>'
+    htmlStr += '<td><button class="btn btn-default buzz-button" type="button">Buzz!</button><button class="btn btn-default delete-party-button" type="button">Delete</button></td>';
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
   }
@@ -75,7 +75,7 @@ function repopulateTable(activeParties) {
 }
 
 function updateWaitlistSuccessCallback(xhr, data) {
-  repopulateTable(xhr["waitlist_data"]);
+  repopulateTable(xhr.waitlist_data);
 }
 
 function registerDeletePartyClickHandlers() {
@@ -119,7 +119,7 @@ $(document).ready(function() {
   });
 
   registerDeletePartyClickHandlers();
-  registerBuzzClickHandlers()
+  registerBuzzClickHandlers();
 
   $(".dropdown-menu li a").click(function(){
     console.log("in handler");
