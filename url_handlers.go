@@ -171,6 +171,10 @@ func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
 }
 
+func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
   http.Redirect(w, r, "/login", 302)
