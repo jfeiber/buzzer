@@ -21,9 +21,6 @@
   <!-- Bootstrap core CSS -->
   <link href="/assets/static/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-  <link href="/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
   <!-- Custom styles for this template -->
   <link href="/assets/static/css/buzzer.css" rel="stylesheet">
 
@@ -44,149 +41,155 @@
 </head>
 
 <body>
-	<nav class="navbar navbar-default navbar-fixed-top">
-     <div class="container-fluid">
-       <div class="navbar-header">
-         <a class="navbar-brand" href="#">Buzzer</a>
-     </div>
-     <ul class="nav navbar-nav">
-         <li class="active"><a href="#">Waitlist</a></li>
-         <li><a href="#">Devices</a></li>
-         <li><a href="#">Analytics</a></li>
-     </ul>
-     <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">Buzzer</a>
+  </div>
+  <div class="collapse navbar-collapse" id="myNavBar">
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Waitlist</a></li>
+      <li><a href="#">Devices</a></li>
+      <li><a href="#">Analytics</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
           <a href="#" class="glyphicon glyphicon-cog white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
           <ul class="dropdown-menu">
             <li><a href="#">Help</a></li>
             <li><a href="#">Contact Buzzer</a></li>
             <li><a href="#">Something else here</a></li>
-        </ul>
-    </li>
-</ul>
+          </ul>
+      </li>
+    </ul>
+  </div>
 </div>
 </nav>
 
-<!-- Should remove this and overhaul header-->
-<br>
-<br>
-<br>
 <div class="row login-alert">
   <div id="alert_placeholder"></div>
 </div>
-<br>
 
 <div class="container">
- <div class="row">
-   <div class="col-sm-3">
-     <input type="text" class="form-control" id="party-name-field" placeholder="Party Name">
- </div>
- <div class="col-sm-2">
-  <div class="dropdown">
-    <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
-      Party Size <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu">
-      <li><a href="#">1</a></li>
-      <li><a href="#">2</a></li>
-      <li><a href="#">3</a></li>
-      <li><a href="#">4</a></li>
-      <li><a href="#">5</a></li>
-      <li><a href="#">6</a></li>
-      <li><a href="#">7</a></li>
-      <li><a href="#">8</a></li>
-      <li><a href="#">9</a></li>
-      <li><a href="#">10</a></li>
-      <li><a href="#">11</a></li>
-      <li><a href="#">12</a></li>
-  </ul>
+  <div class="row">
+    <div class="col-md-12 add-party-container">
+      <div class="row">
 
-</div>
-</div>
+        <!-- Party Name/Party Size button grouping -->
+        <div class="col-md-4 col-md-offset-2" align="center">
+          <div class="input-group">
+            <input type="text" class="form-control" id="party-name-field" placeholder="Party Name"></input>
+              <span class="input-group-btn dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
+                  Party Size <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">5</a></li>
+                  <li><a href="#">6</a></li>
+                  <li><a href="#">7</a></li>
+                  <li><a href="#">8</a></li>
+                  <li><a href="#">9</a></li>
+                  <li><a href="#">10</a></li>
+                  <li><a href="#">11</a></li>
+                  <li><a href="#">12</a></li>
+                </ul>
+              </span>
+          </div>
+        </div>
 
-<!-- Source: http://stackoverflow.com/questions/22362750/bootstrap-button-group-pre-select-button-with-html-only: -->
-<div class="col-sm-3">
-    <div class="btn-group phone-ahead-toggle" data-toggle="buttons" id="btnrocker">
-        <label class="btn btn-default active" id="btnrocker">
-            <input type="radio" name="options" id="phone" width="20"><span class="glyphicon glyphicon-earphone"></span>
-        </label>
-        <label class="btn btn-default" id="btnrocker">
-            <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
-        </label>
+        <!-- Rest of Add party stuff. Expected Wait time, phone ahead/in person selection, add button. -->
+        <div class="col-md-4 add-party-justify">
+          <div class="btn-group phone-ahead-toggle" data-toggle="buttons" id="btnrocker">
+            <label class="btn btn-default active" id="btnrocker">
+                <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
+            </label>
+            <label class="btn btn-default" id="btnrocker">
+                <input type="radio" name="options" id="phone" width="20"><span class="glyphicon glyphicon-earphone"></span>
+            </label>
+          </div>
+          <div class="btn-group dropdown">
+            <button type="button" class="btn btn-default dropdown-toggle" id="hours-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value = "">
+              Hours <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#">0</a></li>
+              <li><a href="#">1</a></li>
+              <li><a href="#">2</a></li>
+              <li><a href="#">3</a></li>
+            </ul>
+          </div>
+          <strong>:</strong>
+          <div class="btn-group dropdown">
+            <button type="button" class="btn btn-default dropdown-toggle" id="minutes-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="">
+              Minutes <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+               <li><a href="#">00</a></li>
+               <li><a href="#">05</a></li>
+               <li><a href="#">10</a></li>
+               <li><a href="#">15</a></li>
+               <li><a href="#">20</a></li>
+               <li><a href="#">25</a></li>
+               <li><a href="#">30</a></li>
+               <li><a href="#">35</a></li>
+               <li><a href="#">40</a></li>
+               <li><a href="#">45</a></li>
+               <li><a href="#">50</a></li>
+               <li><a href="#">55</a></li>
+             </ul>
+          </div>
+          <button class="btn btn-default add-party-button" type="button">ADD</button>
+        </div>
+
+      </div>
     </div>
-</div>
-<div class="col-sm-4">
-
-  <div class="btn-group dropdown">
-    <button type="button" class="btn btn-default dropdown-toggle" id="hours-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value = "">
-      Hours <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu">
-      <li><a href="#">0</a></li>
-      <li><a href="#">1</a></li>
-      <li><a href="#">2</a></li>
-      <li><a href="#">3</a></li>
-  </ul>
-
-</div>
-<strong>:</strong>
-<div class="btn-group dropdown">
-    <button type="button" class="btn btn-default dropdown-toggle" id="minutes-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="">
-      Minutes <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu">
-     <li><a href="#">00</a></li>
-     <li><a href="#">05</a></li>
-     <li><a href="#">10</a></li>
-     <li><a href="#">15</a></li>
-     <li><a href="#">20</a></li>
-     <li><a href="#">25</a></li>
-     <li><a href="#">30</a></li>
-     <li><a href="#">35</a></li>
-     <li><a href="#">40</a></li>
-     <li><a href="#">45</a></li>
-     <li><a href="#">50</a></li>
-     <li><a href="#">55</a></li>
- </ul>
-</div>
-
-<button class="btn btn-default add-party-button" type="button">ADD</button>
-
-</div>
-</div>
-</div>
+  </div>
 
 <!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
-<div class="container">
- <h2>The Waitlist</h2>
- <table class="table table-bordered">
-   <thead>
-     <tr>
-       <th>Party Name</th>
-       <th>Party Size</th>
-       <th>Estimated Wait</th>
-       <th>Type</th>
-       <th>Actions</th>
-   </tr>
-</thead>
-<tbody>
-  {{range .waitlist_data}}
-           <tr>
-             <td>{{.PartyName}}</td>
-             <td>{{.PartySize}}</td>
-             <td>{{.WaitTimeExpected}}</td>
-             <td>{{.PhoneAhead}}</td>
-             <td>
-               <button class="btn btn-default" type="button" onclick="alert('Something!')">Buzz!</button>
-               <button class="btn btn-default" type="button" id= "btndelete" onclick="alert('Delete!')">Delete</button>
-             </td>
-           </tr>
-         {{end}}
-</tbody>
-</table>
+  <div class="row">
+    <div class="col-md-12">
+     <h2>Waitlist</h2>
+     <table class="table table-bordered" id="waitlist-table">
+       <thead>
+         <tr>
+           <th>Party Name</th>
+           <th>Party Size</th>
+           <th>Time Spent Waiting</th>
+           <th>Type</th>
+           <th>Actions</th>
+       </tr>
+    </thead>
+    <tbody>
+      {{range .waitlist_data}}
+        <tr activePartyID="{{.ID}}">
+          <td>{{.PartyName}}</td>
+          <td>{{.PartySize}}</td>
+          <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
+          {{ if .PhoneAhead }}
+            <td><span class="glyphicon glyphicon-earphone"></span></td>
+          {{else}}
+            <td><span class="glyphicon glyphicon-user"></span></td>
+          {{end}}
+          <td>
+            <button class="btn btn-default buzz-button" type="button">Buzz!</button>
+            <button class="btn btn-default delete-party-button" type="button">Delete</button>
+          </td>
+        </tr>
+      {{end}}
+    </tbody>
+    </table>
+    </div>
+  </div>
 </div>
-
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
 </body>
 </html>

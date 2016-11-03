@@ -11,6 +11,8 @@ import (
     "math/rand"
     "time"
     "io/ioutil"
+    "fmt"
+    "math"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
@@ -24,6 +26,7 @@ func MakeRandAlphaNumericStr(n int) string {
 }
 
 func Handle500Error(w http.ResponseWriter, err error) {
+  w.WriteHeader(500)
   http.Error(w, http.StatusText(500), 500)
   log.Println(err)
 }
@@ -102,19 +105,51 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListHandler] ")
-  if !IsUserLoggedIn(GetSession(w, r)) {
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
     http.Redirect(w, r, "/login", 302)
     return
   }
 
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
   var parties []ActiveParty
-  db.Find(&parties)
 
-  party_data := map[string]interface{}{}
-  party_data["waitlist_data"] = parties
+  db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
+  partyData := map[string]interface{}{}
+  partyData["waitlist_data"] = parties
+  //This function is called by the template to format the time an ActiveParty was created it in
+  //HH:MM form.
+  partyData["formatElapsedWaitingTime"] = func (partyCreatedTime time.Time) string {
+    duration := time.Now().Sub(partyCreatedTime)
+    hours := math.Floor(duration.Hours())
+    minutes := math.Floor((duration.Hours()-hours)*60)
+    return fmt.Sprintf("%02d:%02d", int(hours), int(minutes))
+  }
+  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
+}
 
-  RenderTemplate(w, "assets/templates/waitlist.html.tmpl", party_data)
+func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UpdateWaitlist] ")
+  session := GetSession(w, r)
+
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  var parties []ActiveParty
+  db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
+
+  partyData := map[string]interface{}{}
+  partyData["waitlist_data"] = parties
+
+  RenderJSONFromMap(w, partyData);
 }
 
 func DevicesHandler(w http.ResponseWriter, r *http.Request) {
@@ -194,6 +229,34 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
   return true
 }
 
+func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[ActivateBuzzer] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else {
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+          } else {
+              db.Model(&foundActiveParty).Update("is_table_ready", true)
+          }
+        }
+      }
+    }
+    RenderJSONFromMap(w, responseObj)
+  }
+}
+
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
   buzzerName := reqBodyObj["buzzer_name"]
   if buzzerName == nil {
@@ -205,6 +268,15 @@ func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[st
       AddErrorMessageToResponseObj(responseObj, "Buzzer with that name not found.")
       return false
     }
+  }
+  return true
+}
+
+func GetBuzzerObjFromID(buzzerID int, responseObj map[string] interface{}, buzzer *Buzzer) bool {
+  db.First(buzzer, "id = ?", buzzerID)
+  if *buzzer == (Buzzer{}) {
+    AddErrorMessageToResponseObj(responseObj, "Buzzer with that ID not found.")
+    return false
   }
   return true
 }
@@ -308,6 +380,45 @@ func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, responseObj)
 }
 
+// DeleteActivePartyHandler deletes the specificed active party ID
+//TODO: Move the active parties into historical parties.
+func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[DeleteActivePartyHandler] ")
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    session := GetSession(w, r)
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        if activePartyID == nil {
+            responseObj["status"] = "failure"
+            responseObj["error_message"] = "Missing active_party_id parameter"
+        } else {
+            var activeParty ActiveParty
+            db.First(&activeParty, "ID=?", activePartyID)
+            failedBuzzerUpdate := false
+            if (activeParty.BuzzerID != 0) {
+              var buzzer Buzzer
+              if GetBuzzerObjFromID(activeParty.BuzzerID, responseObj, &buzzer) {
+                db.Model(&buzzer).Update("is_active", false)
+              } else {
+                failedBuzzerUpdate = true
+              }
+            }
+            if !failedBuzzerUpdate {
+              dbInfo := db.Delete(&activeParty)
+              if dbInfo.Error == nil {
+                  responseObj["status"] = "success"
+              } else {
+                  responseObj["status"] = "failure"
+                  responseObj["error_message"] = "db.Delete failed"
+              }
+            }
+        }
+    }
+    RenderJSONFromMap(w, responseObj)
+}
 func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[GenerateBuzzerNameHandler] ")
   buzzerName := buzzerNameGenerator.GenerateName()
@@ -326,9 +437,10 @@ func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, obj_map)
 }
 
-func HandleAuthErrorJson(responseObj map[string] interface{}) {
+func HandleAuthErrorJson(w http.ResponseWriter, responseObj map[string] interface{}) {
+  w.WriteHeader(401)
   responseObj["status"] = "failure"
-  responseObj["error_message"] = "User not logged in."
+  responseObj["error_message"] = "User not logged in"
 }
 
 func GetRestaurantIDFromUsername(username string) int {
@@ -346,7 +458,7 @@ func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
   reqBodyObj := map[string] interface{}{}
   session := GetSession(w, r)
   if !IsUserLoggedIn(session) {
-    HandleAuthErrorJson(responseObj)
+    HandleAuthErrorJson(w, responseObj)
   } else {
     if ParseReqBody(r, responseObj, reqBodyObj) {
       log.Println(reqBodyObj)
@@ -426,7 +538,41 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  returnObj := map[string] interface{} {"status": "success"}
+  if !IsUserLoggedIn(GetSession(w, r)) {
+    HandleAuthErrorJson(w, returnObj)
+  } else if r.Method == "POST" {
+    activePartyInfo := map[string] interface{}{}
+    ParseReqBody(r, returnObj, activePartyInfo)
+    var activeParty ActiveParty
+    log.Println(activePartyInfo)
+    activePartyID := activePartyInfo["active_party_id"]; if activePartyID == nil {
+      returnObj["status"] = "failure"
+      returnObj["error_message"] = "Missing active_party_id parameter"
+    } else {
+      db.First(&activeParty, activePartyID)
+      if activeParty == (ActiveParty{}) {
+        returnObj["status"] = "failure"
+        returnObj["error_message"] = "Party with the provided ID not found"
+      }
+      if (activeParty.BuzzerID == 0) {
+        returnObj["is_party_assigned_buzzer"] = false
+      } else {
+        returnObj["is_party_assigned_buzzer"] = true
+      }
+    }
+  }
+  jsonObj, err := json.Marshal(returnObj)
+  if err != nil {
+    Handle500Error(w, err)
+  }
+  w.Header().Set("Content-Type", "application/json")
+  w.Write(jsonObj)
+}
+
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[NotFoundHandler] ")
+  w.WriteHeader(404)
   RenderTemplate(w, "assets/templates/404.html", nil)
 }
