@@ -56,6 +56,7 @@ func main() {
   router.HandleFunc("/login", LoginHandler)
   router.HandleFunc("/add_user", AddUserHandler)
   router.HandleFunc("/waitlist", WaitListHandler)
+  router.HandleFunc("/buzzer_management", BuzzerManagerHandler)
   router.HandleFunc("/register_buzzer", RegisterBuzzerHandler)
   router.HandleFunc("/buzzer_api/get_new_buzzer_name", GetNewBuzzerNameHandler)
   router.HandleFunc("/buzzer_api/is_buzzer_registered", IsBuzzerRegisteredHandler)
@@ -69,6 +70,7 @@ func main() {
   router.HandleFunc("/frontend_api/is_party_assigned_buzzer", IsPartyAssignedBuzzerHandler)
   router.HandleFunc("/frontend_api/activate_buzzer", ActivateBuzzerHandler)
   router.HandleFunc("/frontend_api/update_phone_ahead_status", UpdatePhoneAheadStatusHandler)
+
 
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
