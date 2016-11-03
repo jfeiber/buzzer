@@ -60,6 +60,10 @@ body {
     color: #FFFFFF;
 }
 
+#party-dropdown {
+  /*margin-left: 20px;*/
+}
+
 /* Center the login elements */
 .login {
     /* Horizontal */
@@ -157,6 +161,12 @@ body {
     border-color: white;
 }
 
+#hours-dropdown {
+  margin-left: 10px;
+}
+
+
+
 .login-alert {
     /* Horizontal */
     display: block;
@@ -171,11 +181,27 @@ body {
     transform: translateY(25%);
 }
 
-/*.img-responsive{
-    width:5%;
-    height:5%;
+.add-party-justify {
+  margin-top: 10px;
+  text-align: center;
 }
-*/
+
+.add-party-button {
+  margin-left: 10px;
+}
+
+.add-party-container {
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+@media (min-width: 991px){
+  .add-party-justify {
+    margin-top: 0px;
+    text-align: right;
+  }
+}
+
 .alert-danger {
     color: #FFFFFF;
     background-color: #DD2A17;
