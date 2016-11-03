@@ -172,7 +172,31 @@ func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
-
+  log.SetPrefix("[UnlinkBuzzerHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        buzzerID := reqBodyObj["buzzer_id"]
+        if buzzerID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No buzzerID provided.")
+        } else {
+            var foundBuzzer Buzzer
+            db.First(&foundBuzzer, "id = ?", buzzerID)
+          if foundBuzzer == (Buzzer{}) {
+            AddErrorMessageToResponseObj(responseObj, "Buzzer with that ID not found.")
+          } else {
+              db.Model(&foundBuzzer).Update("restaurant_id", nil)
+          }
+        }
+      }
+    }
+    RenderJSONFromMap(w, responseObj)
+  }
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
