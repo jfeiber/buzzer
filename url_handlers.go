@@ -235,6 +235,36 @@ func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
         }
       }
     }
+
+    RenderJSONFromMap(w, responseObj)
+  }
+}
+
+func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UpdatePhoneAheadStatusHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else {
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+          } else {
+                db.Model(&foundActiveParty).Update("phone_ahead", false)
+            }
+          }
+        }
+      }
+
     RenderJSONFromMap(w, responseObj)
   }
 }
