@@ -76,6 +76,8 @@
 
 <div class="container">
 <!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
+<!-- THIS IS USING STATIC DATA, WILL BE UPDATED WITH NEW DATA WHEN BACKEND APIS -->
+<!-- ARE READY -->
   <div class="row">
     <div class="col-md-12">
      <h2>Buzzer Management</h2>
@@ -91,8 +93,8 @@
     <tbody>
       {{range .waitlist_data}}
         <tr activePartyID="{{.ID}}">
-          <td>{{.PartyName}}</td>
-          <td>{{.PartySize}}</td>
+          <td> fierce-kevin-4646</td>
+          <td><span class="glyphicon glyphicon-ok"></span></td>
           <td> 16:22 11/3/16</td>
           <td>
             <button class="btn btn-default delete-party-button" type="button">Unlink</button>
