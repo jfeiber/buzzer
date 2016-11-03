@@ -44,30 +44,69 @@
 </head>
 
 <body>
-        <nav class="navbar navbar-default navbar-fixed-top">
-     <div class="container-fluid">
-       <div class="navbar-header">
-         <a class="navbar-brand" href="#">Buzzer</a>
-     </div>
-     <ul class="nav navbar-nav">
-         <li class="active"><a href="#">Waitlist</a></li>
-         <li><a href="#">Devices</a></li>
-         <li><a href="#">Analytics</a></li>
-     </ul>
-     <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">Buzzer</a>
+  </div>
+  <div class="collapse navbar-collapse" id="myNavBar">
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Waitlist</a></li>
+      <li><a href="#">Devices</a></li>
+      <li><a href="#">Analytics</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
           <a href="#" class="glyphicon glyphicon-cog white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
           <ul class="dropdown-menu">
             <li><a href="#">Help</a></li>
             <li><a href="#">Contact Buzzer</a></li>
             <li><a href="#">Something else here</a></li>
-        </ul>
-    </li>
-</ul>
+          </ul>
+      </li>
+    </ul>
+  </div>
 </div>
 </nav>
 
-<h2>The Waitlist</h2>
+<div class="container">
+<!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
+  <div class="row">
+    <div class="col-md-12">
+     <h2>Buzzer Management</h2>
+     <table class="table table-bordered" id="waitlist-table">
+       <thead>
+         <tr>
+           <th>Buzzer Name</th>
+           <th>Active</th>
+           <th>Last Check-In</th>
+           <th>Actions</th>
+       </tr>
+    </thead>
+    <tbody>
+      {{range .waitlist_data}}
+        <tr activePartyID="{{.ID}}">
+          <td>{{.PartyName}}</td>
+          <td>{{.PartySize}}</td>
+          <td> 16:22 11/3/16</td>
+          <td>
+            <button class="btn btn-default delete-party-button" type="button">Unlink</button>
+            <button class="btn btn-default buzz-button" type="button">Other</button>
+          </td>
+        </tr>
+      {{end}}
+    </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+</body>
+
 
 
 
