@@ -169,6 +169,25 @@ func DevicesHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/devices.html.tmpl", party_data)
 }
 
+func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[BuzzerManagerHandler] ")
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  var devices []Buzzer
+  db.Order("buzzer_name asc").Find(&devices, "restaurant_id = ?", restaurantID)
+  buzzerData := map[string]interface{}{}
+  buzzerData["buzzer_data"] = devices
+
+  RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
+}
+
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
@@ -253,6 +272,36 @@ func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
         }
       }
     }
+
+    RenderJSONFromMap(w, responseObj)
+  }
+}
+
+func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UpdatePhoneAheadStatusHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else {
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+          } else {
+                db.Model(&foundActiveParty).Update("phone_ahead", false)
+            }
+          }
+        }
+      }
+
     RenderJSONFromMap(w, responseObj)
   }
 }
