@@ -129,11 +129,11 @@ $(document).ready(function() {
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
 
-  $(".party-dropdown li a").click(function(){
+  $(".dropdown li a").click(function(){
     console.log("in handler");
     console.log($(this).text())
 
-    $(this).parents(".party-dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-    $(this).parents(".party-dropdown").find('.btn').val($(this).text());
+    $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+    $(this).parents(".dropdown").find('.btn').val($(this).text());
   });
 });
