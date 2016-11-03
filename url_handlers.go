@@ -152,6 +152,23 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, partyData);
 }
 
+func DevicesHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[DevicesHandler] ")
+  if !IsUserLoggedIn(GetSession(w, r)) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+
+  // Need to update for devices instead of parties? -- 
+  var parties []ActiveParty
+  db.Find(&parties)
+
+  party_data := map[string]interface{}{}
+  party_data["waitlist_data"] = parties
+
+  RenderTemplate(w, "assets/templates/devices.html.tmpl", party_data)
+}
+
 func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[BuzzerManagerHandler] ")
   session := GetSession(w, r)
@@ -170,6 +187,7 @@ func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
 
   RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
 }
+
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
