@@ -27,7 +27,6 @@ body {
   }
 }*/
 
-
 /* Buzzer logo */
 .navbar-default .navbar-brand {
     background-color: #426BE7;
@@ -44,7 +43,6 @@ body {
     margin-top: 2px;
     margin-left: 50px;
 }
-
 
 .active a {
     background-color: #426BE7 !important;
@@ -118,14 +116,18 @@ body {
     /*border-color: #426BE7; set the color you want here*/
 }
 
-#btnrocker{
+#btnrocker {
     background-color: #F1F4F6;
-    color: #000000;
+    color: #000000 !important;
 }
 
-#btnrocker.btn.active{
-    background-color: #0F48B4; /*#426BE7;*/
-    color: #FFFFFF;
+#btnrocker.btn:hover {
+    background-color: #426BE7 !important;
+}
+
+#btnrocker.btn.active {
+    background-color: #426BE7;
+    color: #FFFFFF !important;
 }
 
 .btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
@@ -140,8 +142,7 @@ body {
     /*border-color: #426BE7; set the color you want here*/
 }
 
-.btn-default dropdown-toggle
-{
+.btn-default dropdown-toggle {
     background-color: #FFFFFF !important;
 }
 
@@ -164,8 +165,6 @@ body {
 #hours-dropdown {
   margin-left: 10px;
 }
-
-
 
 .login-alert {
     /* Horizontal */
@@ -194,6 +193,22 @@ body {
   margin-top: 25px;
   margin-bottom: 25px;
 }
+
+#alert_placeholder {
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto;
+    /* Vertical */
+    transform: translateY(-40%);
+}
+
+/*.img-responsive{
+    width:5%;
+    height:5%;
+}*/
 
 @media (min-width: 991px){
   .add-party-justify {
