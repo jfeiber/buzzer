@@ -132,8 +132,6 @@ $(document).ready(function() {
 
   $(".dropdown li a").click(function(){
     console.log("in handler");
-    console.log($(this).text())
-
     $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
     $(this).parents(".dropdown").find('.btn').val($(this).text());
   });
