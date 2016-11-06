@@ -114,6 +114,24 @@ color:#ffffff;
     color: #FFFFFF !important;
 }
 
+.unlink-buzzer-button {
+    background-color: #DD2A17;
+    color: #FFFFFF;
+}
+
+/*Custom ID for modifying the buzzer management glyphicons.*/
+#buzzer-status-ok {
+    font-size: 3.0em;
+    font-weight: 40;
+    color:green;
+}
+
+#buzzer-status-remove {
+    font-size: 3.0em;
+    font-weight: 40;
+    color:red;
+}
+
 .delete-party-button {
     background-color: #DD2A17;
     color: #FFFFFF;

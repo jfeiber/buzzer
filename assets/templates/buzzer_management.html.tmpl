@@ -75,13 +75,10 @@
 </nav>
 
 <div class="container">
-<!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
-<!-- THIS IS USING STATIC DATA, WILL BE UPDATED WITH NEW DATA WHEN BACKEND APIS -->
-<!-- ARE READY -->
   <div class="row">
     <div class="col-md-12">
      <h2>Buzzer Management</h2>
-     <table class="table table-bordered" id="waitlist-table">
+     <table class="table table-bordered" id="buzzer-management-table">
        <thead>
          <tr>
            <th>Buzzer Name</th>
@@ -92,21 +89,18 @@
     </thead>
     <tbody>
       {{range .buzzer_data}}
-        <tr activePartyID="{{.ID}}">
+        <tr>
           <td>{{.BuzzerName}}</td>
           {{ if .IsActive}}
-            <td><span class="glyphicon glyphicon-ok"></span></td>
+            <td><span class="glyphicon glyphicon-ok" id="buzzer-status-ok"></span></td>
           {{else}}
-            <td><span class="glyphicon glyphicon-remove"></span></td>
+            <td><span class="glyphicon glyphicon-remove" id="buzzer-status-remove"></span></td>
           {{end}}
           <td>{{.LastHeartbeat}}</td>
           <td>
-            <button class="btn btn-default delete-party-button" type="button">Unlink</button>
-            <div class="dropdown">
-              <button class="btn btn-default dropdown-toggle" type="buzz-button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                Other
-                <span class="caret"></span>
-              </button>
+            <button class="btn btn-default unlink-buzzer-button" type="button">Unlink</button>
+            <div class="dropdown" style="display:inline;">
+            <button class="btn btn-default dropdown-toggle" type="buzz-button" id="dropdownMenu1" data-toggle="dropdown"> Other<span class="caret"></span></button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                 <li><a href="#">Action</a></li>
                 <li><a href="#">Another action</a></li>
@@ -114,7 +108,7 @@
                 <li role="separator" class="divider"></li>
                 <li><a href="#">Separated link</a></li>
               </ul>
-            </div>
+              </div>
           </td>
         </tr>
       {{end}}
