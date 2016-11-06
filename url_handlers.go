@@ -105,6 +105,20 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/login.html.tmpl", template_data)
 }
 
+// LogoutHandler logs out the current user
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[LogoutHandler] ")
+    session := GetSession(w, r)
+    if IsUserLoggedIn(session) && r.Method =="GET" {
+        session.Values["username"] = ""
+    } else {
+        AddFlashToSession(w, r, "Already Logged Out", session)
+    }
+    session.Save(r, w)
+    http.Redirect(w, r, "/login", 302)
+    return
+}
+
 func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListHandler] ")
   session := GetSession(w, r)
