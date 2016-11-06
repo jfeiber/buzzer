@@ -21,6 +21,19 @@ body {
     font-weight: light;
 }
 
+.navbar .nav > li.dropdown.open.active > a:hover, 
+.navbar .nav > li.dropdown.open > a {
+   color: #fff;
+   background-color: #0F48B4;
+   border-color: #fff;
+}
+
+/*-- change navbar dropdown color --*/
+/*.navbar-default .navbar-nav .open .dropdown-menu > li > a, .navbar-default .navbar-nav .open .dropdown-menu {
+background-color: #3344ff;
+color:#ffffff;
+}
+*/
 /*@media (max-width: 200px) {
   .navbar-header {
       float: none;
@@ -111,6 +124,47 @@ body {
     background-color: #426BE7;
     color: #FFFFFF !important;
 }
+
+.unlink-buzzer-button {
+    background-color: #DD2A17;
+    color: #FFFFFF;
+}
+
+.unlink-buzzer-button.btn-default:hover {
+    color: #FFFFFF;
+    background-color: #AA0000 !important;
+    /*border-color: #426BE7; set the color you want here*/
+}
+
+/*Formatting for Elipsis Circular Button.*/
+/*Source- https://goo.gl/qyg9Sp */
+#elipsis {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 1.42;
+  border-radius: 15px;
+  margin: 8px; /*Modifies spacing of buttons*/
+}
+
+/*Custom ID for modifying the buzzer management glyphicons.*/
+#buzzer-status-ok {
+    font-size: 3.0em;
+    font-weight: 40;
+    color:green;
+}
+
+#buzzer-status-remove {
+    font-size: 3.0em;
+    font-weight: 40;
+    color:red;
+}
+
+/*.table td {
+   text-align: center;   
+}*/
 
 .delete-party-button {
     background-color: #DD2A17;
