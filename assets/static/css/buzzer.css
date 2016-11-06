@@ -58,6 +58,17 @@ body {
     color: #FFFFFF;
 }
 
+.modal-body {
+  height: 200px;
+}
+
+#buzzer-modal-success-message {
+  font-size: 30px;
+  display: none;
+  text-align: center;
+  margin-top: 10%;
+}
+
 /* Center the login elements */
 .login {
     /* Horizontal */

@@ -11,7 +11,6 @@
 
   <!-- Stuff for bootstrap table: http://www.w3schools.com/bootstrap/bootstrap_tables.asp-->
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
   <title>Buzzer - Waitlist</title>
 
@@ -30,6 +29,9 @@
   <!-- Bootstrap -->
   <script src="/assets/static/js/bootstrap.min.js"></script>
 
+  <!-- Spin -->
+  <script src="/assets/static/js/spin.min.js"></script>
+
   <!-- Sitewide JS -->
   <script src="/assets/static/js/buzzer.js"></script>
 
@@ -41,6 +43,23 @@
 </head>
 
 <body>
+
+<div class="test" id="test"></div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="buzzer-party-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel">Press button on buzzer to connect with party</h4>
+        </div>
+        <div class="modal-body">
+          <div id="buzzer-modal"></div>
+          <div id="buzzer-modal-success-message">Buzzer successfully connected with party!</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <nav class="navbar navbar-default">
   <div class="container-fluid">
