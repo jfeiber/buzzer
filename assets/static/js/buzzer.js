@@ -66,6 +66,11 @@ function parseEstimatedWait(estimatedWaitTime) {
   return hours + ":" + minutes;
 }
 
+function refreshWaitlistTable() {
+  AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
+  setTimeout(refreshWaitlistTable, 30000);
+}
+
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
   $('#waitlist-table').append('<tbody>');
@@ -144,4 +149,6 @@ $(document).ready(function() {
     $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
     $(this).parents(".dropdown").find('.btn').val($(this).text());
   });
+
+  setTimeout(refreshWaitlistTable, 30000);
 });
