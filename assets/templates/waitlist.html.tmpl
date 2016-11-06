@@ -155,7 +155,7 @@
     </div>
   </div>
 
-<!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
+  <!-- Main waitlist table -->
   <div class="row">
     <div class="col-md-12">
      <h2>Waitlist</h2>
@@ -165,6 +165,7 @@
            <th>Party Name</th>
            <th>Party Size</th>
            <th>Time Spent Waiting</th>
+           <th>Estimated Wait</th>
            <th>Type</th>
            <th>Actions</th>
        </tr>
@@ -175,6 +176,7 @@
           <td>{{.PartyName}}</td>
           <td>{{.PartySize}}</td>
           <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
+          <td>{{ (call $.formatEstimatedWaitingTime .WaitTimeExpected) }}</td>
           {{ if .PhoneAhead }}
             <td><span class="glyphicon glyphicon-earphone"></span></td>
           {{else}}

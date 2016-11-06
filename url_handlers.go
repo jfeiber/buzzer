@@ -128,6 +128,16 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     minutes := math.Floor((duration.Hours()-hours)*60)
     return fmt.Sprintf("%02d:%02d", int(hours), int(minutes))
   }
+
+  //This function is called by the template to format the estimated waiting time into 
+  //HH:MM format.
+  //Kevin had fun making this with his friends.
+  partyData["formatEstimatedWaitingTime"] = func (duration int) string {
+    var hours = (duration/60)
+    var mins = (duration-(hours*60))
+    return fmt.Sprintf("%02d:%02d", int(hours), int(mins))
+  }
+
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
 }
 
@@ -171,6 +181,33 @@ func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
 }
 
+func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UnlinkBuzzerHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        buzzerID := reqBodyObj["buzzer_id"]
+        if buzzerID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No buzzerID provided.")
+        } else {
+            var foundBuzzer Buzzer
+            db.First(&foundBuzzer, "id = ?", buzzerID)
+          if foundBuzzer == (Buzzer{}) {
+            AddErrorMessageToResponseObj(responseObj, "Buzzer with that ID not found.")
+          } else {
+              db.Model(&foundBuzzer).Update("restaurant_id", nil)
+          }
+        }
+      }
+    }
+    RenderJSONFromMap(w, responseObj)
+  }
+}
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
