@@ -188,7 +188,7 @@ func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   buzzerData := map[string]interface{}{}
   buzzerData["buzzer_data"] = devices
 
-  RenderJSONFromMap(w, devices)
+  RenderJSONFromMap(w, buzzerData)
 }
 
 func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
