@@ -74,7 +74,7 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + activeParties[i].PartyName + "</td>";
     htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
     htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
-    htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>"
+    htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
     } else {
