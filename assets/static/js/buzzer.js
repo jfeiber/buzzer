@@ -58,6 +58,14 @@ function parseTimeCreated(timeCreated) {
   return hours + ":" + min;
 }
 
+function parseEstimatedWait(estimatedWaitTime) {
+  var hours = Math.floor(estimatedWaitTime/60);
+  var minutes = estimatedWaitTime-hours*60;
+  hours = hours < 10 ? '0' + hours : hours;
+  minutes = minutes < 10 ? '0' + minutes : minutes;
+  return hours + ":" + minutes;
+}
+
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
   $('#waitlist-table').append('<tbody>');
@@ -66,6 +74,7 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + activeParties[i].PartyName + "</td>";
     htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
     htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
+    htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
     } else {
