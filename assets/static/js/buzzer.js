@@ -55,6 +55,7 @@ function checkIfPartyAssignedBuzzer(activePartyID) {
 function isPartyAssignedBuzzerSuccessCallback(xhr, success) {
   console.log(xhr);
   if (xhr.is_party_assigned_buzzer) {
+    refreshWaitlistTable();
     $('.spinner').hide();
     $('#buzzer-modal-success-message').show();
     setTimeout(clearModalCallback, 2000);
@@ -69,8 +70,9 @@ function addPartySuccessCallbackBuzzer(xhr, success) {
 }
 
 function addPartySuccessCallbackPA(xhr, success) {
-  console.log(xhr)
-  console.log(success)
+  console.log(xhr);
+  console.log(success);
+  refreshWaitlistTable();
 }
 
 function repopulateWaitlistSuccessCallback(xhr, success) {
@@ -105,9 +107,13 @@ function parseEstimatedWait(estimatedWaitTime) {
   return hours + ":" + minutes;
 }
 
-function refreshWaitlistTable() {
+function refreshWaitlistTableRepeat() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
   setTimeout(refreshWaitlistTable, 30000);
+}
+
+function refreshWaitlistTable() {
+  AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
 }
 
 function repopulateTable(activeParties) {
@@ -215,5 +221,5 @@ $(document).ready(function() {
   var target = document.getElementById('buzzer-modal')
   var spinner = new Spinner(opts).spin(target);
 
-  setTimeout(refreshWaitlistTable, 2000);
+  setTimeout(refreshWaitlistTableRepeat, 2000);
 });
