@@ -103,6 +103,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/login.html.tmpl", template_data)
 }
 
+// LogoutHandler logs out the current user
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[LogoutHandler] ")
     session := GetSession(w, r)
