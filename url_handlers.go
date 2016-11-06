@@ -129,7 +129,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     return fmt.Sprintf("%02d:%02d", int(hours), int(minutes))
   }
 
-  //This function is called by the template to format the estimated waiting time into 
+  //This function is called by the template to format the estimated waiting time into
   //HH:MM format.
   //Kevin had fun making this with his friends.
   partyData["formatEstimatedWaitingTime"] = func (duration int) string {
@@ -613,31 +613,28 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
     HandleAuthErrorJson(w, returnObj)
   } else if r.Method == "POST" {
     activePartyInfo := map[string] interface{}{}
-    ParseReqBody(r, returnObj, activePartyInfo)
-    var activeParty ActiveParty
-    log.Println(activePartyInfo)
-    activePartyID := activePartyInfo["active_party_id"]; if activePartyID == nil {
-      returnObj["status"] = "failure"
-      returnObj["error_message"] = "Missing active_party_id parameter"
-    } else {
-      db.First(&activeParty, activePartyID)
-      if activeParty == (ActiveParty{}) {
+    if ParseReqBody(r, returnObj, activePartyInfo) {
+      var activeParty ActiveParty
+      activePartyID := activePartyInfo["active_party_id"]; if activePartyID == nil {
         returnObj["status"] = "failure"
-        returnObj["error_message"] = "Party with the provided ID not found"
-      }
-      if (activeParty.BuzzerID == 0) {
-        returnObj["is_party_assigned_buzzer"] = false
+        returnObj["error_message"] = "Missing active_party_id parameter"
       } else {
-        returnObj["is_party_assigned_buzzer"] = true
+        db.First(&activeParty, "id = ?", activePartyID)
+        if activeParty == (ActiveParty{}) {
+          returnObj["status"] = "failure"
+          returnObj["error_message"] = "Party with the provided ID not found"
+        }
+        log.Println(activeParty);
+        if (activeParty.BuzzerID == 0) {
+          returnObj["is_party_assigned_buzzer"] = false
+        } else {
+          returnObj["is_party_assigned_buzzer"] = true
+        }
+        returnObj["active_party_id"] = activePartyID
       }
     }
   }
-  jsonObj, err := json.Marshal(returnObj)
-  if err != nil {
-    Handle500Error(w, err)
-  }
-  w.Header().Set("Content-Type", "application/json")
-  w.Write(jsonObj)
+  RenderJSONFromMap(w, returnObj)
 }
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {

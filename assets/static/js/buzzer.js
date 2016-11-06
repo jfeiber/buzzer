@@ -34,6 +34,45 @@ function buzzPartyErrorCallback(xhr, error) {
   errorAlert("Buzz party request failed");
 }
 
+function isPartyAssignedBuzzerErrorCallback(xhr, error) {
+  $('#buzzer-party-modal').modal('hide');
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Could not check to see if buzzer was assigned party.");
+}
+
+function clearModalCallback() {
+  $('#buzzer-party-modal').modal('hide');
+  $('.spinner').show();
+  $('#buzzer-modal-success-message').hide();
+}
+
+function checkIfPartyAssignedBuzzer(activePartyID) {
+  jsonObj = JSON.stringify({"active_party_id": parseInt(activePartyID)});
+  AjaxJSONPOST("/frontend_api/is_party_assigned_buzzer", jsonObj, isPartyAssignedBuzzerErrorCallback, isPartyAssignedBuzzerSuccessCallback, completeCallback);
+}
+
+function isPartyAssignedBuzzerSuccessCallback(xhr, success) {
+  console.log(xhr);
+  if (xhr.is_party_assigned_buzzer) {
+    $('.spinner').hide();
+    $('#buzzer-modal-success-message').show();
+    setTimeout(clearModalCallback, 2000);
+  } else {
+    setTimeout(checkIfPartyAssignedBuzzer, 2000, xhr.active_party_id);
+  }
+}
+
+function addPartySuccessCallbackBuzzer(xhr, success) {
+  $('#buzzer-party-modal').modal({backdrop: 'static', keyboard: false});
+  checkIfPartyAssignedBuzzer(xhr.active_party_id);
+}
+
+function addPartySuccessCallbackPA(xhr, success) {
+  console.log(xhr)
+  console.log(success)
+}
+
 function repopulateWaitlistSuccessCallback(xhr, success) {
   console.debug(xhr);
   console.debug(success);
@@ -138,7 +177,8 @@ $(document).ready(function() {
     $('#alert_placeholder').html('');
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
-    AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
+    successCallback = (phoneAhead) ? addPartySuccessCallbackPA : addPartySuccessCallbackBuzzer;
+    AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, successCallback, completeCallback);
   });
 
   registerDeletePartyClickHandlers();
@@ -150,5 +190,30 @@ $(document).ready(function() {
     $(this).parents(".dropdown").find('.btn').val($(this).text());
   });
 
-  setTimeout(refreshWaitlistTable, 30000);
+  var opts = {
+    lines: 15 // The number of lines to draw
+  , length: 56 // The length of each line
+  , width: 14 // The line thickness
+  , radius: 72 // The radius of the inner circle
+  , scale: 0.50 // Scales overall size of the spinner
+  , corners: 1 // Corner roundness (0..1)
+  , color: '#9B9B9B' // #rgb or #rrggbb or array of colors
+  , opacity: 0 // Opacity of the lines
+  , rotate: 0 // The rotation offset
+  , direction: 1 // 1: clockwise, -1: counterclockwise
+  , speed: 1 // Rounds per second
+  , trail: 56 // Afterglow percentage
+  , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+  , zIndex: 2e9 // The z-index (defaults to 2000000000)
+  , className: 'spinner' // The CSS class to assign to the spinner
+  , top: '50%' // Top position relative to parent
+  , left: '50%' // Left position relative to parent
+  , shadow: false // Whether to render a shadow
+  , hwaccel: false // Whether to use hardware acceleration
+  , position: 'absolute' // Element positioning
+  }
+  var target = document.getElementById('buzzer-modal')
+  var spinner = new Spinner(opts).spin(target);
+
+  setTimeout(refreshWaitlistTable, 2000);
 });
