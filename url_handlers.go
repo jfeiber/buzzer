@@ -145,6 +145,11 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[UpdateWaitlist] ")
   session := GetSession(w, r)
 
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
@@ -155,6 +160,53 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   partyData["waitlist_data"] = parties
 
   RenderJSONFromMap(w, partyData);
+}
+
+func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[BuzzerManagerHandler] ")
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  var devices []Buzzer
+  db.Order("buzzer_name asc").Find(&devices, "restaurant_id = ?", restaurantID)
+  buzzerData := map[string]interface{}{}
+  buzzerData["buzzer_data"] = devices
+
+  RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
+}
+
+func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UnlinkBuzzerHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        buzzerID := reqBodyObj["buzzer_id"]
+        if buzzerID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No buzzerID provided.")
+        } else {
+            var foundBuzzer Buzzer
+            db.First(&foundBuzzer, "id = ?", buzzerID)
+          if foundBuzzer == (Buzzer{}) {
+            AddErrorMessageToResponseObj(responseObj, "Buzzer with that ID not found.")
+          } else {
+              db.Model(&foundBuzzer).Update("restaurant_id", nil)
+          }
+        }
+      }
+    }
+    RenderJSONFromMap(w, responseObj)
+  }
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
@@ -216,6 +268,64 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
   return true
 }
 
+func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[ActivateBuzzer] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else {
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+          } else {
+              db.Model(&foundActiveParty).Update("is_table_ready", true)
+          }
+        }
+      }
+    }
+
+    RenderJSONFromMap(w, responseObj)
+  }
+}
+
+func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UpdatePhoneAheadStatusHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else {
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+          } else {
+                db.Model(&foundActiveParty).Update("phone_ahead", false)
+            }
+          }
+        }
+      }
+
+    RenderJSONFromMap(w, responseObj)
+  }
+}
+
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
   buzzerName := reqBodyObj["buzzer_name"]
   if buzzerName == nil {
@@ -227,6 +337,15 @@ func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[st
       AddErrorMessageToResponseObj(responseObj, "Buzzer with that name not found.")
       return false
     }
+  }
+  return true
+}
+
+func GetBuzzerObjFromID(buzzerID int, responseObj map[string] interface{}, buzzer *Buzzer) bool {
+  db.First(buzzer, "id = ?", buzzerID)
+  if *buzzer == (Buzzer{}) {
+    AddErrorMessageToResponseObj(responseObj, "Buzzer with that ID not found.")
+    return false
   }
   return true
 }
@@ -331,6 +450,7 @@ func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteActivePartyHandler deletes the specificed active party ID
+//TODO: Move the active parties into historical parties.
 func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[DeleteActivePartyHandler] ")
     responseObj := map[string] interface{} {}
@@ -344,15 +464,25 @@ func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
             responseObj["status"] = "failure"
             responseObj["error_message"] = "Missing active_party_id parameter"
         } else {
-            var activeparty ActiveParty
-            db.First(&activeparty, "ID=?", activePartyID)
-            dbInfo := db.Delete(&activeparty)
-
-            if dbInfo.Error == nil {
-                responseObj["status"] = "success"
-            } else {
-                responseObj["status"] = "failure"
-                responseObj["error_message"] = "db.Delete failed"
+            var activeParty ActiveParty
+            db.First(&activeParty, "ID=?", activePartyID)
+            failedBuzzerUpdate := false
+            if (activeParty.BuzzerID != 0) {
+              var buzzer Buzzer
+              if GetBuzzerObjFromID(activeParty.BuzzerID, responseObj, &buzzer) {
+                db.Model(&buzzer).Update("is_active", false)
+              } else {
+                failedBuzzerUpdate = true
+              }
+            }
+            if !failedBuzzerUpdate {
+              dbInfo := db.Delete(&activeParty)
+              if dbInfo.Error == nil {
+                  responseObj["status"] = "success"
+              } else {
+                  responseObj["status"] = "failure"
+                  responseObj["error_message"] = "db.Delete failed"
+              }
             }
         }
     }
@@ -512,5 +642,6 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
 
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[NotFoundHandler] ")
+  w.WriteHeader(404)
   RenderTemplate(w, "assets/templates/404.html", nil)
 }

@@ -13,7 +13,7 @@ function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCall
 }
 
 function errorAlert(errorStr) {
-  $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">'+errorStr+'/div>');
+  $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">'+errorStr+'</div>');
 }
 
 function addPartyErrorCallback(xhr, error) {
@@ -26,6 +26,12 @@ function deletePartyErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
   errorAlert("Delete party request failed");
+}
+
+function buzzPartyErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Buzz party request failed");
 }
 
 function repopulateWaitlistSuccessCallback(xhr, success) {
@@ -97,7 +103,9 @@ function registerDeletePartyClickHandlers() {
 
 function registerBuzzClickHandlers() {
   $(".buzz-button").click(function(){
-    alert("bzzzzzzzzzzzzzzz");
+    console.log($(this).closest('tr').attr('activePartyID'));
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/activate_buzzer', JSON.stringify({"active_party_id": activePartyID}), buzzPartyErrorCallback, completeCallback, completeCallback);
   });
 }
 
@@ -105,7 +113,7 @@ $(document).ready(function() {
   $(".add-party-button").click(function(){
     // activePartyID = $('#party-name-field').id();
     partyName = $('#party-name-field').val();
-    partySize = $('.btn#party-dropdown').val();
+    partySize = $('.btn#party-dropdown-button').val();
     waitHours = $('.btn#hours-dropdown').val();
     waitMins = $('.btn#minutes-dropdown').val();
     phoneAhead = $('.phone-ahead-toggle .active input').attr('id') === "phone" ? true : false;
@@ -122,6 +130,7 @@ $(document).ready(function() {
         $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>');
       return;
     }
+    $('#alert_placeholder').html('');
     waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
@@ -130,7 +139,7 @@ $(document).ready(function() {
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
 
-  $(".dropdown-menu li a").click(function(){
+  $(".dropdown li a").click(function(){
     console.log("in handler");
     $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
     $(this).parents(".dropdown").find('.btn').val($(this).text());
