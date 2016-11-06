@@ -72,131 +72,126 @@
 </div>
 </nav>
 
-
-<!-- Should remove this and overhaul header-->
-<!-- <br>
-<br>
-<br> -->
 <div class="row login-alert">
   <div id="alert_placeholder"></div>
 </div>
-<!-- <br> -->
 
-<div class="container-fluid">
- <div class="row">
-   <div class="col-md-3 col-sm-3">
-     <input type="text" class="form-control" id="party-name-field" placeholder="Party Name">
- </div>
- <div class="col-md-2 col-sm-3">
-  <div class="dropdown">
-    <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
-      Party Size <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu">
-      <li><a href="#">1</a></li>
-      <li><a href="#">2</a></li>
-      <li><a href="#">3</a></li>
-      <li><a href="#">4</a></li>
-      <li><a href="#">5</a></li>
-      <li><a href="#">6</a></li>
-      <li><a href="#">7</a></li>
-      <li><a href="#">8</a></li>
-      <li><a href="#">9</a></li>
-      <li><a href="#">10</a></li>
-      <li><a href="#">11</a></li>
-      <li><a href="#">12</a></li>
-  </ul>
-
-</div>
-</div>
-
-<!-- Source: http://stackoverflow.com/questions/22362750/bootstrap-button-group-pre-select-button-with-html-only: -->
-<div class="col-md-3 col-sm-3">
-    <div class="btn-group phone-ahead-toggle" data-toggle="buttons" id="btnrocker">
-        <label class="btn btn-default active" id="btnrocker">
-            <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
-        </label>
-        <label class="btn btn-default" id="btnrocker">
-            <input type="radio" name="options" id="phone" width="20"><span class="glyphicon glyphicon-earphone"></span>
-        </label>
-    </div>
-</div>
-<div class="col-md-4 col-sm-3">
-
-  <div class="btn-group dropdown">
-    <button type="button" class="btn btn-default dropdown-toggle" id="hours-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value = "">
-      Hours <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu">
-      <li><a href="#">0</a></li>
-      <li><a href="#">1</a></li>
-      <li><a href="#">2</a></li>
-      <li><a href="#">3</a></li>
-  </ul>
-
-</div>
-<strong>:</strong>
-<div class="btn-group dropdown">
-    <button type="button" class="btn btn-default dropdown-toggle" id="minutes-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="">
-      Minutes <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu">
-     <li><a href="#">00</a></li>
-     <li><a href="#">05</a></li>
-     <li><a href="#">10</a></li>
-     <li><a href="#">15</a></li>
-     <li><a href="#">20</a></li>
-     <li><a href="#">25</a></li>
-     <li><a href="#">30</a></li>
-     <li><a href="#">35</a></li>
-     <li><a href="#">40</a></li>
-     <li><a href="#">45</a></li>
-     <li><a href="#">50</a></li>
-     <li><a href="#">55</a></li>
- </ul>
-</div>
-
-<button class="btn btn-default add-party-button" type="button">ADD</button>
-
-</div>
-</div>
-</div>
-
-<!-- Responsive Table used from: http://www.w3schools.com/bootstrap/bootstrap_tables.asp -->
 <div class="container">
- <h2>Waitlist</h2>
- <table class="table table-bordered" id="waitlist-table">
-   <thead>
-     <tr>
-       <th>Party Name</th>
-       <th>Party Size</th>
-       <th>Time Spent Waiting</th>
-       <th>Estimated Wait</th>
-       <th>Type</th>
-       <th>Actions</th>
-   </tr>
-</thead>
-<tbody>
-  {{range .waitlist_data}}
-    <tr activePartyID="{{.ID}}">
-      <td>{{.PartyName}}</td>
-      <td>{{.PartySize}}</td>
-      <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
-      <td>{{ (call $.formatEstimatedWaitingTime .WaitTimeExpected) }}</td>
-      {{ if .PhoneAhead }}
-        <td><span class="glyphicon glyphicon-earphone"></span></td>
-      {{else}}
-        <td><span class="glyphicon glyphicon-user"></span></td>
-      {{end}}
-      <td>
-        <button class="btn btn-default buzz-button" type="button">Buzz!</button>
-        <button class="btn btn-default delete-party-button" type="button">Delete</button>
-      </td>
-    </tr>
-  {{end}}
-</tbody>
-</table>
-</div>
+  <div class="row">
+    <div class="col-md-12 add-party-container">
+      <div class="row">
 
+        <!-- Party Name/Party Size button grouping -->
+        <div class="col-md-4 col-md-offset-2" align="center">
+          <div class="input-group">
+            <input type="text" class="form-control" id="party-name-field" placeholder="Party Name"></input>
+              <span class="input-group-btn dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
+                  Party Size <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">5</a></li>
+                  <li><a href="#">6</a></li>
+                  <li><a href="#">7</a></li>
+                  <li><a href="#">8</a></li>
+                  <li><a href="#">9</a></li>
+                  <li><a href="#">10</a></li>
+                  <li><a href="#">11</a></li>
+                  <li><a href="#">12</a></li>
+                </ul>
+              </span>
+          </div>
+        </div>
+
+        <!-- Rest of Add party stuff. Expected Wait time, phone ahead/in person selection, add button. -->
+        <div class="col-md-4 add-party-justify">
+          <div class="btn-group phone-ahead-toggle" data-toggle="buttons" id="btnrocker">
+            <label class="btn btn-default active" id="btnrocker">
+                <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
+            </label>
+            <label class="btn btn-default" id="btnrocker">
+                <input type="radio" name="options" id="phone" width="20"><span class="glyphicon glyphicon-earphone"></span>
+            </label>
+          </div>
+          <div class="btn-group dropdown">
+            <button type="button" class="btn btn-default dropdown-toggle" id="hours-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value = "">
+              Hours <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="#">0</a></li>
+              <li><a href="#">1</a></li>
+              <li><a href="#">2</a></li>
+              <li><a href="#">3</a></li>
+            </ul>
+          </div>
+          <strong>:</strong>
+          <div class="btn-group dropdown">
+            <button type="button" class="btn btn-default dropdown-toggle" id="minutes-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="">
+              Minutes <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+               <li><a href="#">00</a></li>
+               <li><a href="#">05</a></li>
+               <li><a href="#">10</a></li>
+               <li><a href="#">15</a></li>
+               <li><a href="#">20</a></li>
+               <li><a href="#">25</a></li>
+               <li><a href="#">30</a></li>
+               <li><a href="#">35</a></li>
+               <li><a href="#">40</a></li>
+               <li><a href="#">45</a></li>
+               <li><a href="#">50</a></li>
+               <li><a href="#">55</a></li>
+             </ul>
+          </div>
+          <button class="btn btn-default add-party-button" type="button">ADD</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Main waitlist table -->
+  <div class="row">
+    <div class="col-md-12">
+     <h2>Waitlist</h2>
+     <table class="table table-bordered" id="waitlist-table">
+       <thead>
+         <tr>
+           <th>Party Name</th>
+           <th>Party Size</th>
+           <th>Time Spent Waiting</th>
+           <th>Estimated Wait</th>
+           <th>Type</th>
+           <th>Actions</th>
+       </tr>
+    </thead>
+    <tbody>
+      {{range .waitlist_data}}
+        <tr activePartyID="{{.ID}}">
+          <td>{{.PartyName}}</td>
+          <td>{{.PartySize}}</td>
+          <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
+          <td>{{ (call $.formatEstimatedWaitingTime .WaitTimeExpected) }}</td>
+          {{ if .PhoneAhead }}
+            <td><span class="glyphicon glyphicon-earphone"></span></td>
+          {{else}}
+            <td><span class="glyphicon glyphicon-user"></span></td>
+          {{end}}
+          <td>
+            <button class="btn btn-default buzz-button" type="button">Buzz!</button>
+            <button class="btn btn-default delete-party-button" type="button">Delete</button>
+          </td>
+        </tr>
+      {{end}}
+    </tbody>
+    </table>
+    </div>
+  </div>
+</div>
 </body>
 </html>
