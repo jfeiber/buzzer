@@ -71,6 +71,7 @@ func main() {
   router.HandleFunc("/frontend_api/activate_buzzer", ActivateBuzzerHandler)
   router.HandleFunc("/frontend_api/update_phone_ahead_status", UpdatePhoneAheadStatusHandler)
   router.HandleFunc("/frontend_api/unlink_buzzer", UnlinkBuzzerHandler)
+  router.HandleFunc("/logout", LogoutHandler)
 
 
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)

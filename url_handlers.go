@@ -103,6 +103,19 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/login.html.tmpl", template_data)
 }
 
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[LogoutHandler] ")
+    session := GetSession(w, r)
+    if IsUserLoggedIn(session) && r.Method =="GET" {
+        session.Values["username"] = ""
+    } else {
+        AddFlashToSession(w, r, "Already Logged Out", session)
+    }
+    session.Save(r, w)
+    http.Redirect(w, r, "/login", 302)
+    return
+}
+
 func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListHandler] ")
   session := GetSession(w, r)
@@ -129,7 +142,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     return fmt.Sprintf("%02d:%02d", int(hours), int(minutes))
   }
 
-  //This function is called by the template to format the estimated waiting time into 
+  //This function is called by the template to format the estimated waiting time into
   //HH:MM format.
   //Kevin had fun making this with his friends.
   partyData["formatEstimatedWaitingTime"] = func (duration int) string {
