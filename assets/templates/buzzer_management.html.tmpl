@@ -91,11 +91,15 @@
        </tr>
     </thead>
     <tbody>
-      {{range .waitlist_data}}
+      {{range .buzzer_data}}
         <tr activePartyID="{{.ID}}">
-          <td> fierce-kevin-4646</td>
-          <td><span class="glyphicon glyphicon-ok"></span></td>
-          <td> 16:22 11/3/16</td>
+          <td>{{.BuzzerName}}</td>
+          {{ if .IsActive}}
+            <td><span class="glyphicon glyphicon-ok"></span></td>
+          {{else}}
+            <td><span class="glyphicon glyphicon-remove"></span></td>
+          {{end}}
+          <td>{{.LastHeartbeat}}</td>
           <td>
             <button class="btn btn-default delete-party-button" type="button">Unlink</button>
             <div class="dropdown">
