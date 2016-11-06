@@ -119,6 +119,12 @@ color:#ffffff;
     color: #FFFFFF;
 }
 
+.unlink-buzzer-button.btn-default:hover {
+    color: #FFFFFF;
+    background-color: #AA0000 !important;
+    /*border-color: #426BE7; set the color you want here*/
+}
+
 /*Custom ID for modifying the buzzer management glyphicons.*/
 #buzzer-status-ok {
     font-size: 3.0em;
