@@ -40,7 +40,9 @@ func GetSession(w http.ResponseWriter, r *http.Request) *sessions.Session {
 }
 
 func RenderTemplate(w http.ResponseWriter, template_name string, template_params map[string] interface{}) {
-  t, err := template.ParseFiles(template_name)
+  t, err := template.ParseFiles(template_name, "assets/templates/navbar.html.tmpl",
+                                "assets/templates/header.html.tmpl")
+  template_params["template_name"] = template_name
   if err != nil{
     Handle500Error(w, err)
   }
