@@ -57,7 +57,7 @@
   <div class="collapse navbar-collapse" id="myNavBar">
     <ul class="nav navbar-nav">
       <li class="active"><a href="#">Waitlist</a></li>
-      <li><a href="#">Devices</a></li>
+      <li><a href="#">Buzzer Management</a></li>
       <li><a href="#">Analytics</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
@@ -92,15 +92,15 @@
         <tr>
           <td>{{.BuzzerName}}</td>
           {{ if .IsActive}}
-            <td><span class="glyphicon glyphicon-ok" id="buzzer-status-ok"></span></td>
+            <td class="text-center"><span class="glyphicon glyphicon-ok" id="buzzer-status-ok"></span></td>
           {{else}}
-            <td><span class="glyphicon glyphicon-remove" id="buzzer-status-remove"></span></td>
+            <td class="text-center"><span class="glyphicon glyphicon-remove" id="buzzer-status-remove"></span></td>
           {{end}}
           <td>{{.LastHeartbeat}}</td>
           <td>
             <button class="btn btn-default unlink-buzzer-button" type="button">Unlink</button>
             <div class="dropdown" style="display:inline;">
-            <button class="btn btn-default dropdown-toggle" type="buzz-button" id="dropdownMenu1" data-toggle="dropdown"> Other<span class="caret"></span></button>
+            <button class="btn btn-default dropdown-toggle" type="buzz-button" id="elipsis" data-toggle="dropdown"><span class="glyphicon glyphicon-option-horizontal"></button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                 <li><a href="#">Action</a></li>
                 <li><a href="#">Another action</a></li>

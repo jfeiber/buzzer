@@ -125,6 +125,19 @@ color:#ffffff;
     /*border-color: #426BE7; set the color you want here*/
 }
 
+/*Formatting for Elipsis Circular Button.*/
+/*Source- https://goo.gl/qyg9Sp */
+#elipsis {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 14px;
+  line-height: 1.42;
+  border-radius: 15px;
+  margin: 8px; /*Modifies spacing of buttons*/
+}
+
 /*Custom ID for modifying the buzzer management glyphicons.*/
 #buzzer-status-ok {
     font-size: 3.0em;
@@ -137,6 +150,10 @@ color:#ffffff;
     font-weight: 40;
     color:red;
 }
+
+/*.table td {
+   text-align: center;   
+}*/
 
 .delete-party-button {
     background-color: #DD2A17;
