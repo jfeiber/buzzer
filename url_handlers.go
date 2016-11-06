@@ -132,7 +132,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[UpdateWaitlist] ")
+  log.SetPrefix("[GetActivePartiesHandler] ")
   session := GetSession(w, r)
 
   if !IsUserLoggedIn(session) {
@@ -169,6 +169,26 @@ func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
   buzzerData["buzzer_data"] = devices
 
   RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
+}
+
+func GetLinkedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[GetLinkedBuzzerHandler] ")
+  session := GetSession(w, r)
+
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  var devices []Buzzer
+  db.Order("buzzer_name asc").Find(&devices, "restaurant_id = ?", restaurantID)
+  buzzerData := map[string]interface{}{}
+  buzzerData["buzzer_data"] = devices
+
+  RenderJSONFromMap(w, devices)
 }
 
 func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
