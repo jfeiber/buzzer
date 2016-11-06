@@ -17,7 +17,7 @@ INSERT INTO users (restaurant_id, username, password, pass_salt) VALUES
 
 
 INSERT INTO buzzers (restaurant_id, buzzer_name, is_active) VALUES
-        (9, 'loud-turtke-1043', 'FALSE')
+        (9, 'loud-turtke-1043', 'FALSE'),
         (9, 'smart-fox-2066', 'FALSE'),
         (9, 'fast-dog-3212', 'TRUE');
 
