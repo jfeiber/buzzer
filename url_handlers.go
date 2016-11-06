@@ -171,7 +171,7 @@ func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
 }
 
-func GetLinkedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
+func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[GetLinkedBuzzerHandler] ")
   session := GetSession(w, r)
 
