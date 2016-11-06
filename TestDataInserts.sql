@@ -17,9 +17,9 @@ INSERT INTO users (restaurant_id, username, password, pass_salt) VALUES
 
 
 INSERT INTO buzzers (restaurant_id, buzzer_name, is_active) VALUES
-        (9, 'loud-turtke-1043', 'FALSE')
-        (9, 'smart-fox-2066', 'FALSE'),
-        (9, 'fast-dog-3212', 'TRUE');
+        (3, 'loud-turtke-1043', 'FALSE'),
+        (3, 'smart-fox-2066', 'FALSE'),
+        (3, 'fast-dog-3212', 'TRUE');
 
 INSERT INTO active_parties (restaurant_id, party_name, party_size, time_created, phone_ahead, wait_time_expected, wait_time_calculated, is_table_ready, buzzer_id) VALUES
         (1, 'Josh', 11, '2016-10-30 08:43:24', 'FALSE', 27, 25, 'FALSE', 1),
