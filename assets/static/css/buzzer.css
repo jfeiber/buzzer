@@ -96,6 +96,14 @@ color:#ffffff;
     transform: translateY(50%);
 }
 
+.add_user {
+   /* Horizontal */
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+}
+
 .btn-primary {
     background-color: #426BE7;
     border: none;

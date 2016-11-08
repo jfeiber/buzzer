@@ -1,35 +1,24 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 <head>
-<title>Restaur-Anteater</title>
-<script src="https://unpkg.com/react@15.3.2/dist/react.js"></script>
-<script src="https://unpkg.com/react-dom@15.3.2/dist/react-dom.js"></script>
-<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
-<script src="https://unpkg.com/jquery@3.1.0/dist/jquery.min.js"></script>
-<script src="https://unpkg.com/remarkable@1.7.1/dist/remarkable.min.js"></script>
-
-    <!-- Bootstrap -->
-    <link href="/assets/static/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+{{ template "header.html.tmpl" .}}
 </head>
-	<body>
+<body>
+{{ template "navbar.html.tmpl" .}}
+<body>
     {{.flash}}
-		<div align="center">
-			<h2>Add User</h2>
-			<form action="/add_user" method="POST">
-				<p>
-					User Name: <input type="text" name="username"><br>
-					Password: <input type="text" name="password"><br>
-          Restaurant Name: <input type="text" name="restaurant_name"><br>
-				</p>
-				<input type="submit" value="Login">
-			</form>
-		</div>
-	</body>
+	<div class= "row add_user" align="center">
+		<h2>Add User</h2>
+		<form action="/add_user" method="POST">
+			<p>
+				User Name: <input type="text" name="username"><br>
+				Password: <input type="text" name="password"><br>
+  Restaurant Name: <input type="text" name="restaurant_name"><br>
+                        <br>
+                        <button class="btn btn-lg btn-primary" type="submit">Add User</button>
+			</p>
+		</form>
+        </div>
+</body>
 </html>
