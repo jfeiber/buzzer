@@ -676,5 +676,5 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[NotFoundHandler] ")
   w.WriteHeader(404)
-  RenderTemplate(w, "assets/templates/404.html", nil)
+  RenderTemplate(w, "assets/templates/404.html", map[string]interface{}{})
 }
