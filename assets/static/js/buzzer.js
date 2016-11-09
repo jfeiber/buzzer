@@ -159,6 +159,14 @@ function registerBuzzClickHandlers() {
   });
 }
 
+function registerUnlinkBuzzerClickHandlers() {
+  $(".unlink-buzzer-button").click(function(){
+    console.log($(this).closest('tr').attr('activePartyID'));
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/unlink_buzzer', JSON.stringify({"active_party_id": activePartyID}), unlinkBuzzerErrorCallback, completeCallback, completeCallback);
+  });
+}
+
 $(document).ready(function() {
   $(".add-party-button").click(function(){
     // activePartyID = $('#party-name-field').id();
@@ -189,6 +197,7 @@ $(document).ready(function() {
 
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
+  registerUnlinkBuzzerClickHandlers();
 
   $(".dropdown li a").click(function(){
     console.log("in handler");
