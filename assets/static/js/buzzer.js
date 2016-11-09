@@ -41,6 +41,12 @@ function isPartyAssignedBuzzerErrorCallback(xhr, error) {
   errorAlert("Could not check to see if buzzer was assigned party.");
 }
 
+function unlinkBuzzerErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Unlink buzzer request failed.");
+}
+
 function clearModalCallback() {
   $('#buzzer-party-modal').modal('hide');
   $('.spinner').show();
