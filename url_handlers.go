@@ -434,6 +434,7 @@ func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
   responseObj := map[string] interface{} {}
   reqBodyObj := map[string] interface{}{}
   if ParseReqBody(r, responseObj, reqBodyObj) {
+    log.Println(reqBodyObj)
     var buzzer Buzzer
     if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
       responseObj["is_active"] = buzzer.IsActive
