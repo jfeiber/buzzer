@@ -178,12 +178,29 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, partyData);
 }
 
-func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
+func BuzzerManagementHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[BuzzerManagerHandler] ")
   session := GetSession(w, r)
   if !IsUserLoggedIn(session) {
     http.Redirect(w, r, "/login", 302)
     return
+  }
+  if r.Method == "POST" {
+    buzzerName := r.FormValue("buzzer_name")
+
+    var currUser User
+    db.First(&currUser, "username = ?", session.Values["username"])
+    if currUser == (User{}) {
+      Handle500Error(w, errors.New("Big problem: The user that is currently logged in does not have an entry in the users table."))
+    } else {
+      var buzzer Buzzer
+      db.First(&buzzer, "buzzer_name = ? and restaurant_id is null", buzzerName)
+      if buzzer == (Buzzer{}) {
+        AddFlashToSession(w, r, "No buzzer with that name found.", session)
+      } else {
+        db.Model(&buzzer).Update("restaurant_id", currUser.RestaurantID)
+      }
+    }
   }
 
   username, _ := session.Values["username"]
@@ -193,6 +210,10 @@ func BuzzerManagerHandler(w http.ResponseWriter, r *http.Request) {
   db.Order("buzzer_name asc").Find(&devices, "restaurant_id = ?", restaurantID)
   buzzerData := map[string]interface{}{}
   buzzerData["buzzer_data"] = devices
+  if flashes := session.Flashes(); len(flashes) > 0 {
+    buzzerData["failure_message"] = flashes[0]
+  }
+  session.Save(r, w)
 
   RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
 }
@@ -248,37 +269,6 @@ func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
   http.Redirect(w, r, "/login", 302)
-}
-
-func RegisterBuzzerHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[RegisterBuzzerHandler] ")
-  session := GetSession(w, r)
-  if !IsUserLoggedIn(GetSession(w, r)) {
-    http.Redirect(w, r, "/login", 302)
-  }
-  if r.Method == "POST" {
-    buzzerName := r.FormValue("buzzer_name")
-
-    var currUser User
-    db.First(&currUser, "username = ?", session.Values["username"])
-    if currUser == (User{}) {
-      Handle500Error(w, errors.New("Big problem: The user that is currently logged in does not have an entry in the users table."))
-    } else {
-      var buzzer Buzzer
-      db.First(&buzzer, "buzzer_name = ?", buzzerName)
-      if buzzer == (Buzzer{}) {
-        AddFlashToSession(w, r, "No buzzer with that name found.", session)
-      } else {
-        db.Model(&buzzer).Update("restaurant_id", currUser.RestaurantID)
-      }
-    }
-  }
-  templateData := map[string]interface{}{}
-  if flashes := session.Flashes(); len(flashes) > 0 {
-    templateData["failure_message"] = flashes[0]
-  }
-  session.Save(r, w)
-  RenderTemplate(w, "assets/templates/register_buzzer.html.tmpl", templateData)
 }
 
 func AddErrorMessageToResponseObj(responseObj map[string] interface{}, err_message string) {
@@ -434,6 +424,7 @@ func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
   responseObj := map[string] interface{} {}
   reqBodyObj := map[string] interface{}{}
   if ParseReqBody(r, responseObj, reqBodyObj) {
+    log.Println(reqBodyObj)
     var buzzer Buzzer
     if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
       responseObj["is_active"] = buzzer.IsActive

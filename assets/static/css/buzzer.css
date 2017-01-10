@@ -21,7 +21,7 @@ body {
     font-weight: light;
 }
 
-.navbar .nav > li.dropdown.open.active > a:hover, 
+.navbar .nav > li.dropdown.open.active > a:hover,
 .navbar .nav > li.dropdown.open > a {
    color: #fff;
    background-color: #0F48B4;
@@ -171,7 +171,7 @@ color:#ffffff;
 }
 
 /*.table td {
-   text-align: center;   
+   text-align: center;
 }*/
 
 .delete-party-button {
@@ -217,6 +217,12 @@ color:#ffffff;
 
 .btn.active, .btn:active {
     background-color: #426BE7;
+}
+
+.register-buzzer {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  width: 300px;
 }
 
 .form-login input {

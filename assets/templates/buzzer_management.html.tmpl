@@ -7,6 +7,23 @@
 {{ template "navbar.html.tmpl" .}}
 <body>
 <div class="container">
+  {{ if .failure_message }}
+    <div class="row login-alert">
+      <div class="alert alert-danger" role="alert">{{ .failure_message }}</div>
+    </div>
+  {{ end }}
+  <div class="row">
+    <div class="col-md-12" align="center">
+      <form action="/buzzer_management" method="POST" class="form-login">
+        <div class="input-group register-buzzer">
+          <input id="buzzer_name" name="buzzer_name" class="form-control" placeholder="Buzzer Name">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="submit">Register Buzzer</button>
+          </span>
+        </div>
+      </form>
+    </div>
+  </div>
   <div class="row">
     <div class="col-md-12">
      <h2>Buzzer Management</h2>
