@@ -16,6 +16,13 @@ import (
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
+// TODO comment
+func RootHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[RootHandler] ")
+  http.Redirect(w, r, "/login", 302)
+}
+
+// TODO comment
 func MakeRandAlphaNumericStr(n int) string {
   var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
   b := make([]rune, n)
@@ -25,12 +32,14 @@ func MakeRandAlphaNumericStr(n int) string {
   return string(b)
 }
 
+// TODO comment
 func Handle500Error(w http.ResponseWriter, err error) {
   w.WriteHeader(500)
   http.Error(w, http.StatusText(500), 500)
   log.Println(err)
 }
 
+// TODO comment
 func GetSession(w http.ResponseWriter, r *http.Request) *sessions.Session {
   session, err := sessionStore.Get(r, "buzzer-session")
   if err != nil {
@@ -39,6 +48,7 @@ func GetSession(w http.ResponseWriter, r *http.Request) *sessions.Session {
   return session
 }
 
+// TODO comment
 func RenderTemplate(w http.ResponseWriter, template_name string, template_params map[string] interface{}) {
   t, err := template.ParseFiles(template_name, "assets/templates/navbar.html.tmpl",
                                 "assets/templates/header.html.tmpl")
@@ -49,6 +59,7 @@ func RenderTemplate(w http.ResponseWriter, template_name string, template_params
   t.Execute(w, template_params)
 }
 
+// TODO comment
 func RenderJSONFromMap(w http.ResponseWriter, obj_map map[string] interface{}) {
   json_obj, err := json.Marshal(obj_map)
   if err != nil {
@@ -58,16 +69,40 @@ func RenderJSONFromMap(w http.ResponseWriter, obj_map map[string] interface{}) {
   w.Write(json_obj)
 }
 
+// TODO comment
+func ParseReqBody(r *http.Request, responseObj map[string] interface{},
+                  reqBodyObj map[string] interface{}) bool {
+  responseObj["status"] = "success"
+  body, err := ioutil.ReadAll(r.Body)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse request body."
+    return false
+  }
+  err = json.Unmarshal(body, &reqBodyObj)
+  if err != nil {
+    responseObj["status"] = "failure"
+    responseObj["error_message"] = "Failed to parse JSON."
+    return false
+  }
+  return true
+}
+
+// TODO comment
 func AddFlashToSession(w http.ResponseWriter, r *http.Request, flash string, session *sessions.Session) {
   session.AddFlash(flash)
   session.Save(r, w)
 }
 
-func IsUserLoggedIn(session *sessions.Session) bool {
-  username, found := session.Values["username"]
-  return found && username != ""
+// TODO comment
+func AddErrorMessageToResponseObj(responseObj map[string] interface{}, err_message string) {
+  responseObj["status"] = "failure"
+  responseObj["error_message"] = err_message
 }
 
+//Check credentials against database and establish session if valid
+//redirects to/renders Wailtlist page if valid user, display error if not
+//POST contains 'username' and 'password' which are attemped username and password
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[LoginURLHandler] ")
   session := GetSession(w, r)
@@ -119,19 +154,27 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
     return
 }
 
+//Back-end method to verify user is logged in and has valid session
+func IsUserLoggedIn(session *sessions.Session) bool {
+  username, found := session.Values["username"]
+  return found && username != ""
+}
+
+//Render Wailtlist page after url call recieved
 func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListHandler] ")
   session := GetSession(w, r)
+  //confirms valid session
   if !IsUserLoggedIn(session) {
     http.Redirect(w, r, "/login", 302)
     return
   }
-
+  //get current session values
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
   var parties []ActiveParty
-
+  //query database for all parties associated with this restaurantID, order by time created asc
   db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
   partyData := map[string]interface{}{}
@@ -154,59 +197,73 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
     return fmt.Sprintf("%02d:%02d", int(hours), int(mins))
   }
 
+  //render the html template, passing along the data
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
 }
 
+//Frontend API Call to update Table of Active Parties
 func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[GetActivePartiesHandler] ")
   session := GetSession(w, r)
-
+  //confirms user session is valid
   if !IsUserLoggedIn(session) {
     http.Redirect(w, r, "/login", 302)
     return
   }
-
+  //retrieve username then restaurantID of current user
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
   var parties []ActiveParty
+  //query database for all parties with currect restaurantID, order by time partied created asc
   db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
+  //create struct and store resuting data from query
   partyData := map[string]interface{}{}
   partyData["waitlist_data"] = parties
 
+  //send to format as JSON and return to frontend
   RenderJSONFromMap(w, partyData);
 }
 
+//Render device/buzzer management page
 func BuzzerManagementHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[BuzzerManagerHandler] ")
   session := GetSession(w, r)
+  //verify session
   if !IsUserLoggedIn(session) {
     http.Redirect(w, r, "/login", 302)
     return
   }
+  //process to assign restaurant id to buzzer
   if r.Method == "POST" {
+    //get the name of desired buzzer from POST
     buzzerName := r.FormValue("buzzer_name")
-
+    //pull user data from database based on username from session
     var currUser User
     db.First(&currUser, "username = ?", session.Values["username"])
+    //verify that user is in database
     if currUser == (User{}) {
       Handle500Error(w, errors.New("Big problem: The user that is currently logged in does not have an entry in the users table."))
     } else {
       var buzzer Buzzer
+      //pull buzzer info from database based on buzzerName from POST
       db.First(&buzzer, "buzzer_name = ? and restaurant_id is null", buzzerName)
+      //error if buzzerName does not exist in database
       if buzzer == (Buzzer{}) {
         AddFlashToSession(w, r, "No buzzer with that name found.", session)
       } else {
+        //update the found buzzer entry with the current users restaurant id
         db.Model(&buzzer).Update("restaurant_id", currUser.RestaurantID)
       }
     }
   }
-
+  //get username and restaurantID from session
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
 
   var devices []Buzzer
+  //query database for all buzzers with the current restaurantID, order by buzzerName asc
   db.Order("buzzer_name asc").Find(&devices, "restaurant_id = ?", restaurantID)
   buzzerData := map[string]interface{}{}
   buzzerData["buzzer_data"] = devices
@@ -215,9 +272,11 @@ func BuzzerManagementHandler(w http.ResponseWriter, r *http.Request) {
   }
   session.Save(r, w)
 
+  //render buzzer management page and pass along buzzer data
   RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
 }
 
+//Frontend API class to return updated JSON of buzzers/devices for a specific restaurant
 func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[GetLinkedBuzzerHandler] ")
   session := GetSession(w, r)
@@ -238,6 +297,8 @@ func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, buzzerData)
 }
 
+//Frontend API call to unlink a buzzer from assigned resturant
+//POST 'buzzer_id' has buzzerID to be unlinked, restaurantID set to null
 func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[UnlinkBuzzerHandler] ")
   session := GetSession(w, r)
@@ -266,34 +327,9 @@ func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-func RootHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[RootHandler] ")
-  http.Redirect(w, r, "/login", 302)
-}
-
-func AddErrorMessageToResponseObj(responseObj map[string] interface{}, err_message string) {
-  responseObj["status"] = "failure"
-  responseObj["error_message"] = err_message
-}
-
-func ParseReqBody(r *http.Request, responseObj map[string] interface{},
-                  reqBodyObj map[string] interface{}) bool {
-  responseObj["status"] = "success"
-  body, err := ioutil.ReadAll(r.Body)
-  if err != nil {
-    responseObj["status"] = "failure"
-    responseObj["error_message"] = "Failed to parse request body."
-    return false
-  }
-  err = json.Unmarshal(body, &reqBodyObj)
-  if err != nil {
-    responseObj["status"] = "failure"
-    responseObj["error_message"] = "Failed to parse JSON."
-    return false
-  }
-  return true
-}
-
+//Frontend API call to activate a buzzer and alert connected party
+//if information is valid, will set 'is_table_ready' value in database to true
+//POST contains 'active_party_id' which is the related party to be alerted
 func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[ActivateBuzzer] ")
   session := GetSession(w, r)
@@ -323,6 +359,8 @@ func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+//Frontend API call to update party status from PhoneAhead to Waitlist
+//POST contains 'active_party_id' which is the party whose status is to be updated
 func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[UpdatePhoneAheadStatusHandler] ")
   session := GetSession(w, r)
@@ -352,6 +390,8 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+//Back-end method to return all information (as object) on a buzzer based on buzzerName
+//passed reqBodyObj contains 'buzzer_name' which is the buzzerName to query by
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
   buzzerName := reqBodyObj["buzzer_name"]
   if buzzerName == nil {
@@ -367,6 +407,8 @@ func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[st
   return true
 }
 
+//Back-end method to return all information (as object) on a buzzer based on buzzerID
+//passed buzzerID is the buzzerID to query by
 func GetBuzzerObjFromID(buzzerID int, responseObj map[string] interface{}, buzzer *Buzzer) bool {
   db.First(buzzer, "id = ?", buzzerID)
   if *buzzer == (Buzzer{}) {
@@ -376,6 +418,9 @@ func GetBuzzerObjFromID(buzzerID int, responseObj map[string] interface{}, buzze
   return true
 }
 
+//Back-end method to determine if buzzer is connected to an active party and return active party info
+//buzzerID retrieved from passed buzzer object
+//returns false if no asscoicated active party, else returns true and sets passed activeParty pointer to found party
 func GetActivePartyFromBuzzerID(responseObj map[string] interface{}, buzzer Buzzer, activeParty *ActiveParty) bool {
   db.First(activeParty, "buzzer_id = ?", buzzer.ID)
   if *activeParty == (ActiveParty{}) {
@@ -385,6 +430,9 @@ func GetActivePartyFromBuzzerID(responseObj map[string] interface{}, buzzer Buzz
   return true
 }
 
+//Back-end method to determine if active party exists
+//passed reqBodyObj contains 'party_id' which is the activePartyID to check
+//returns false if party does not exist, else returns true and sets passed activeParty pointer to found party
 func GetActivePartyFromID(reqBodyObj map[string] interface{}, responseObj map[string] interface{}, activeParty *ActiveParty) bool {
   db.First(activeParty, "id = ?", reqBodyObj["party_id"])
   if *activeParty == (ActiveParty{}) {
@@ -394,6 +442,34 @@ func GetActivePartyFromID(reqBodyObj map[string] interface{}, responseObj map[st
   return true
 }
 
+//Buzzer API method to get an active party to potentially be assigned to buzzer
+//returns first result from database of party with no assigned buzzer and not phone ahead
+//creates return object with party information of 'party_name', 'wait_time', 'party_id'
+func GetAvailablePartyHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[GetAvailablePartyHandler] ")
+  responseObj := map[string] interface{} {}
+  reqBodyObj := map[string] interface{}{}
+  if ParseReqBody(r, responseObj, reqBodyObj) {
+    var buzzer Buzzer
+    if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
+      var activeParty ActiveParty
+      db.First(&activeParty, "restaurant_id = ? and buzzer_id is null and phone_ahead is false", buzzer.RestaurantID)
+      responseObj["party_avail"] = true;
+      if activeParty != (ActiveParty{}) {
+        responseObj["party_name"] = activeParty.PartyName
+        responseObj["wait_time"] = activeParty.WaitTimeExpected
+        responseObj["party_id"] = activeParty.ID
+      } else {
+        responseObj["party_avail"] = false;
+      }
+    }
+  }
+  RenderJSONFromMap(w, responseObj)
+}
+
+//Buzzer API method handles response from buzzer accepting assignment to a active party
+//if the accepted information is valid, the database is updated to reflect buzzer assignment
+//reqBodyObj contains 'buzzer_name' assigned name of responding buzzer, and 'party_id' id of active party accepted by buzzer
 func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[AcceptPartyHandler] ")
   responseObj := map[string] interface{} {}
@@ -419,6 +495,7 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, responseObj)
 }
 
+// TODO comment
 func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[HeartbeatHandler] ")
   responseObj := map[string] interface{} {}
@@ -441,28 +518,9 @@ func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, responseObj)
 }
 
-func GetAvailablePartyHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[GetAvailablePartyHandler] ")
-  responseObj := map[string] interface{} {}
-  reqBodyObj := map[string] interface{}{}
-  if ParseReqBody(r, responseObj, reqBodyObj) {
-    var buzzer Buzzer
-    if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
-      var activeParty ActiveParty
-      db.First(&activeParty, "restaurant_id = ? and buzzer_id is null and phone_ahead is false", buzzer.RestaurantID)
-      responseObj["party_avail"] = true;
-      if activeParty != (ActiveParty{}) {
-        responseObj["party_name"] = activeParty.PartyName
-        responseObj["wait_time"] = activeParty.WaitTimeExpected
-        responseObj["party_id"] = activeParty.ID
-      } else {
-        responseObj["party_avail"] = false;
-      }
-    }
-  }
-  RenderJSONFromMap(w, responseObj)
-}
 
+
+// TODO comment
 func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[IsBuzzerRegisteredHandler] ")
   responseObj := map[string] interface{} {}
@@ -478,6 +536,7 @@ func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
 
 // DeleteActivePartyHandler deletes the specificed active party ID
 //TODO: Move the active parties into historical parties.
+// TODO comment
 func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[DeleteActivePartyHandler] ")
     responseObj := map[string] interface{} {}
@@ -533,12 +592,14 @@ func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, obj_map)
 }
 
+// TODO comment
 func HandleAuthErrorJson(w http.ResponseWriter, responseObj map[string] interface{}) {
   w.WriteHeader(401)
   responseObj["status"] = "failure"
   responseObj["error_message"] = "User not logged in"
 }
 
+// TODO comment
 func GetRestaurantIDFromUsername(username string) int {
   var currUser User
   db.First(&currUser, "username = ?", username)
@@ -548,6 +609,7 @@ func GetRestaurantIDFromUsername(username string) int {
   return currUser.RestaurantID
 }
 
+// TODO comment
 func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[CreateNewPartyHandler] ")
   responseObj := map[string] interface{} {}
@@ -582,6 +644,7 @@ func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, responseObj)
 }
 
+// TODO comment
 func AddUserHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[AddUserHandler] ")
   session := GetSession(w, r)
@@ -634,6 +697,7 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+// TODO comment
 func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   returnObj := map[string] interface{} {"status": "success"}
   if !IsUserLoggedIn(GetSession(w, r)) {
@@ -664,6 +728,7 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, returnObj)
 }
 
+// TODO comment
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[NotFoundHandler] ")
   w.WriteHeader(404)
