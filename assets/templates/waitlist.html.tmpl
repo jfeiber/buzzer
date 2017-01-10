@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--Waitlist page-->
 <head>
 {{ template "header.html.tmpl" .}}
 </head>
@@ -9,7 +10,7 @@
   <div id="alert_placeholder"></div>
 </div>
 
-<!-- Modal -->
+<!-- Modal for buzzer linking -->
 <div class="modal fade" id="buzzer-party-modal" tabindex="-1" role="dialog" aria-labelledby="buzzer-party-modal-label">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -120,6 +121,7 @@
     </thead>
     <tbody>
       {{range .waitlist_data}}
+        <!--Iterate through waitlist data for each buzzer (or phone-ahead party)-->
         <tr activePartyID="{{.ID}}">
           <td>{{.PartyName}}</td>
           <td>{{.PartySize}}</td>

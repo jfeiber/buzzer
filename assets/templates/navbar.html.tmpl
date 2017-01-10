@@ -10,6 +10,7 @@
   </div>
   <div class="collapse navbar-collapse" id="myNavBar">
     <ul class="nav navbar-nav">
+      <!--Bold the current tab, plain font for others-->
       {{ if eq .template_name "assets/templates/waitlist.html.tmpl" }}
       <li class="active"><a href="/waitlist">Waitlist</a></li>
       {{else}}
@@ -24,6 +25,7 @@
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li class="dropdown">
+          <!--Cog with logout functionality and room for more links (currently a couple fun easter eggs)-->
           <a href="#" class="glyphicon glyphicon-cog white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
           <ul class="dropdown-menu">
             <li><a href="/logout">Logout</a></li>
