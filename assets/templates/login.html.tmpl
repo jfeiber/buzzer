@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--Login page-->
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -52,6 +53,7 @@
     <div class="container-fluid">
       {{ if .failure_message }}
         <div class="row login-alert">
+        <!--Alert for failed login attempts-->
           <div class="alert alert-danger" role="alert">{{ .failure_message }}</div>
         </div>
       {{ end }}

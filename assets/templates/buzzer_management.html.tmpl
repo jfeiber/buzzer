@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--Buzzer management page (status info and admin functionality for buzzer fleet)-->
+
 <head>
 {{ template "header.html.tmpl" .}}
 </head>
@@ -7,6 +9,7 @@
 {{ template "navbar.html.tmpl" .}}
 <body>
 <div class="container">
+<!--Alerts-->
   {{ if .failure_message }}
     <div class="row login-alert">
       <div class="alert alert-danger" role="alert">{{ .failure_message }}</div>
@@ -15,6 +18,7 @@
   <div class="row">
     <div class="col-md-12" align="center">
       <form action="/buzzer_management" method="POST" class="form-login">
+        <!--Form to register a new buzzer-->
         <div class="input-group register-buzzer">
           <input id="buzzer_name" name="buzzer_name" class="form-control" placeholder="Buzzer Name">
           <span class="input-group-btn">
@@ -27,6 +31,7 @@
   <div class="row">
     <div class="col-md-12">
      <h2>Buzzer Management</h2>
+     <!--Buzzer management info table-->
      <table class="table table-bordered" id="buzzer-management-table">
        <thead>
          <tr>
@@ -38,6 +43,7 @@
     </thead>
     <tbody>
       {{range .buzzer_data}}
+      <!--Show name, status (active or not), time of last check-in, and action buttons for each buzzer-->
         <tr>
           <td>{{.BuzzerName}}</td>
           {{ if .IsActive}}
@@ -51,6 +57,7 @@
             <div class="dropdown" style="display:inline;">
             <button class="btn btn-default dropdown-toggle" type="buzz-button" id="elipsis" data-toggle="dropdown"><span class="glyphicon glyphicon-option-horizontal"></button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <!--Easter egg until we add more buzzer actions-->
                 <li><a href="#">Kevin</a></li>
                 <li><a href="#">Has</a></li>
                 <li><a href="#">Fun</a></li>
