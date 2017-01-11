@@ -421,10 +421,10 @@ func GetBuzzerObjFromID(buzzerID int, responseObj map[string] interface{}, buzze
   return true
 }
 
-// GetActivePartyFromBuzzerID is a back-end method to determine if buzzer is connected to an active
-// party and return active party info. buzzerID retrieved from passed buzzer object.
-// Returns false if no asscoicated active party, else returns true and sets passed activeParty
-// pointer to found party.
+/* GetActivePartyFromBuzzerID is a back-end method to determine if buzzer is connected to an active
+   party and return active party info. buzzerID retrieved from passed buzzer object.
+   Returns false if no asscoicated active party, else returns true and sets passed activeParty
+   pointer to found party. */
 func GetActivePartyFromBuzzerID(responseObj map[string] interface{}, buzzer Buzzer, activeParty *ActiveParty) bool {
   db.First(activeParty, "buzzer_id = ?", buzzer.ID)
   if *activeParty == (ActiveParty{}) {
