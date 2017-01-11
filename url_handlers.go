@@ -523,12 +523,14 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, responseObj)
 }
 
+
 /* HeartbeatHandler
-    - TODO comment      */
+    - HeartbeatHandler is used by the buzzers to check in periodically. Right now that period is ~30 seconds
+    - If a party has been marked inactive or a table is ready then the Buzzer will receive that info in the response to this endpoint   */
 func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[HeartbeatHandler] ")
   responseObj := map[string] interface{} {}
-  reqBodyObj := map[string] interface{}{}
+  reqBodyObj := map[string] interface{} {}
   if ParseReqBody(r, responseObj, reqBodyObj) {
     log.Println(reqBodyObj)
     var buzzer Buzzer
