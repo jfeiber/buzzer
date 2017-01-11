@@ -1,3 +1,5 @@
+
+
 INSERT INTO restaurants (id, name) VALUES
   (1, 'Pilars Place'),
   (2, 'Mikes Bistro'),
