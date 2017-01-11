@@ -503,7 +503,7 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
 func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[HeartbeatHandler] ")
   responseObj := map[string] interface{} {}
-  reqBodyObj := map[string] interface{}{}
+  reqBodyObj := map[string] interface{} {}
   if ParseReqBody(r, responseObj, reqBodyObj) {
     log.Println(reqBodyObj)
     var buzzer Buzzer
