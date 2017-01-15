@@ -55,6 +55,7 @@ func main() {
   router.HandleFunc("/", RootHandler)
   router.HandleFunc("/login", LoginHandler)
   router.HandleFunc("/add_user", AddUserHandler)
+  router.HandleFunc("/analytics", AnalyticsHandler)
   router.HandleFunc("/waitlist", WaitListHandler)
   router.HandleFunc("/buzzer_management", BuzzerManagementHandler)
   router.HandleFunc("/buzzer_api/get_new_buzzer_name", GetNewBuzzerNameHandler)
@@ -69,6 +70,7 @@ func main() {
   router.HandleFunc("/frontend_api/activate_buzzer", ActivateBuzzerHandler)
   router.HandleFunc("/frontend_api/update_phone_ahead_status", UpdatePhoneAheadStatusHandler)
   router.HandleFunc("/frontend_api/unlink_buzzer", UnlinkBuzzerHandler)
+  router.HandleFunc("/analytics_api/get_historical_parties", GetHistoricalPartiesHandler)
   router.HandleFunc("/logout", LogoutHandler)
   router.HandleFunc("/frontend_api/get_linked_buzzers", GetLinkedBuzzersHandler)
 

@@ -13,6 +13,7 @@ import (
     "io/ioutil"
     "fmt"
     "math"
+    // "strings"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
@@ -85,6 +86,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     } else {
       var user User;
       db.First(&user, "Username = ?", username)
+      log.Println(user)
       if (user != (User{})) {
         passSalt := user.PassSalt
         if (bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password+passSalt)) == nil) {
@@ -93,6 +95,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
             http.Redirect(w, r, "/waitlist", 302)
             return
         }
+
       }
       AddFlashToSession(w, r, "Username or password is incorrect", session)
     }
@@ -634,26 +637,68 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-func returnHistoricalPartiesFromRestaurantAndTime(restaurantName string, timeCreatedText string, timeSeatedText string) []HistoricalParty {
+func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[AnalyticsHandler] ")
+    session := GetSession(w, r)
 
-    // clean up restaurant name
-    var currRestaurant Restaurant
-    db.First(&currRestaurant, "name = ?", restaurantName)
+    username, _ := session.Values["username"]
+    restaurantID := GetRestaurantIDFromUsername(username.(string))
 
-    if currRestaurant == (Restaurant{}) {
-      returnObj["status"] = "failure"
-      returnObj["error_message"] = "Party with the provided ID not found"
+    log.Println(restaurantID)
+
+
+    RenderTemplate(w, "assets/templates/analytics.html.tmpl", map[string]interface{}{})
+}
+
+func GetHistoricalPartiesHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetHistoricalPartiesHandler]")
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, returnObj)
+    } else if r.Method == "POST" {
+        startEndInfo := map[string] interface{}{}
+        if ParseReqBody(r, returnObj, startEndInfo) {
+            username, _ := session.Values["username"]
+            restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+            var format = "01/02/2006"
+            var startDate, endDate time.Time
+            var err interface{}
+
+            if val, ok := startEndInfo["start_date"].(string); ok {
+                startDate, err = time.Parse(format, val)
+                if err != nil {
+                    returnObj["status"] = "failure"
+                    returnObj["error_message"] = "time.Parse failed"
+                }
+            } else {
+                returnObj["status"] = "failure"
+                returnObj["error_message"] = "start date undefined"
+            }
+
+            if val, ok := startEndInfo["end_date"].(string); ok {
+                endDate, err = time.Parse(format, val)
+                if err != nil {
+                    returnObj["status"] = "failure"
+                    returnObj["error_message"] = "time.Parse failed"
+                }
+            } else {
+                returnObj["status"] = "failure"
+                returnObj["error_message"] = "end date undefined"
+            }
+
+            startDateFormatted := startDate.Format("2006-01-02 15:04:05")
+            endDateFormatted := endDate.Format("2006-01-02 15:04:05")
+            var historicalParties []HistoricalParty
+            db.Where("restaurant_id = ? AND time_created >= ? AND time_seated <= ?", restaurantID, startDateFormatted, endDateFormatted).Find(&historicalParties)
+            if len(historicalParties) > 0 {
+                returnObj["historical_parties"] = historicalParties
+            }
+        }
     }
-
-    var historicalParties []HistoricalParty
-    var format = "asdasdad"
-
-    var timeCreated, err := time.Parse(format, timeCreatedText)
-    var timeSeated, err := time.Parse(restaurantName, timeSeatedText)
-
-    var timeCreatedFormatted := timeCreated.Format("2006-01-02 15:04:05")
-
-    db.Where("restaurant_id = ? AND time_created >= ? AND time_seated <= ?", currRestaurant.id, timeCreated, timeSeated).find(&historicalParties)
+    RenderJSONFromMap(w, returnObj)
 }
 
 func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
