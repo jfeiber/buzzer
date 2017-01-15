@@ -16,13 +16,13 @@ import (
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
-/* RootHandler Handles roots. */
+// RootHandler Handles roots.
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
   http.Redirect(w, r, "/login", 302)
 }
 
-/* MakeRandAlphaNumericStr is a back-end method that generates random string for password salt hash. */
+// MakeRandAlphaNumericStr is a back-end method that generates random string for password salt hash.
 func MakeRandAlphaNumericStr(n int) string {
   var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
   b := make([]rune, n)
@@ -32,14 +32,14 @@ func MakeRandAlphaNumericStr(n int) string {
   return string(b)
 }
 
-/* Handle500Error handles 500 error messages. */
+// Handle500Error handles 500 error messages.
 func Handle500Error(w http.ResponseWriter, err error) {
   w.WriteHeader(500)
   http.Error(w, http.StatusText(500), 500)
   log.Println(err)
 }
 
-/* GetSession is a back-end method gets and returns information about current session. */
+// GetSession is a back-end method gets and returns information about current session.
 func GetSession(w http.ResponseWriter, r *http.Request) *sessions.Session {
   session, err := sessionStore.Get(r, "buzzer-session")
   if err != nil {
@@ -48,7 +48,7 @@ func GetSession(w http.ResponseWriter, r *http.Request) *sessions.Session {
   return session
 }
 
-/* RenderTemplate is a back-end method to render html templates to user. */
+// RenderTemplate is a back-end method to render html templates to user.
 func RenderTemplate(w http.ResponseWriter, template_name string, template_params map[string] interface{}) {
   t, err := template.ParseFiles(template_name, "assets/templates/navbar.html.tmpl",
                                 "assets/templates/header.html.tmpl")
@@ -59,7 +59,7 @@ func RenderTemplate(w http.ResponseWriter, template_name string, template_params
   t.Execute(w, template_params)
 }
 
-/* RenderJSONFromMap is a back-end method to create JSON object from passed object map. */
+// RenderJSONFromMap is a back-end method to create JSON object from passed object map.
 func RenderJSONFromMap(w http.ResponseWriter, obj_map map[string] interface{}) {
   json_obj, err := json.Marshal(obj_map)
   if err != nil {
@@ -69,7 +69,7 @@ func RenderJSONFromMap(w http.ResponseWriter, obj_map map[string] interface{}) {
   w.Write(json_obj)
 }
 
-/* ParseReqBody is a back-end method to parse recieved JSON into reqBodyObj object. */
+// ParseReqBody is a back-end method to parse recieved JSON into reqBodyObj object.
 func ParseReqBody(r *http.Request, responseObj map[string] interface{},
                   reqBodyObj map[string] interface{}) bool {
   responseObj["status"] = "success"
@@ -142,7 +142,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/login.html.tmpl", template_data)
 }
 
-/* LogoutHandler logs out the current user. */
+// LogoutHandler logs out the current user.
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[LogoutHandler] ")
     session := GetSession(w, r)
@@ -156,13 +156,13 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
     return
 }
 
-/* IsUserLoggedIn is a back-end method to verify user is logged in and has valid session. */
+// IsUserLoggedIn is a back-end method to verify user is logged in and has valid session.
 func IsUserLoggedIn(session *sessions.Session) bool {
   username, found := session.Values["username"]
   return found && username != ""
 }
 
-/* WaitListHandler renders the Wailtlist page after url call recieved. */
+// WaitListHandler renders the Wailtlist page after url call recieved.
 func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[WaitListHandler] ")
   session := GetSession(w, r)
@@ -203,7 +203,7 @@ func WaitListHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/waitlist.html.tmpl", partyData)
 }
 
-/* GetActivePartiesHandler is a frontend API Call to update Table of Active Parties. */
+// GetActivePartiesHandler is a frontend API Call to update Table of Active Parties.
 func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[GetActivePartiesHandler] ")
   session := GetSession(w, r)
@@ -228,7 +228,7 @@ func GetActivePartiesHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, partyData);
 }
 
-/* BuzzerManagementHandler renders the device/buzzer management page. */
+// BuzzerManagementHandler renders the device/buzzer management page.
 func BuzzerManagementHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[BuzzerManagerHandler] ")
   session := GetSession(w, r)
@@ -278,7 +278,7 @@ func BuzzerManagementHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/buzzer_management.html.tmpl", buzzerData)
 }
 
-/* GetLinkedBuzzersHandler is a frontend API class to return updated JSON of buzzers/devices for a specific restaurant. */
+// GetLinkedBuzzersHandler is a frontend API class to return updated JSON of buzzers/devices for a specific restaurant.
 func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[GetLinkedBuzzerHandler] ")
   session := GetSession(w, r)
@@ -299,8 +299,8 @@ func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, buzzerData)
 }
 
-/* UnlinkBuzzerHandler is a frontend API call to unlink a buzzer from assigned restaurant.
-    POST 'buzzer_id' has buzzerID to be unlinked, restaurantID set to null. */
+// UnlinkBuzzerHandler is a frontend API call to unlink a buzzer from assigned restaurant.
+// POST 'buzzer_id' has buzzerID to be unlinked, restaurantID set to null.
 func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[UnlinkBuzzerHandler] ")
   session := GetSession(w, r)
@@ -329,9 +329,9 @@ func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-/* ActivateBuzzerHandler is a frontend API call to activate a buzzer and alert connected party.
-    If information is valid, will set 'is_table_ready' value in database to true.
-    POST contains 'active_party_id' which is the related party to be alerted. */
+// ActivateBuzzerHandler is a frontend API call to activate a buzzer and alert connected party.
+// If information is valid, will set 'is_table_ready' value in database to true.
+// POST contains 'active_party_id' which is the related party to be alerted.
 func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[ActivateBuzzer] ")
   session := GetSession(w, r)
@@ -361,8 +361,8 @@ func ActivateBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-/* UpdatePhoneAheadStatusHandler is a frontend API call to update party status from PhoneAhead to Waitlist.
-    POST contains 'active_party_id' which is the party whose status is to be updated. */
+// UpdatePhoneAheadStatusHandler is a frontend API call to update party status from PhoneAhead to Waitlist.
+//  POST contains 'active_party_id' which is the party whose status is to be updated.
 func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[UpdatePhoneAheadStatusHandler] ")
   session := GetSession(w, r)
@@ -392,8 +392,8 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-/* GetBuzzerObjFromName is a back-end method to return all information (as object) on a buzzer based on buzzerName.
-    Passed reqBodyObj contains 'buzzer_name' which is the buzzerName to query by. */
+// GetBuzzerObjFromName is a back-end method to return all information (as object) on a buzzer based on buzzerName.
+//  Passed reqBodyObj contains 'buzzer_name' which is the buzzerName to query by.
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
   buzzerName := reqBodyObj["buzzer_name"]
   if buzzerName == nil {
@@ -410,8 +410,8 @@ func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[st
 }
 
 
-/* GetBuzzerObjFromID is a back-end method to return all information (as object) on a buzzer based on buzzerID.
-    Passed buzzerID is the buzzerID to query by. */
+// GetBuzzerObjFromID is a back-end method to return all information (as object) on a buzzer based on buzzerID.
+// Passed buzzerID is the buzzerID to query by.
 func GetBuzzerObjFromID(buzzerID int, responseObj map[string] interface{}, buzzer *Buzzer) bool {
   db.First(buzzer, "id = ?", buzzerID)
   if *buzzer == (Buzzer{}) {
@@ -720,7 +720,7 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
 // IsPartyAssignedBuzzerHandler is a frontend API method to check if specified active party is
 // assigned buzzer. Passed object r contains 'active_party_id' to be quieried for, returnObj
 // contains response 'is_party_assigned_buzzer'. Used by fronted to check if buzzer has been
-// successfully assigend to party after party was created. 
+// successfully assigend to party after party was created.
 func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   returnObj := map[string] interface{} {"status": "success"}
   if !IsUserLoggedIn(GetSession(w, r)) {
