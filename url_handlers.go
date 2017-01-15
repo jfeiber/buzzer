@@ -13,7 +13,6 @@ import (
     "io/ioutil"
     "fmt"
     "math"
-    // "strings"
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
@@ -86,7 +85,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
     } else {
       var user User;
       db.First(&user, "Username = ?", username)
-      log.Println(user)
       if (user != (User{})) {
         passSalt := user.PassSalt
         if (bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password+passSalt)) == nil) {
@@ -95,7 +93,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
             http.Redirect(w, r, "/waitlist", 302)
             return
         }
-
       }
       AddFlashToSession(w, r, "Username or password is incorrect", session)
     }
