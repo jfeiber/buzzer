@@ -179,7 +179,6 @@ $(document).ready(function() {
     // activePartyID = $('#party-name-field').id();
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown-button').val();
-    waitHours = $('.btn#hours-dropdown').val();
     waitMins = $('.btn#minutes-dropdown').val();
     phoneAhead = $('.phone-ahead-toggle .active input').attr('id') === "phone" ? true : false;
     if (partyName === "") {
@@ -188,15 +187,12 @@ $(document).ready(function() {
     } else if (partySize === "") {
         $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party size</div>');
       return;
-    } else if (waitHours === "") {
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time hours</div>');
-      return;
     } else if (waitMins === "") {
         $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>');
       return;
     }
     $('#alert_placeholder').html('');
-    waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
+    waitTimeExpected = parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     successCallback = (phoneAhead) ? addPartySuccessCallbackPA : addPartySuccessCallbackBuzzer;
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, successCallback, completeCallback);

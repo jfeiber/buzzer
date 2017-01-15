@@ -262,9 +262,15 @@ color:#ffffff;
     border-color: white;
 }
 
-/* Hours dropdown spacing */
-#hours-dropdown {
-  margin-left: 10px;
+/* Scrollable dropdown for minutes */
+.scrollable-menu {
+    height: auto;
+    max-height: 300px;
+    overflow-x: hidden;
+}
+
+.phone-ahead-toggle {
+  margin-right: 10px;
 }
 
 /* Login error alert */
