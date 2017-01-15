@@ -41,6 +41,12 @@ function isPartyAssignedBuzzerErrorCallback(xhr, error) {
   errorAlert("Could not check to see if buzzer was assigned party.");
 }
 
+function unlinkBuzzerErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Unlink buzzer request failed.");
+}
+
 function clearModalCallback() {
   $('#buzzer-party-modal').modal('hide');
   $('.spinner').show();
@@ -127,10 +133,11 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
+      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Assign Buzzer</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     } else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
+      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Buzz!</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     }
-    htmlStr += '<td><button class="btn btn-default buzz-button" type="button">Buzz!</button><button class="btn btn-default delete-party-button" type="button">Delete</button></td>';
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
   }
@@ -159,12 +166,19 @@ function registerBuzzClickHandlers() {
   });
 }
 
+function registerUnlinkBuzzerClickHandlers() {
+  $(".unlink-buzzer-button").click(function(){
+    console.log($(this).closest('tr').attr('activePartyID'));
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/unlink_buzzer', JSON.stringify({"active_party_id": activePartyID}), unlinkBuzzerErrorCallback, completeCallback, completeCallback);
+  });
+}
+
 $(document).ready(function() {
   $(".add-party-button").click(function(){
     // activePartyID = $('#party-name-field').id();
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown-button').val();
-    waitHours = $('.btn#hours-dropdown').val();
     waitMins = $('.btn#minutes-dropdown').val();
     phoneAhead = $('.phone-ahead-toggle .active input').attr('id') === "phone" ? true : false;
     if (partyName === "") {
@@ -173,15 +187,12 @@ $(document).ready(function() {
     } else if (partySize === "") {
         $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party size</div>');
       return;
-    } else if (waitHours === "") {
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time hours</div>');
-      return;
     } else if (waitMins === "") {
         $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>');
       return;
     }
     $('#alert_placeholder').html('');
-    waitTimeExpected = parseInt(waitHours)*60 + parseInt(waitMins);
+    waitTimeExpected = parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     successCallback = (phoneAhead) ? addPartySuccessCallbackPA : addPartySuccessCallbackBuzzer;
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, successCallback, completeCallback);
@@ -189,6 +200,7 @@ $(document).ready(function() {
 
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
+  registerUnlinkBuzzerClickHandlers();
 
   $(".dropdown li a").click(function(){
     console.log("in handler");

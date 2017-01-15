@@ -33,8 +33,8 @@ CREATE TABLE historical_parties (
   party_size int NOT NULL,
   time_created timestamp NOT NULL,
   time_seated timestamp NOT NULL,
-  wait_time_expected timestamp NOT NULL,
-  wait_time_calculated timestamp NOT NULL
+  wait_time_expected int NOT NULL,
+  wait_time_calculated int NOT NULL
 );
 
 CREATE TABLE users (

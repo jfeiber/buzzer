@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<!--Waitlist page-->
 <head>
 {{ template "header.html.tmpl" .}}
 </head>
@@ -9,7 +10,7 @@
   <div id="alert_placeholder"></div>
 </div>
 
-<!-- Modal -->
+<!-- Modal for buzzer linking -->
 <div class="modal fade" id="buzzer-party-modal" tabindex="-1" role="dialog" aria-labelledby="buzzer-party-modal-label">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -66,23 +67,10 @@
             </label>
           </div>
           <div class="btn-group dropdown">
-            <button type="button" class="btn btn-default dropdown-toggle" id="hours-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value = "">
-              Hours <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a href="#">0</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-            </ul>
-          </div>
-          <strong>:</strong>
-          <div class="btn-group dropdown">
             <button type="button" class="btn btn-default dropdown-toggle" id="minutes-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="">
               Minutes <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu">
-               <li><a href="#">00</a></li>
+            <ul class="dropdown-menu scrollable-menu" role="menu">
                <li><a href="#">05</a></li>
                <li><a href="#">10</a></li>
                <li><a href="#">15</a></li>
@@ -94,6 +82,19 @@
                <li><a href="#">45</a></li>
                <li><a href="#">50</a></li>
                <li><a href="#">55</a></li>
+               <li><a href="#">60</a></li>
+               <li><a href="#">65</a></li>
+               <li><a href="#">70</a></li>
+               <li><a href="#">75</a></li>
+               <li><a href="#">80</a></li>
+               <li><a href="#">85</a></li>
+               <li><a href="#">90</a></li>
+               <li><a href="#">95</a></li>
+               <li><a href="#">100</a></li>
+               <li><a href="#">105</a></li>
+               <li><a href="#">110</a></li>
+               <li><a href="#">115</a></li>
+               <li><a href="#">120</a></li>
              </ul>
           </div>
           <button class="btn btn-default add-party-button" type="button">ADD</button>
@@ -120,6 +121,7 @@
     </thead>
     <tbody>
       {{range .waitlist_data}}
+        <!--Iterate through waitlist data for each buzzer (or phone-ahead party)-->
         <tr activePartyID="{{.ID}}">
           <td>{{.PartyName}}</td>
           <td>{{.PartySize}}</td>
@@ -131,8 +133,15 @@
             <td><span class="glyphicon glyphicon-user"></span></td>
           {{end}}
           <td>
+          {{if .PhoneAhead}}
+            <div class="btn-toolbar">
+            <button class="btn btn-default buzz-button" type="button">Assign Buzzer</button>
+          {{else}}
+            <div class="btn-toolbar">
             <button class="btn btn-default buzz-button" type="button">Buzz!</button>
+          {{end}}
             <button class="btn btn-default delete-party-button" type="button">Delete</button>
+            </div>
           </td>
         </tr>
       {{end}}

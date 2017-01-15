@@ -15,12 +15,14 @@ body {
     border-radius: 0;
 }
 
+/* Navbar text */
 .navbar-default .navbar- {
     background-color: #426BE7;
     color: #FFFFFF;
     font-weight: light;
 }
 
+/* Navbar hover behavior */
 .navbar .nav > li.dropdown.open.active > a:hover,
 .navbar .nav > li.dropdown.open > a {
    color: #fff;
@@ -52,29 +54,35 @@ color:#ffffff;
     font-weight: light;
 }
 
+/* Navbar text margins */
 .navbar-default .navbar-nav {
     margin-top: 2px;
     margin-left: 50px;
 }
 
+/* Active text */
 .active a {
     background-color: #426BE7 !important;
     font-weight: bold;
     color: #FFFFFF !important;
 }
 
+/* Define white */
 .white, .white a {
   color: #fff;
 }
 
+/* Navbar color override */
 .navbar-default .navbar-nav > li > a {
     color: #FFFFFF;
 }
 
+/* Buzzer assignment modal */
 .modal-body {
   height: 200px;
 }
 
+/* Buzzer successful link to party */
 #buzzer-modal-success-message {
   font-size: 30px;
   display: none;
@@ -84,6 +92,7 @@ color:#ffffff;
 
 /* Center the login elements */
 .login {
+
     /* Horizontal */
     text-align: center;
     margin-left: auto;
@@ -96,14 +105,15 @@ color:#ffffff;
     transform: translateY(50%);
 }
 
+/* Horizontal centering of add user elements */
 .add_user {
-   /* Horizontal */
     text-align: center;
     margin-left: auto;
     margin-right: auto;
     width: 200px;
 }
 
+/* Button style */
 .btn-primary {
     background-color: #426BE7;
     border: none;
@@ -111,6 +121,7 @@ color:#ffffff;
     /*border-width: 2px;*/
 }
 
+/* Button hover behavior */
 .btn-primary:hover {
     background-color: #426BE7;
     border: none;
@@ -119,6 +130,7 @@ color:#ffffff;
     -moz-box-shadow:    0px 0px 5px 2px #A9A9A9;
 }
 
+/* Button active behavior */
 .btn-primary:active {
     /*background-color: #374570;*/
     background-color: #426BE7 !important;
@@ -128,24 +140,27 @@ color:#ffffff;
     -moz-box-shadow:    inset 0px 0px 2px 2px #000000;
 }
 
+/* Button default style */
 .btn-default {
     background-color: #426BE7;
     color: #FFFFFF !important;
 }
 
+/* Red button to unlink buzzer */
 .unlink-buzzer-button {
     background-color: #DD2A17;
     color: #FFFFFF;
 }
 
+/* Unlink button hover behavior */
 .unlink-buzzer-button.btn-default:hover {
     color: #FFFFFF;
     background-color: #AA0000 !important;
     /*border-color: #426BE7; set the color you want here*/
 }
 
-/*Formatting for Elipsis Circular Button.*/
-/*Source- https://goo.gl/qyg9Sp */
+/* Formatting for ellipsis button (extra actions) */
+/* Source- https://goo.gl/qyg9Sp */
 #elipsis {
   width: 30px;
   height: 30px;
@@ -154,10 +169,10 @@ color:#ffffff;
   font-size: 14px;
   line-height: 1.42;
   border-radius: 15px;
-  margin: 8px; /*Modifies spacing of buttons*/
+  margin: 8px; /* Modifies spacing of buttons */
 }
 
-/*Custom ID for modifying the buzzer management glyphicons.*/
+/* Custom ID for modifying the buzzer management glyphicons */
 #buzzer-status-ok {
     font-size: 3.0em;
     font-weight: 40;
@@ -185,51 +200,61 @@ color:#ffffff;
     /*border-color: #426BE7; set the color you want here*/
 }
 
+/* Waitlist/phone-ahead switch */
 #btnrocker {
     background-color: #F1F4F6;
     color: #000000 !important;
 }
 
+/* Waitlist/phone-ahead hover behavior */
 #btnrocker.btn:hover {
     background-color: #426BE7 !important;
 }
 
+/* Waitlist/phone-ahead active style */
 #btnrocker.btn.active {
     background-color: #426BE7;
     color: #FFFFFF !important;
 }
 
+/* Active button style */
 .btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
     outline: 0;
     background-color: #426BE7;
     color: #FFFFFF;
 }
 
+/* Deafult button hover behavior */
 .btn-default:hover {
     color: #FFFFFF;
     background-color: #0F48B4 !important;
     /*border-color: #426BE7; set the color you want here*/
 }
 
+/* Dropdown toggle color */
 .btn-default dropdown-toggle {
     background-color: #FFFFFF !important;
 }
 
+/* Blue buttons */
 .btn.active, .btn:active {
     background-color: #426BE7;
 }
 
+/* Register spacing */
 .register-buzzer {
   margin-top: 25px;
   margin-bottom: 25px;
   width: 300px;
 }
 
+/* Login form element alignment */
 .form-login input {
     display: block;
     margin-bottom: 15px;
 }
 
+/* Login form element shadow */
 .form-login input:focus {
     -webkit-box-shadow: 0px 0px 5px 2px #426BE7;
     box-shadow:         0px 0px 5px 2px #426BE7;
@@ -237,10 +262,18 @@ color:#ffffff;
     border-color: white;
 }
 
-#hours-dropdown {
-  margin-left: 10px;
+/* Scrollable dropdown for minutes */
+.scrollable-menu {
+    height: auto;
+    max-height: 300px;
+    overflow-x: hidden;
 }
 
+.phone-ahead-toggle {
+  margin-right: 10px;
+}
+
+/* Login error alert */
 .login-alert {
     /* Horizontal */
     display: block;
@@ -255,20 +288,24 @@ color:#ffffff;
     transform: translateY(25%);
 }
 
+/* Add party spacing */
 .add-party-justify {
   margin-top: 10px;
   text-align: center;
 }
 
+/* Add party button spacing */
 .add-party-button {
   margin-left: 10px;
 }
 
+/* Add party container alignment */
 .add-party-container {
   margin-top: 25px;
   margin-bottom: 25px;
 }
 
+/* Alert spacing */
 #alert_placeholder {
     display: block;
     text-align: center;
@@ -292,6 +329,7 @@ color:#ffffff;
   }
 }
 
+/* Custom red for danger alerts */
 .alert-danger {
     color: #FFFFFF;
     background-color: #DD2A17;
