@@ -262,12 +262,15 @@ color:#ffffff;
     border-color: white;
 }
 
-/* Scrollable menu for minutes */
+/* Scrollable dropdown for minutes */
 .scrollable-menu {
     height: auto;
     max-height: 300px;
     overflow-x: hidden;
-    
+}
+
+.phone-ahead-toggle {
+  margin-right: 10px;
 }
 
 /* Login error alert */
