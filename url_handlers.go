@@ -637,13 +637,10 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
 func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[AnalyticsHandler] ")
     session := GetSession(w, r)
-
-    username, _ := session.Values["username"]
-    restaurantID := GetRestaurantIDFromUsername(username.(string))
-
-    log.Println(restaurantID)
-
-
+    if !IsUserLoggedIn(session) {
+        http.Redirect(w, r, "/login", 302)
+        return
+    }
     RenderTemplate(w, "assets/templates/analytics.html.tmpl", map[string]interface{}{})
 }
 
