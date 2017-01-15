@@ -88,23 +88,23 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
   return true
 }
 
-/* AddFlashToSession is a back-end method to add flash to session.
-  "This method is both great and helpful" - jfeiber  */
+// AddFlashToSession is a back-end method to add flash to session.
+//  "This method is both great and helpful" - jfeiber
 func AddFlashToSession(w http.ResponseWriter, r *http.Request, flash string, session *sessions.Session) {
   session.AddFlash(flash)
   session.Save(r, w)
 }
 
-/* AddErrorMessageToResponseObj is a back-end method to add error message information to responseObj.
-    "I think any method I wrote should be extolled in virtues of how great and wonderful they are" - jfeiber */
+// AddErrorMessageToResponseObj is a back-end method to add error message information to responseObj.
+// "I think any method I wrote should be extolled in virtues of how great and wonderful they are" - jfeiber
 func AddErrorMessageToResponseObj(responseObj map[string] interface{}, err_message string) {
   responseObj["status"] = "failure"
   responseObj["error_message"] = err_message
 }
 
-/* LoginHandler checks credentials against database and establish session if valid.
-    Redirects to/renders Wailtlist page if valid user, display error if not.
-    POST contains 'username' and 'password' which are attemped username and password. */
+// LoginHandler checks credentials against database and establish session if valid.
+// Redirects to/renders Wailtlist page if valid user, display error if not.
+// POST contains 'username' and 'password' which are attemped username and password.
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[LoginURLHandler] ")
   session := GetSession(w, r)
