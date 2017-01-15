@@ -2,15 +2,6 @@
 <html lang="en">
 <head>
 {{ template "header.html.tmpl" .}}
-<script>
-   $(function() {
-      $( "#datepicker-start" ).datepicker();
-      $( "#datepicker-start" ).datepicker("show");
-
-      $( "#datepicker-end" ).datepicker();
-      $( "#datepicker-end" ).datepicker("show");
-   });
-</script>
 </head>
 <body>
 {{ template "navbar.html.tmpl" .}}
@@ -29,10 +20,17 @@
   <div class="row">
     <div id="historical_parties" class="col-md-12">
     <h2>Historical Parties</h2>
-
     </div>
 </body>
 <script>
+$(function() {
+   $( "#datepicker-start" ).datepicker();
+   $( "#datepicker-start" ).datepicker("show");
+
+   $( "#datepicker-end" ).datepicker();
+   $( "#datepicker-end" ).datepicker("show");
+});
+
 function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCallback) {
   $.ajax({
     url: url,
@@ -55,7 +53,6 @@ function getHistoricalPartiesSuccessCallback(xhr, success) {
         $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated);
         $("#historical_parties").append("<br>");
     });
-
 }
 
 $("#get_parties_button").on('click', function() {
