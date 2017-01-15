@@ -634,7 +634,7 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-// AnalyticsHandle renders the analytics page
+// AnalyticsHandler renders the analytics page
 func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[AnalyticsHandler] ")
     session := GetSession(w, r)
@@ -645,6 +645,7 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
     RenderTemplate(w, "assets/templates/analytics.html.tmpl", map[string]interface{}{})
 }
 
+// GetHistoricalPartiesHandler Returns a json of historicalparties within a time range
 func GetHistoricalPartiesHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetHistoricalPartiesHandler]")
     returnObj := map[string] interface{} {"status": "success"}
@@ -661,7 +662,6 @@ func GetHistoricalPartiesHandler(w http.ResponseWriter, r *http.Request) {
             var format = "01/02/2006"
             var startDate, endDate time.Time
             var err interface{}
-
             if val, ok := startEndInfo["start_date"].(string); ok {
                 startDate, err = time.Parse(format, val)
                 if err != nil {
