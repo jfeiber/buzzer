@@ -133,8 +133,15 @@
             <td><span class="glyphicon glyphicon-user"></span></td>
           {{end}}
           <td>
+          {{if .PhoneAhead}}
+            <div class="btn-toolbar">
+            <button class="btn btn-default buzz-button" type="button">Assign Buzzer</button>
+          {{else}}
+            <div class="btn-toolbar">
             <button class="btn btn-default buzz-button" type="button">Buzz!</button>
+          {{end}}
             <button class="btn btn-default delete-party-button" type="button">Delete</button>
+            </div>
           </td>
         </tr>
       {{end}}
