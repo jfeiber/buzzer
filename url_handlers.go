@@ -634,6 +634,7 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+// AnalyticsHandle renders the analytics page
 func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[AnalyticsHandler] ")
     session := GetSession(w, r)
