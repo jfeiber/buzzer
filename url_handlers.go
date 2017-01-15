@@ -97,9 +97,9 @@ func AddFlashToSession(w http.ResponseWriter, r *http.Request, flash string, ses
 
 // AddErrorMessageToResponseObj is a back-end method to add error message information to responseObj.
 // "I think any method I wrote should be extolled in virtues of how great and wonderful they are" - jfeiber
-func AddErrorMessageToResponseObj(responseObj map[string] interface{}, err_message string) {
+func AddErrorMessageToResponseObj(responseObj map[string] interface{}, errMessage string) {
   responseObj["status"] = "failure"
-  responseObj["error_message"] = err_message
+  responseObj["error_message"] = errMessage
 }
 
 // LoginHandler checks credentials against database and establish session if valid.
