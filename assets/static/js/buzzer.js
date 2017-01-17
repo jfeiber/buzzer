@@ -180,7 +180,7 @@ function registerGetHistoricalClickHandlers() {
              "end_date": $("#datepicker-end").val()
          });
          AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response)}, getHistoricalPartiesSuccessCallback, completeCallback);
-    })
+    });
 }
 
 $(document).ready(function() {
