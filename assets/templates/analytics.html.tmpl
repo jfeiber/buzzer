@@ -7,14 +7,18 @@
 {{ template "navbar.html.tmpl" .}}
 <div class="container">
   <div class="row">
-    <div class="col-md-12">
-     <h2>Analytics</h2>
+        <div class="col-md-12">
+            <h2>Analytics</h2>
+        </div>
+
+        <div class="input-group input-daterange">
+            <input type="text" class="form-control" value="2012-04-05">
+            <div class="input-group-addon">to</div>
+            <input type="text" class="form-control" value="2012-04-19">
+        </div>
     </div>
-    <p style="display:inline-block;" >Start Date: <input type = "text"  id="datepicker-start"></p>
-    <p style="display:inline-block;">End Date: <input type = "text"  id="datepicker-end"></p>
-    <button class="btn btn-default get_parties_button">Get Historical</button>
 </div>
-</div>
+
 
 <div class="container">
   <div class="row">
@@ -23,12 +27,8 @@
     </div>
 </body>
 <script>
-$(function() {
-   $( "#datepicker-start" ).datepicker();
-   $( "#datepicker-start" ).datepicker("show");
-
-   $( "#datepicker-end" ).datepicker();
-   $( "#datepicker-end" ).datepicker("show");
-});
+    $('.input-daterange input').each(function() {
+        $(this).datepicker('clearDates');
+    });
 </script>
 </html>
