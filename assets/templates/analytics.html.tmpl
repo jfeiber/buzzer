@@ -31,30 +31,6 @@ $(function() {
    $( "#datepicker-end" ).datepicker("show");
 });
 
-function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCallback) {
-  $.ajax({
-    url: url,
-    type: "POST",
-    data: jsonStr,
-    contentType: "application/json",
-    error: errorCallback,
-    success: successCallback,
-    complete: completeCallback
-  });
-}
-
-function completeCallback(xhr, data) {
-    console.log(data);
- }
-
-function getHistoricalPartiesSuccessCallback(xhr, success) {
-    xhr.historical_parties.forEach( function (party)
-    {
-        $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated);
-        $("#historical_parties").append("<br>");
-    });
-}
-
 $("#get_parties_button").on('click', function() {
      jsonObj = JSON.stringify({"start_date": $("#datepicker-start").val(),
          "end_date": $("#datepicker-end").val()

@@ -235,3 +235,11 @@ $(document).ready(function() {
 
   setTimeout(refreshWaitlistTableRepeat, 2000);
 });
+
+function getHistoricalPartiesSuccessCallback(xhr, success) {
+    xhr.historical_parties.forEach( function (party)
+    {
+        $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated);
+        $("#historical_parties").append("<br>");
+    });
+}
