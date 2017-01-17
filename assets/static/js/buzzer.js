@@ -179,7 +179,7 @@ function registerGetHistoricalClickHandlers() {
          jsonObj = JSON.stringify({"start_date": $("#datepicker-start").val(),
              "end_date": $("#datepicker-end").val()
          });
-         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response)}, getHistoricalPartiesSuccessCallback, completeCallback);
+         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
     });
 }
 
