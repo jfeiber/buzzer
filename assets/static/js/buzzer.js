@@ -197,6 +197,15 @@ function registerUnlinkBuzzerClickHandlers() {
   });
 }
 
+function registerGetHistoricalClickHandlers() {
+    $(".get_parties_button").on('click', function() {
+         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+             "end_date": $(".form-control.endDate").val()
+         });
+         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
+    });
+}
+
 // get party info when ADD button is selected
 $(document).ready(function() {
   $(".add-party-button").click(function(){
@@ -225,6 +234,7 @@ $(document).ready(function() {
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
   registerUnlinkBuzzerClickHandlers();
+  registerGetHistoricalClickHandlers();
 
   $(".dropdown li a").click(function(){
     console.log("in handler");
@@ -260,3 +270,12 @@ $(document).ready(function() {
 
   setTimeout(refreshWaitlistTableRepeat, 2000);
 });
+
+function getHistoricalPartiesSuccessCallback(xhr, success) {
+    if (xhr.historical_parties) {
+        xhr.historical_parties.forEach( function (party) {
+            $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated);
+            $("#historical_parties").append("<br>");
+        });
+    }
+}
