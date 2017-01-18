@@ -2,6 +2,15 @@
 <html lang="en">
 <head>
 {{ template "header.html.tmpl" .}}
+<script>
+    console.log($('.input-daterange input') === undefined)
+    $(document).ready(function(){
+        $('.input-daterange input').each(function() {
+            $(this).datepicker({});
+        });
+    });
+
+</script>
 </head>
 <body>
 {{ template "navbar.html.tmpl" .}}
@@ -19,16 +28,12 @@
     </div>
 </div>
 
-
 <div class="container">
   <div class="row">
-    <div id="historical_parties" class="col-md-12">
-    <h2>Historical Parties</h2>
+        <div id="historical_parties" class="col-md-12">
+            <h2>Historical Parties</h2>
+        </div>
     </div>
+</div>
 </body>
-<script>
-    $('.input-daterange input').each(function() {
-        $(this).datepicker('clearDates');
-    });
-</script>
 </html>
