@@ -6,7 +6,11 @@
     console.log($('.input-daterange input') === undefined)
     $(document).ready(function(){
         $('.input-daterange input').each(function() {
-            $(this).datepicker({});
+            $(this).datepicker({
+                format: "mm/dd/yyyy",
+                startDate: "10/20/2016",
+                endDate: "11/30/2016"
+            });
         });
     });
 
@@ -21,9 +25,9 @@
         </div>
 
         <div class="input-group input-daterange">
-            <input type="text" class="form-control" value="2012-04-05">
+            <input type="text" class="form-control startDate" value="10/30/2016">
             <div class="input-group-addon">to</div>
-            <input type="text" class="form-control" value="2012-04-19">
+            <input type="text" class="form-control endDate" value="11/30/2016">
         </div>
     </div>
 </div>
@@ -33,7 +37,7 @@
         <div id="historical_parties" class="col-md-12">
             <h2>Historical Parties</h2>
         </div>
-    </div>
+        <button class="btn btn-default get_parties_button" type="button">Get Historical</button>
 </div>
 </body>
 </html>
