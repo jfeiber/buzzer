@@ -247,9 +247,7 @@ $(document).ready(function() {
 });
 
 function getHistoricalPartiesSuccessCallback(xhr, success) {
-    console.log("hell yeah");
     if (xhr.historical_parties) {
-        console.log(xhr)
         xhr.historical_parties.forEach( function (party) {
             $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated);
             $("#historical_parties").append("<br>");
