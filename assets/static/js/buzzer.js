@@ -1,5 +1,6 @@
 console.log("sup");
 
+// POST payload
 function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCallback) {
   $.ajax({
     url: url,
@@ -12,28 +13,33 @@ function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCall
   });
 }
 
+// creates Bootstrap alert for input errors
 function errorAlert(errorStr) {
   $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">'+errorStr+'</div>');
 }
 
+// error callback for add party failure
 function addPartyErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
   errorAlert("Add party request failed");
 }
 
+// error callback for delete party failure
 function deletePartyErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
   errorAlert("Delete party request failed");
 }
 
+// error callback for buzz party failure
 function buzzPartyErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
   errorAlert("Buzz party request failed");
 }
 
+// error callback for check buzzer assignment failure
 function isPartyAssignedBuzzerErrorCallback(xhr, error) {
   $('#buzzer-party-modal').modal('hide');
   console.debug(xhr);
@@ -41,23 +47,27 @@ function isPartyAssignedBuzzerErrorCallback(xhr, error) {
   errorAlert("Could not check to see if buzzer was assigned party.");
 }
 
+// error callback for unlink buzzer failure
 function unlinkBuzzerErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
   errorAlert("Unlink buzzer request failed.");
 }
 
+// clear buzzer assignment modal
 function clearModalCallback() {
   $('#buzzer-party-modal').modal('hide');
   $('.spinner').show();
   $('#buzzer-modal-success-message').hide();
 }
 
+// check if party with given party ID is assigned a buzzer
 function checkIfPartyAssignedBuzzer(activePartyID) {
   jsonObj = JSON.stringify({"active_party_id": parseInt(activePartyID)});
   AjaxJSONPOST("/frontend_api/is_party_assigned_buzzer", jsonObj, isPartyAssignedBuzzerErrorCallback, isPartyAssignedBuzzerSuccessCallback, completeCallback);
 }
 
+// success callback for buzzer assignment check
 function isPartyAssignedBuzzerSuccessCallback(xhr, success) {
   console.log(xhr);
   if (xhr.is_party_assigned_buzzer) {
@@ -70,27 +80,32 @@ function isPartyAssignedBuzzerSuccessCallback(xhr, success) {
   }
 }
 
+// success callback for add party
 function addPartySuccessCallbackBuzzer(xhr, success) {
   $('#buzzer-party-modal').modal({backdrop: 'static', keyboard: false});
   checkIfPartyAssignedBuzzer(xhr.active_party_id);
 }
 
+// success callback logging for add party
 function addPartySuccessCallbackPA(xhr, success) {
   console.log(xhr);
   console.log(success);
   refreshWaitlistTable();
 }
 
+// success callback logging for waitlist population
 function repopulateWaitlistSuccessCallback(xhr, success) {
   console.debug(xhr);
   console.debug(success);
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
 }
 
+// log callback to the console
 function completeCallback(xhr, data) {
   console.log(data);
 }
 
+// parse elapsed time into hours and minutes
 function parseTimeCreated(timeCreated) {
   var timeCreatedDate = new Date(timeCreated);
   var elapsedTime = Date.now()-timeCreatedDate;
@@ -105,6 +120,7 @@ function parseTimeCreated(timeCreated) {
   return hours + ":" + min;
 }
 
+// parse estimated wait time into hours and minutes
 function parseEstimatedWait(estimatedWaitTime) {
   var hours = Math.floor(estimatedWaitTime/60);
   var minutes = estimatedWaitTime-hours*60;
@@ -113,15 +129,18 @@ function parseEstimatedWait(estimatedWaitTime) {
   return hours + ":" + minutes;
 }
 
+// refresh waitlist table every 30 seconds
 function refreshWaitlistTableRepeat() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
   setTimeout(refreshWaitlistTable, 30000);
 }
 
+// refresh waitlist table (no built-in timeout)
 function refreshWaitlistTable() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
 }
 
+// repopulate waitlist table
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
   $('#waitlist-table').append('<tbody>');
@@ -146,10 +165,12 @@ function repopulateTable(activeParties) {
   registerBuzzClickHandlers();
 }
 
+// success callback for waitlist update
 function updateWaitlistSuccessCallback(xhr, data) {
   repopulateTable(xhr.waitlist_data);
 }
 
+// register click handlers for deleting a party
 function registerDeletePartyClickHandlers() {
   $(".delete-party-button").click(function(){
     console.log($(this).closest('tr').attr('activePartyID'));
@@ -158,6 +179,7 @@ function registerDeletePartyClickHandlers() {
   });
 }
 
+// register click handlers for buzz button
 function registerBuzzClickHandlers() {
   $(".buzz-button").click(function(){
     console.log($(this).closest('tr').attr('activePartyID'));
@@ -166,6 +188,7 @@ function registerBuzzClickHandlers() {
   });
 }
 
+// register click handlers for unlink buzzer button
 function registerUnlinkBuzzerClickHandlers() {
   $(".unlink-buzzer-button").click(function(){
     console.log($(this).closest('tr').attr('activePartyID'));
@@ -203,6 +226,7 @@ function resetAddPartyFields() {
 
 }
 
+// get party info when ADD button is selected
 $(document).ready(function() {
   registerPartyNameKeyHandlers();
   $(".add-party-button").click(function(){
@@ -241,6 +265,7 @@ $(document).ready(function() {
     $(this).parents(".dropdown").find('.btn').val($(this).text());
   });
 
+  // spinner parameters
   var opts = {
     lines: 15, // The number of lines to draw
     length: 56, // The length of each line
