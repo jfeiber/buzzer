@@ -197,33 +197,19 @@ function registerUnlinkBuzzerClickHandlers() {
   });
 }
 
-function registerPartyNameKeyHandlers() {
-  console.log("registering key handlers");
-  $(".party-name-field").keydown(function(){
-    enableDisableAddPartyButton();
-  });
-}
-
-function enableDisableAddPartyButton() {
-  console.log("here!!!");
-  partyName = $('#party-name-field').val();
-  partySize = $('.btn#party-dropdown-button').val();
-  waitMins = $('.btn#minutes-dropdown').val();
-  if (partyName === "" || partySize === "" || waitMins === "") {
-    $('.add-party-button').attr('disabled', true);
-  }
-}
-
+// reset add party fields after ADD button is hit
 function resetAddPartyFields() {
-  $('.btn#party-dropdown-button').html('Party Size ' + '<span class="caret"></span>');
-  $('.btn#party-dropdown-button').val(null);
-
-  $('.btn#minutes-dropdown').html('Minutes ' + '<span class="caret"></span>');
-  $('.btn#minutes-dropdown').val(null);
-
+  // party name
   $('#party-name-field').html('Party Name');
   $('#party-name-field').val(null);
 
+  // party size
+  $('.btn#party-dropdown-button').html('Party Size ' + '<span class="caret"></span>');
+  $('.btn#party-dropdown-button').val(null);
+
+  // wait time in minutes
+  $('.btn#minutes-dropdown').html('Minutes ' + '<span class="caret"></span>');
+  $('.btn#minutes-dropdown').val(null);
 }
 
 // get party info when ADD button is selected
