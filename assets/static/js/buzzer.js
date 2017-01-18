@@ -210,6 +210,14 @@ function resetAddPartyFields() {
   // wait time in minutes
   $('.btn#minutes-dropdown').html('Minutes ' + '<span class="caret"></span>');
   $('.btn#minutes-dropdown').val(null);
+
+function registerGetHistoricalClickHandlers() {
+    $(".get_parties_button").on('click', function() {
+         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+             "end_date": $(".form-control.endDate").val()
+         });
+         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
+    });
 }
 
 // get party info when ADD button is selected
@@ -243,6 +251,7 @@ $(document).ready(function() {
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
   registerUnlinkBuzzerClickHandlers();
+  registerGetHistoricalClickHandlers();
 
   // set dropdown button value and text to reflect selected value
   $(".dropdown li a").click(function(){
@@ -279,3 +288,12 @@ $(document).ready(function() {
 
   setTimeout(refreshWaitlistTableRepeat, 2000);
 });
+
+function getHistoricalPartiesSuccessCallback(xhr, success) {
+    if (xhr.historical_parties) {
+        xhr.historical_parties.forEach( function (party) {
+            $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated);
+            $("#historical_parties").append("<br>");
+        });
+    }
+}
