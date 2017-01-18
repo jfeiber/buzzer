@@ -197,6 +197,7 @@ function registerUnlinkBuzzerClickHandlers() {
   });
 }
 
+// placeholder until Joon comments this
 function registerGetHistoricalClickHandlers() {
     $(".get_parties_button").on('click', function() {
          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
