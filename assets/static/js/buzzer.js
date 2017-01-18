@@ -174,7 +174,37 @@ function registerUnlinkBuzzerClickHandlers() {
   });
 }
 
+function registerPartyNameKeyHandlers() {
+  console.log("registering key handlers");
+  $(".party-name-field").keydown(function(){
+    enableDisableAddPartyButton();
+  });
+}
+
+function enableDisableAddPartyButton() {
+  console.log("here!!!");
+  partyName = $('#party-name-field').val();
+  partySize = $('.btn#party-dropdown-button').val();
+  waitMins = $('.btn#minutes-dropdown').val();
+  if (partyName === "" || partySize === "" || waitMins === "") {
+    $('.add-party-button').attr('disabled', true);
+  }
+}
+
+function resetAddPartyFields() {
+  $('.btn#party-dropdown-button').html('Party Size ' + '<span class="caret"></span>');
+  $('.btn#party-dropdown-button').val(null);
+
+  $('.btn#minutes-dropdown').html('Minutes ' + '<span class="caret"></span>');
+  $('.btn#minutes-dropdown').val(null);
+
+  $('#party-name-field').html('Party Name');
+  $('#party-name-field').val(null);
+
+}
+
 $(document).ready(function() {
+  registerPartyNameKeyHandlers();
   $(".add-party-button").click(function(){
     // activePartyID = $('#party-name-field').id();
     partyName = $('#party-name-field').val();
@@ -191,12 +221,15 @@ $(document).ready(function() {
         $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>');
       return;
     }
+
     $('#alert_placeholder').html('');
     waitTimeExpected = parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     successCallback = (phoneAhead) ? addPartySuccessCallbackPA : addPartySuccessCallbackBuzzer;
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, successCallback, completeCallback);
-  });
+    resetAddPartyFields();
+
+    });
 
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
