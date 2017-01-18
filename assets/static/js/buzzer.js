@@ -214,7 +214,6 @@ function resetAddPartyFields() {
 
 // get party info when ADD button is selected
 $(document).ready(function() {
-  registerPartyNameKeyHandlers();
   $(".add-party-button").click(function(){
     // activePartyID = $('#party-name-field').id();
     partyName = $('#party-name-field').val();
@@ -245,6 +244,7 @@ $(document).ready(function() {
   registerBuzzClickHandlers();
   registerUnlinkBuzzerClickHandlers();
 
+  // set dropdown button value and text to reflect selected value
   $(".dropdown li a").click(function(){
     console.log("in handler");
     $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
