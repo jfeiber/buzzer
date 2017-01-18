@@ -197,6 +197,20 @@ function registerUnlinkBuzzerClickHandlers() {
   });
 }
 
+// reset add party fields after ADD button is hit
+function resetAddPartyFields() {
+  // party name
+  $('#party-name-field').html('Party Name');
+  $('#party-name-field').val(null);
+
+  // party size
+  $('.btn#party-dropdown-button').html('Party Size ' + '<span class="caret"></span>');
+  $('.btn#party-dropdown-button').val(null);
+
+  // wait time in minutes
+  $('.btn#minutes-dropdown').html('Minutes ' + '<span class="caret"></span>');
+  $('.btn#minutes-dropdown').val(null);
+
 function registerGetHistoricalClickHandlers() {
     $(".get_parties_button").on('click', function() {
          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
@@ -224,18 +238,22 @@ $(document).ready(function() {
         $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>');
       return;
     }
+
     $('#alert_placeholder').html('');
     waitTimeExpected = parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
     successCallback = (phoneAhead) ? addPartySuccessCallbackPA : addPartySuccessCallbackBuzzer;
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, successCallback, completeCallback);
-  });
+    resetAddPartyFields();
+
+    });
 
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
   registerUnlinkBuzzerClickHandlers();
   registerGetHistoricalClickHandlers();
 
+  // set dropdown button value and text to reflect selected value
   $(".dropdown li a").click(function(){
     console.log("in handler");
     $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
