@@ -488,6 +488,10 @@ func GetAvailablePartyHandler(w http.ResponseWriter, r *http.Request) {
       responseObj["p_a"] = 1;
       if activeParty != (ActiveParty{}) {
         responseObj["n"] = activeParty.PartyName
+        // Only send 20 chars of the party name to the buzzer.
+        if len(activeParty.PartyName) > 20 {
+          responseObj["n"] = activeParty.PartyName[:20]
+        }
         responseObj["t"] = activeParty.WaitTimeExpected
         responseObj["id"] = activeParty.ID
       } else {
