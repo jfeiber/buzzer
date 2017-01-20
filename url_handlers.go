@@ -462,7 +462,7 @@ func GetActivePartyFromBuzzerID(responseObj map[string] interface{}, buzzer Buzz
 // Returns false if party does not exist, else returns true and sets passed activeParty
 // pointer to found party.
 func GetActivePartyFromID(reqBodyObj map[string] interface{}, responseObj map[string] interface{}, activeParty *ActiveParty) bool {
-  db.First(activeParty, "id = ?", reqBodyObj["party_id"])
+  db.First(activeParty, "id = ?", reqBodyObj["id"])
   if *activeParty == (ActiveParty{}) {
     AddErrorMessageToResponseObjBuzzer(responseObj, "Party with that ID not found.")
     return false
