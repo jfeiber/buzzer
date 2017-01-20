@@ -122,7 +122,7 @@ func AddErrorMessageToResponseObj(responseObj map[string] interface{}, errMessag
 // use the more succinct API response used for API endpoints that interact with the Buzzer.
 func AddErrorMessageToResponseObjBuzzer(responseObj map[string] interface{}, errMessage string) {
   responseObj["e"] = 1
-  responseObj["e_mes"] = errMessage
+  responseObj["e_msg"] = errMessage
 }
 
 // LoginHandler checks credentials against database and establish session if valid.
