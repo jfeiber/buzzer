@@ -75,14 +75,30 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
   responseObj["status"] = "success"
   body, err := ioutil.ReadAll(r.Body)
   if err != nil {
-    responseObj["status"] = "failure"
-    responseObj["error_message"] = "Failed to parse request body."
+    AddErrorMessageToResponseObj(responseObj, "Failed to parse request body.")
     return false
   }
   err = json.Unmarshal(body, &reqBodyObj)
   if err != nil {
-    responseObj["status"] = "failure"
-    responseObj["error_message"] = "Failed to parse JSON."
+    AddErrorMessageToResponseObj(responseObj, "Failed to parse JSON.")
+    return false
+  }
+  return true
+}
+
+// ParseReqBodyBuzzer is a back-end method that performs the same functionality as the one above
+// but uses the more succinct response language for Buzzer API methods.
+func ParseReqBodyBuzzer(r *http.Request, responseObj map[string] interface{},
+                  reqBodyObj map[string] interface{}) bool {
+  responseObj["e"] = 0
+  body, err := ioutil.ReadAll(r.Body)
+  if err != nil {
+    AddErrorMessageToResponseObjBuzzer(responseObj, "Failed to parse request body.")
+    return false
+  }
+  err = json.Unmarshal(body, &reqBodyObj)
+  if err != nil {
+    AddErrorMessageToResponseObjBuzzer(responseObj, "Failed to parse JSON.")
     return false
   }
   return true
@@ -100,6 +116,13 @@ func AddFlashToSession(w http.ResponseWriter, r *http.Request, flash string, ses
 func AddErrorMessageToResponseObj(responseObj map[string] interface{}, errMessage string) {
   responseObj["status"] = "failure"
   responseObj["error_message"] = errMessage
+}
+
+// AddErrorMessageToResponseObjBuzzer performs the same functionality as the above method but
+// use the more succinct API response used for API endpoints that interact with the Buzzer.
+func AddErrorMessageToResponseObjBuzzer(responseObj map[string] interface{}, errMessage string) {
+  responseObj["e"] = 1
+  responseObj["e_mes"] = errMessage
 }
 
 // LoginHandler checks credentials against database and establish session if valid.
@@ -393,16 +416,16 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetBuzzerObjFromName is a back-end method to return all information (as object) on a buzzer based on buzzerName.
-//  Passed reqBodyObj contains 'buzzer_name' which is the buzzerName to query by.
+// Passed reqBodyObj contains 'buzzer_name' which is the buzzerName to query by.
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
   buzzerName := reqBodyObj["buzzer_name"]
   if buzzerName == nil {
-    AddErrorMessageToResponseObj(responseObj, "buzzer_name field required.")
+    AddErrorMessageToResponseObjBuzzer(responseObj, "buzzer_name field required.")
     return false
   } else {
     db.First(buzzer, "buzzer_name = ?", buzzerName)
     if *buzzer == (Buzzer{}) {
-      AddErrorMessageToResponseObj(responseObj, "Buzzer with that name not found.")
+      AddErrorMessageToResponseObjBuzzer(responseObj, "Buzzer with that name not found.")
       return false
     }
   }
@@ -441,7 +464,7 @@ func GetActivePartyFromBuzzerID(responseObj map[string] interface{}, buzzer Buzz
 func GetActivePartyFromID(reqBodyObj map[string] interface{}, responseObj map[string] interface{}, activeParty *ActiveParty) bool {
   db.First(activeParty, "id = ?", reqBodyObj["party_id"])
   if *activeParty == (ActiveParty{}) {
-    AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+    AddErrorMessageToResponseObjBuzzer(responseObj, "Party with that ID not found.")
     return false
   }
   return true
@@ -449,23 +472,26 @@ func GetActivePartyFromID(reqBodyObj map[string] interface{}, responseObj map[st
 
 // GetAvailablePartyHandler is a buzzer API method to get an active party to potentially be assigned to buzzer.
 // Returns first result from database of party with no assigned buzzer and not phone ahead.
-// Creates return object with party information of 'party_name', 'wait_time', 'party_id'.
+// The 'p_a' field in the response indicates whether or not a party is available. If a party is
+// available, then the response will also contain the name of the party ('n'), the estimated wait
+// time for the party ('t'), and the ID of the party ('id'). The response will also contain the
+// usual error info.
 func GetAvailablePartyHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[GetAvailablePartyHandler] ")
   responseObj := map[string] interface{} {}
   reqBodyObj := map[string] interface{}{}
-  if ParseReqBody(r, responseObj, reqBodyObj) {
+  if ParseReqBodyBuzzer(r, responseObj, reqBodyObj) {
     var buzzer Buzzer
     if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
       var activeParty ActiveParty
       db.First(&activeParty, "restaurant_id = ? and buzzer_id is null and phone_ahead is false", buzzer.RestaurantID)
-      responseObj["party_avail"] = true;
+      responseObj["p_a"] = 1;
       if activeParty != (ActiveParty{}) {
-        responseObj["party_name"] = activeParty.PartyName
-        responseObj["wait_time"] = activeParty.WaitTimeExpected
-        responseObj["party_id"] = activeParty.ID
+        responseObj["n"] = activeParty.PartyName
+        responseObj["t"] = activeParty.WaitTimeExpected
+        responseObj["id"] = activeParty.ID
       } else {
-        responseObj["party_avail"] = false;
+        responseObj["p_a"] = 0;
       }
     }
   }
@@ -474,15 +500,15 @@ func GetAvailablePartyHandler(w http.ResponseWriter, r *http.Request) {
 
 // AcceptPartyHandler is a buzzer API method handles response from buzzer accepting assignment to a active party.
 // If the accepted information is valid, the database is updated to reflect buzzer assignment.
-// reqBodyObj contains 'buzzer_name' assigned name of responding buzzer, and 'party_id' id of active
-// party accepted by buzzer.
+// reqBodyObj must contain 'bn' (the assigned name of requesting buzzer) and 'id' (id of active
+// party that the buzzer is accepting).
 func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[AcceptPartyHandler] ")
   responseObj := map[string] interface{} {}
   reqBodyObj := map[string] interface{}{}
-  if ParseReqBody(r, responseObj, reqBodyObj) {
-    if reqBodyObj["buzzer_name"] == nil || reqBodyObj["party_id"] == nil {
-      AddErrorMessageToResponseObj(responseObj, "Missing required fields.")
+  if ParseReqBodyBuzzer(r, responseObj, reqBodyObj) {
+    if reqBodyObj["bn"] == nil || reqBodyObj["id"] == nil {
+      AddErrorMessageToResponseObjBuzzer(responseObj, "Missing required fields.")
     } else {
       var activeParty ActiveParty
       if GetActivePartyFromID(reqBodyObj, responseObj, &activeParty) {
@@ -493,7 +519,7 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
             db.Model(&buzzer).Update("is_active", true)
           }
         } else {
-          AddErrorMessageToResponseObj(responseObj, "Can't accept a party that already has a buzzer")
+          AddErrorMessageToResponseObjBuzzer(responseObj, "Can't accept a party that already has a buzzer")
         }
       }
     }
@@ -504,21 +530,32 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
 // HeartbeatHandler is used by the buzzers to check in periodically. Right now that period is ~30
 // seconds. If a party has been marked inactive or a table is ready then the Buzzer will receive
 // that info in the response to this endpoint.
+// The 'i_a' field in the response indicates whether or not a party is active. In the future
+// this should return that a party is inactive if it's not in the ActiveParties DB as parties
+// that are no longer active will be moved to HistoricalParties.
+// The "t" field represents the expected wait time.
+// When the "b" field is 1 the buzzer will buzz.
 func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[HeartbeatHandler] ")
   responseObj := map[string] interface{} {}
   reqBodyObj := map[string] interface{} {}
-  if ParseReqBody(r, responseObj, reqBodyObj) {
+  if ParseReqBodyBuzzer(r, responseObj, reqBodyObj) {
     log.Println(reqBodyObj)
     var buzzer Buzzer
     if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
-      responseObj["is_active"] = buzzer.IsActive
+      responseObj["i_a"] = 0
+      if buzzer.IsActive {
+        responseObj["i_a"] = 1
+      }
       if buzzer.IsActive {
         db.Model(&buzzer).Update("last_heartbeat", time.Now().UTC())
         var activeParty ActiveParty
         if GetActivePartyFromBuzzerID(responseObj, buzzer, &activeParty) {
-          responseObj["wait_time"] = activeParty.WaitTimeExpected
-          responseObj["buzz"] = activeParty.IsTableReady
+          responseObj["t"] = activeParty.WaitTimeExpected
+          responseObj["b"] = 0
+          if activeParty.IsTableReady {
+            responseObj["b"] = 1
+          }
         }
       }
     }
@@ -528,15 +565,19 @@ func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
 
 // IsBuzzerRegisteredHandler is a buzzer API method checks to see if specified buzzer is
 // assigned/registered with a resturant. Uses buzzer name in reqBodyObj to get the related buzzer
-// object adn check for RestaurantID. Sets result to 'is_buzzer_registered' in responseObj.
+// object adn check for RestaurantID. The response field 'i_reg' is 1 if the buzzer is registered,
+// 0 otherwise.
 func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[IsBuzzerRegisteredHandler] ")
   responseObj := map[string] interface{} {}
   reqBodyObj := map[string] interface{}{}
-  if ParseReqBody(r, responseObj, reqBodyObj) {
+  if ParseReqBodyBuzzer(r, responseObj, reqBodyObj) {
     var buzzer Buzzer
     if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
-      responseObj["is_buzzer_registered"] = buzzer.RestaurantID != 0
+      responseObj["i_reg"] = 0
+      if  buzzer.RestaurantID != 0 {
+        responseObj["i_reg"] = 1
+      }
     }
   }
   RenderJSONFromMap(w, responseObj)
