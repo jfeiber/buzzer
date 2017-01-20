@@ -418,7 +418,7 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
 // GetBuzzerObjFromName is a back-end method to return all information (as object) on a buzzer based on buzzerName.
 // Passed reqBodyObj contains 'buzzer_name' which is the buzzerName to query by.
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
-  buzzerName := reqBodyObj["buzzer_name"]
+  buzzerName := reqBodyObj["bn"]
   if buzzerName == nil {
     AddErrorMessageToResponseObjBuzzer(responseObj, "buzzer_name field required.")
     return false
