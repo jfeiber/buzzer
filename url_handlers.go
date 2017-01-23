@@ -647,7 +647,7 @@ func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   if err := db.Create(&buzzer).Error; err != nil {
     Handle500Error(w, err)
   }
-  obj_map := map[string] interface{} {"status": "success", "buzzer_name": buzzerName}
+  obj_map := map[string] interface{} {"e": 0, "bn": buzzerName}
   RenderJSONFromMap(w, obj_map)
 }
 
