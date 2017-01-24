@@ -845,11 +845,10 @@ func getHistoricalPartiesHelper(startDate string, endDate string, restaurantID i
     endDateFormatted := endTime.Format("2006-01-02 15:04:05")
     var historicalParties []HistoricalParty
     db.Where("restaurant_id = ? AND time_created >= ? AND time_seated <= ?", restaurantID, startDateFormatted, endDateFormatted).Find(&historicalParties)
-    if len(historicalParties) > 0 {
-        return historicalParties
-    } else {
+    if len(historicalParties) == 0 {
         return nil
     }
+    return historicalParties
 }
 
 // GetAveragePartySizeHandler returns the average Party size from all historical parties in between certain dates
@@ -867,7 +866,7 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
             restaurantID := GetRestaurantIDFromUsername(username.(string))
             historicalParties := getHistoricalPartiesHelper(startEndInfo["start_date"].(string), startEndInfo["end_date"].(string), restaurantID)
 
-            var total int = 0
+            var total int
             for _, historicalParty := range historicalParties {
                 total += historicalParty.PartySize
             }
