@@ -761,18 +761,27 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
+func ChartHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[AnalyticsHandler] ")
+  session := GetSession(w, r)
+  //confirms valid session
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+  //get current session values
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
 
+  //query database for all parties associated with this restaurantID, order by time created asc
+//  db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
-
-  rows, err := db.Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Group("date(time_created)").Rows()
+  rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ?", restaurantID).Group("date(time_created)").Rows()
   if err != nil {
     log.Println("Error")
   }
 
-
-  var DateArray  []time.Time
+  var DateArray  []string
   var TotalSizeArray []int
 
   for rows.Next() {
@@ -782,7 +791,11 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
 
     rows.Scan(&date, &tsize)
 
-    DateArray = append(DateArray, date)
+    formatDate := date.Format("01/02/2006")
+
+    log.Println(formatDate)
+
+    DateArray = append(DateArray, formatDate)
     TotalSizeArray = append(TotalSizeArray, tsize)
   }
 
@@ -790,5 +803,5 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
     resultData["label_data"] = DateArray
     resultData["graph_data"] = TotalSizeArray
 
-  RenderTemplate(w, "assets/templates/analytics.html.tmpl", resultData)
+  RenderTemplate(w, "assets/templates/chart.html.tmpl", resultData)
 }
