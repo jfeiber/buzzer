@@ -200,7 +200,6 @@ function registerUnlinkBuzzerClickHandlers() {
 // placeholder until Joon comments this
 function registerGetHistoricalClickHandlers() {
     $(".get_parties_button").on('click', function() {
-        console.log("hey");
          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
              "end_date": $(".form-control.endDate").val()
          });
