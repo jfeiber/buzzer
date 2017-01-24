@@ -757,3 +757,38 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   w.WriteHeader(404)
   RenderTemplate(w, "assets/templates/404.html", map[string]interface{}{})
 }
+
+
+
+
+func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[AnalyticsHandler] ")
+
+
+
+  rows, err := db.Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Group("date(time_created)").Rows()
+  if err != nil {
+    log.Println("Error")
+  }
+
+
+  var DateArray  []time.Time
+  var TotalSizeArray []int
+
+  for rows.Next() {
+
+    var date time.Time
+    var tsize int
+
+    rows.Scan(&date, &tsize)
+
+    DateArray = append(DateArray, date)
+    TotalSizeArray = append(TotalSizeArray, tsize)
+  }
+
+    resultData := map[string]interface{}{}
+    resultData["label_data"] = DateArray
+    resultData["graph_data"] = TotalSizeArray
+
+  RenderTemplate(w, "assets/templates/analytics.html.tmpl", resultData)
+}
