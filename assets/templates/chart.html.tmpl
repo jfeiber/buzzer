@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--Login page-->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="../../icon.ico">
+
+  <head>
+  {{ template "header.html.tmpl" .}}
+  </head>
+  <body>
+  {{ template "navbar.html.tmpl" .}}
+  <div class="row login-alert">
+    <div id="alert_placeholder"></div>
+  </div>
+
+
+
+  <!-- Lato font family, thanks to Łukasz Dziedzic (Open Font License) -->
+  <link href="https://fonts.googleapis.com/css?family=Lato:normal,light,bold" rel="stylesheet">
+
+  <!-- JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/assets/static/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="/assets/static/css/buzzer.css" rel="stylesheet">
+
+  <script src="/assets/static/js/Chart.min.js"></script>
+
+</head>
+
+<body>
+
+
+  <div align="center" style="padding-top:100px">
+      <div style="width:800px;height:600px">
+          <canvas id="myChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+
+
+    <script>
+
+      $(document).ready(function() {
+
+        var labelData = {{.label_data}}
+        var dateData = {{.graph_data}}
+
+        var ctx = document.getElementById("myChart");
+        var myChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: labelData,
+              datasets: [{
+                  label: '# of Guests',
+                  data: dateData,
+                  backgroundColor: [
+                      'rgba(66, 107, 231, 0.2)',
+                      'rgba(255, 206, 86, 0.2)',
+                      'rgba(75, 192, 192, 0.2)',
+                      'rgba(153, 102, 255, 0.2)',
+                      'rgba(255, 159, 64, 0.2)'
+                  ],
+                  borderColor: [
+                      'rgba(66, 107, 231, 1)',
+                      'rgba(255, 206, 86, 1)',
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(153, 102, 255, 1)',
+                      'rgba(255, 159, 64, 1)'
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          maintainAspectRatio: false,
+          options: {
+              scales: {
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero:true
+                      }
+                  }]
+              }
+          }
+        });
+      });
+    </script>
+
+
+</body>
+</html>
