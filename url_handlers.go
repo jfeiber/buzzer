@@ -825,20 +825,21 @@ func GetHistoricalPartiesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // getHistoricalPartiesHelper returns a list of historical parties given a start and end date and restaurant id
-func getHistoricalPartiesHelper(startDate string, endDate string, restaurantID int) []HistoricalParty {
+func getHistoricalPartiesHelper(startDate string, endDate string, restaurantID int, returnObj map[string] interface{}) []HistoricalParty {
     var format = "01/02/2006"
     var startTime, endTime time.Time
     var err interface{}
     startTime, err = time.Parse(format, startDate)
     if err != nil {
-        log.Println("time.Parse failed")
+        returnObj["status"] = "failure"
+        returnObj["error_message"] = "time.Parse failed"
         return nil
     }
 
     endTime, err = time.Parse(format, endDate)
     if err != nil {
-        log.Println("time.Parse failed")
-        return nil
+        returnObj["status"] = "failure"
+        returnObj["error_message"] = "time.Parse failed"
     }
 
     startDateFormatted := startTime.Format("2006-01-02 15:04:05")
@@ -864,7 +865,21 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
         if ParseReqBody(r, returnObj, startEndInfo) {
             username, _ := session.Values["username"]
             restaurantID := GetRestaurantIDFromUsername(username.(string))
-            historicalParties := getHistoricalPartiesHelper(startEndInfo["start_date"].(string), startEndInfo["end_date"].(string), restaurantID)
+
+            var startDate, endDate string
+            var ok bool
+
+            if startDate, ok = startEndInfo["start_date"].(string); !ok {
+                returnObj["status"] = "failure"
+                returnObj["error_message"] = "start date undefined"
+            }
+
+            if endDate, ok = startEndInfo["end_date"].(string); !ok {
+                returnObj["status"] = "failure"
+                returnObj["error_message"] = "end date undefined"
+            }
+
+            historicalParties := getHistoricalPartiesHelper(startDate, endDate, restaurantID, returnObj)
 
             var total int
             for _, historicalParty := range historicalParties {
