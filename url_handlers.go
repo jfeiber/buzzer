@@ -760,7 +760,8 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-
+// ChartHandler is a method to render chart page
+//TODO: combine with analytics
 func ChartHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[AnalyticsHandler] ")
   session := GetSession(w, r)
@@ -772,9 +773,6 @@ func ChartHandler(w http.ResponseWriter, r *http.Request) {
   //get current session values
   username, _ := session.Values["username"]
   restaurantID := GetRestaurantIDFromUsername(username.(string))
-
-  //query database for all parties associated with this restaurantID, order by time created asc
-//  db.Order("time_created asc").Find(&parties, "restaurant_id = ?", restaurantID)
 
   rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ?", restaurantID).Group("date(time_created)").Rows()
   if err != nil {
