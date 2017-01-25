@@ -7,6 +7,7 @@ import (
     "html/template"
     "golang.org/x/crypto/bcrypt"
     "github.com/gorilla/sessions"
+    "github.com/jinzhu/gorm"
     "encoding/json"
     "math/rand"
     "time"
@@ -343,7 +344,7 @@ func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
           if foundBuzzer == (Buzzer{}) {
             AddErrorMessageToResponseObj(responseObj, "Buzzer with that ID not found.")
           } else {
-              db.Model(&foundBuzzer).Update("restaurant_id", nil)
+              db.Model(&foundBuzzer).Update("restaurant_id", gorm.Expr("NULL"))
           }
         }
       }

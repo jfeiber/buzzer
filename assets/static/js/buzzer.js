@@ -191,9 +191,8 @@ function registerBuzzClickHandlers() {
 // register click handlers for unlink buzzer button
 function registerUnlinkBuzzerClickHandlers() {
   $(".unlink-buzzer-button").click(function(){
-    console.log($(this).closest('tr').attr('activePartyID'));
-    activePartyID = $(this).closest('tr').attr('activePartyID');
-    AjaxJSONPOST('/frontend_api/unlink_buzzer', JSON.stringify({"active_party_id": activePartyID}), unlinkBuzzerErrorCallback, completeCallback, completeCallback);
+    buzzerID = $(this).closest('tr').attr('buzzerID');
+    AjaxJSONPOST('/frontend_api/unlink_buzzer', JSON.stringify({"buzzer_id": buzzerID}), unlinkBuzzerErrorCallback, completeCallback, completeCallback);
   });
 }
 
@@ -231,25 +230,38 @@ function resetAddPartyFields() {
   $('.btn#minutes-dropdown').val(null);
 }
 
-// get party info when ADD button is selected
-$(document).ready(function() {
+function checkIfAddPartyFormComplete() {
+  partyName = $('#party-name-field').val();
+  partySize = $('.btn#party-dropdown-button').val();
+  waitMins = $('.btn#minutes-dropdown').val();
+  if (partyName !== "" && partySize !== "" && waitMins !== "") {
+    $('.add-party-button').removeAttr('disabled');
+  } else {
+    $('.add-party-button').attr('disabled', 'disabled');
+  }
+}
+
+// Registers click/type handlers for fields/dropdowns relating to the add party menu.
+function registerAddPartyHandlers() {
+  // set dropdown button value and text to reflect selected value
+  $(".dropdown li a").click(function(){
+    console.log("in handler");
+    $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+    $(this).parents(".dropdown").find('.btn').val($(this).text());
+    checkIfAddPartyFormComplete();
+  });
+
+  $( "#party-name-field" ).keyup(function() {
+    checkIfAddPartyFormComplete();
+  });
+
+  // add party click handler
   $(".add-party-button").click(function(){
     // activePartyID = $('#party-name-field').id();
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown-button').val();
     waitMins = $('.btn#minutes-dropdown').val();
     phoneAhead = $('.phone-ahead-toggle .active input').attr('id') === "phone" ? true : false;
-    if (partyName === "") {
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party name</div>');
-      return;
-    } else if (partySize === "") {
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing party size</div>');
-      return;
-    } else if (waitMins === "") {
-        $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">Missing wait time minutes</div>');
-      return;
-    }
-
     $('#alert_placeholder').html('');
     waitTimeExpected = parseInt(waitMins);
     jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
@@ -258,19 +270,17 @@ $(document).ready(function() {
     resetAddPartyFields();
 
     });
+}
+
+// get party info when ADD button is selected
+$(document).ready(function() {
 
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
   registerUnlinkBuzzerClickHandlers();
   registerGetHistoricalClickHandlers();
   registerGetAveragePartySizeClickHandler();
-
-  // set dropdown button value and text to reflect selected value
-  $(".dropdown li a").click(function(){
-    console.log("in handler");
-    $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-    $(this).parents(".dropdown").find('.btn').val($(this).text());
-  });
+  registerAddPartyHandlers();
 
   // spinner parameters
   var opts = {
