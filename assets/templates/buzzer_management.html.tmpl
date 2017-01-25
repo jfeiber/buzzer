@@ -47,7 +47,7 @@
     <tbody>
       {{range .buzzer_data}}
       <!--Show name, status (active or not), time of last check-in, and action buttons for each buzzer-->
-        <tr>
+        <tr buzzerID="{{.ID}}">
           <td>{{.BuzzerName}}</td>
           {{ if .IsActive}}
             <td class="text-center"><span class="glyphicon glyphicon-ok" id="buzzer-status-ok"></span></td>
