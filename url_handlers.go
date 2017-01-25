@@ -868,26 +868,21 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
 
             var startDate, endDate string
             var ok bool
-
             if startDate, ok = startEndInfo["start_date"].(string); !ok {
                 returnObj["status"] = "failure"
                 returnObj["error_message"] = "start date undefined"
             }
-
             if endDate, ok = startEndInfo["end_date"].(string); !ok {
                 returnObj["status"] = "failure"
                 returnObj["error_message"] = "end date undefined"
             }
 
             historicalParties := getHistoricalPartiesHelper(startDate, endDate, restaurantID, returnObj)
-
             var total int
             for _, historicalParty := range historicalParties {
                 total += historicalParty.PartySize
             }
-
             returnObj["average_party_size"] = total / len(historicalParties)
-
         }
     }
     RenderJSONFromMap(w, returnObj)
