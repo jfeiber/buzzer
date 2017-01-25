@@ -73,7 +73,7 @@ func main() {
   router.HandleFunc("/analytics_api/get_historical_parties", GetHistoricalPartiesHandler)
   router.HandleFunc("/logout", LogoutHandler)
   router.HandleFunc("/frontend_api/get_linked_buzzers", GetLinkedBuzzersHandler)
-
+  router.HandleFunc("/chart", ChartHandler)
 
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
