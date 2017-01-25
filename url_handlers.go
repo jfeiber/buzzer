@@ -762,15 +762,42 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
-// AnalyticsHandler renders the analytics page
+// AnalyticsHandler renders the analytics page and load data for default chart.
 func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
-    log.SetPrefix("[AnalyticsHandler] ")
-    session := GetSession(w, r)
-    if !IsUserLoggedIn(session) {
-        http.Redirect(w, r, "/login", 302)
-        return
-    }
-    RenderTemplate(w, "assets/templates/analytics.html.tmpl", map[string]interface{}{})
+  log.SetPrefix("[AnalyticsHandler] ")
+  session := GetSession(w, r)
+  //confirms valid session
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+  //get current session values
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ?", restaurantID).Group("date(time_created)").Rows()
+  if err != nil {
+    log.Println("Error")
+  }
+
+  var DateArray  []string
+  var TotalSizeArray []int
+
+  for rows.Next() {
+    var date time.Time
+    var tsize int
+    rows.Scan(&date, &tsize)
+    formatDate := date.Format("01/02/2006")
+    log.Println(formatDate)
+    DateArray = append(DateArray, formatDate)
+    TotalSizeArray = append(TotalSizeArray, tsize)
+  }
+
+    resultData := map[string]interface{}{}
+    resultData["label_data"] = DateArray
+    resultData["graph_data"] = TotalSizeArray
+
+  RenderTemplate(w, "assets/templates/analytics.html.tmpl", resultData)
 }
 
 // GetHistoricalPartiesHandler Returns a json of historicalparties within a time range
@@ -927,50 +954,4 @@ func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[NotFoundHandler] ")
   w.WriteHeader(404)
   RenderTemplate(w, "assets/templates/404.html", map[string]interface{}{})
-}
-
-
-
-// ChartHandler is a method to render chart page
-//TODO: combine with analytics
-func ChartHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[AnalyticsHandler] ")
-  session := GetSession(w, r)
-  //confirms valid session
-  if !IsUserLoggedIn(session) {
-    http.Redirect(w, r, "/login", 302)
-    return
-  }
-  //get current session values
-  username, _ := session.Values["username"]
-  restaurantID := GetRestaurantIDFromUsername(username.(string))
-
-  rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ?", restaurantID).Group("date(time_created)").Rows()
-  if err != nil {
-    log.Println("Error")
-  }
-
-  var DateArray  []string
-  var TotalSizeArray []int
-
-  for rows.Next() {
-
-    var date time.Time
-    var tsize int
-
-    rows.Scan(&date, &tsize)
-
-    formatDate := date.Format("01/02/2006")
-
-    log.Println(formatDate)
-
-    DateArray = append(DateArray, formatDate)
-    TotalSizeArray = append(TotalSizeArray, tsize)
-  }
-
-    resultData := map[string]interface{}{}
-    resultData["label_data"] = DateArray
-    resultData["graph_data"] = TotalSizeArray
-
-  RenderTemplate(w, "assets/templates/chart.html.tmpl", resultData)
 }
