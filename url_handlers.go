@@ -824,6 +824,70 @@ func GetHistoricalPartiesHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, returnObj)
 }
 
+// getHistoricalPartiesHelper returns a list of historical parties given a start and end date and restaurant id
+func getHistoricalPartiesHelper(startDate string, endDate string, restaurantID int, returnObj map[string] interface{}) []HistoricalParty {
+    var format = "01/02/2006"
+    var startTime, endTime time.Time
+    var err interface{}
+    startTime, err = time.Parse(format, startDate)
+    if err != nil {
+        returnObj["status"] = "failure"
+        returnObj["error_message"] = "time.Parse failed"
+        return nil
+    }
+
+    endTime, err = time.Parse(format, endDate)
+    if err != nil {
+        returnObj["status"] = "failure"
+        returnObj["error_message"] = "time.Parse failed"
+    }
+
+    startDateFormatted := startTime.Format("2006-01-02 15:04:05")
+    endDateFormatted := endTime.Format("2006-01-02 15:04:05")
+    var historicalParties []HistoricalParty
+    db.Where("restaurant_id = ? AND time_created >= ? AND time_seated <= ?", restaurantID, startDateFormatted, endDateFormatted).Find(&historicalParties)
+    if len(historicalParties) == 0 {
+        return nil
+    }
+    return historicalParties
+}
+
+// GetAveragePartySizeHandler returns the average Party size from all historical parties in between certain dates
+func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetAveragePartySizeHandler]")
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, returnObj)
+    } else if r.Method == "POST" {
+        startEndInfo := map[string] interface{}{}
+        if ParseReqBody(r, returnObj, startEndInfo) {
+            username, _ := session.Values["username"]
+            restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+            var startDate, endDate string
+            var ok bool
+            if startDate, ok = startEndInfo["start_date"].(string); !ok {
+                returnObj["status"] = "failure"
+                returnObj["error_message"] = "start date undefined"
+            }
+            if endDate, ok = startEndInfo["end_date"].(string); !ok {
+                returnObj["status"] = "failure"
+                returnObj["error_message"] = "end date undefined"
+            }
+
+            historicalParties := getHistoricalPartiesHelper(startDate, endDate, restaurantID, returnObj)
+            var total int
+            for _, historicalParty := range historicalParties {
+                total += historicalParty.PartySize
+            }
+            returnObj["average_party_size"] = total / len(historicalParties)
+        }
+    }
+    RenderJSONFromMap(w, returnObj)
+}
+
 // IsPartyAssignedBuzzerHandler is a frontend API method to check if specified active party is
 // assigned buzzer. Passed object r contains 'active_party_id' to be quieried for, returnObj
 // contains response 'is_party_assigned_buzzer'. Used by fronted to check if buzzer has been

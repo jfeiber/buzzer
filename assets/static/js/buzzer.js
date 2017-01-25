@@ -207,6 +207,15 @@ function registerGetHistoricalClickHandlers() {
     });
 }
 
+function registerGetAveragePartySizeClickHandler() {
+    $(".get_average_party_size_button").on('click', function() {
+         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+             "end_date": $(".form-control.endDate").val()
+         });
+         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
+         AjaxJSONPOST("/analytics_api/get_average_party_size", jsonObj, function(response) { console.log(response); }, getAveragePartySizeSuccessCallback, completeCallback);
+    });
+}
 // reset add party fields after ADD button is hit
 function resetAddPartyFields() {
   // party name
@@ -254,6 +263,7 @@ $(document).ready(function() {
   registerBuzzClickHandlers();
   registerUnlinkBuzzerClickHandlers();
   registerGetHistoricalClickHandlers();
+  registerGetAveragePartySizeClickHandler();
 
   // set dropdown button value and text to reflect selected value
   $(".dropdown li a").click(function(){
@@ -294,8 +304,15 @@ $(document).ready(function() {
 function getHistoricalPartiesSuccessCallback(xhr, success) {
     if (xhr.historical_parties) {
         xhr.historical_parties.forEach( function (party) {
-            $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated);
+            $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated + "\t" + party.PartySize);
             $("#historical_parties").append("<br>");
         });
+    }
+}
+
+function getAveragePartySizeSuccessCallback(xhr, success) {
+    if (xhr.average_party_size) {
+        $("#average_party_size").append("average party size:\t" + xhr.average_party_size);
+        $("#average_party_size").append("<br>");
     }
 }
