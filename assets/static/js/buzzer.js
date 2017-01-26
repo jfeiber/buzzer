@@ -150,20 +150,28 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
     htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
- if (activeParties[i].PhoneAhead) {
+    if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
       htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Assign Buzzer</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
-    }
-    else {
-      if(activeParties[i].IsTableReady)
-      {
-        htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" disabled="disabled" type="button">Buzz!</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+    } else {
+      htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
+      htmlStr += '<td><div class="btn-toolbar">';
+      if(activeParties[i].IsTableReady) {      
+        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" disabled="disabled" type="button">Buzz!</button>';
       }
       else {
-      htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Buzz!</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Buzz!</button>';
       }
+      htmlStr += '<button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td><td><div class="btn-toolbar"><button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+    } else {
+        htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
+        
+      if (activeParties[i].BuzzerID !== 0){
+        htmlStr += '<button class="btn btn-default buzz-button" type="button">Buzz!</button>';
+      } else {
+        htmlStr += '<button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>';
+      }
+      htmlStr +=    '<button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     }
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
@@ -171,6 +179,7 @@ function repopulateTable(activeParties) {
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
   registerSeatPartyClickHandlers();
+  registerAssignBuzzerClickHandlers();
   registerBuzzClickHandlers();
 }
 
@@ -204,6 +213,16 @@ function registerBuzzClickHandlers() {
   });
 }
 
+// register click handlers for asign buzzer button
+function registerAssignBuzzerClickHandlers() {
+  $(".assign-buzzer-button").click(function(){
+    console.log($(this).closest('tr').attr('activePartyID'));
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/update_phone_ahead_status', JSON.stringify({"active_party_id": activePartyID}), buzzPartyErrorCallback, addPartySuccessCallbackBuzzer, completeCallback);
+
+  });
+}
+
 // register click handlers for unlink buzzer button
 function registerUnlinkBuzzerClickHandlers() {
   $(".unlink-buzzer-button").click(function(){
@@ -222,6 +241,7 @@ function registerGetHistoricalClickHandlers() {
     });
 }
 
+// another placeholder until Joon comments this
 function registerGetAveragePartySizeClickHandler() {
     $(".get_average_party_size_button").on('click', function() {
          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
@@ -231,6 +251,17 @@ function registerGetAveragePartySizeClickHandler() {
          AjaxJSONPOST("/analytics_api/get_average_party_size", jsonObj, function(response) { console.log(response); }, getAveragePartySizeSuccessCallback, completeCallback);
     });
 }
+
+function registerGetAverageWaitTimeClickHandler() {
+    $(".get_average_wait_time_button").on('click', function() {
+         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+             "end_date": $(".form-control.endDate").val()
+         });
+         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
+         AjaxJSONPOST("/analytics_api/get_average_wait_time", jsonObj, function(response) { console.log(response); }, getAveragePartySizeSuccessCallback, completeCallback);
+    });
+}
+
 // reset add party fields after ADD button is hit
 function resetAddPartyFields() {
   // party name
@@ -294,9 +325,11 @@ $(document).ready(function() {
   registerDeletePartyClickHandlers();
   registerSeatPartyClickHandlers();
   registerBuzzClickHandlers();
+  registerAssignBuzzerClickHandlers();
   registerUnlinkBuzzerClickHandlers();
   registerGetHistoricalClickHandlers();
   registerGetAveragePartySizeClickHandler();
+  registerGetAverageWaitTimeClickHandler();
   registerAddPartyHandlers();
 
   // spinner parameters
@@ -340,6 +373,17 @@ function getHistoricalPartiesSuccessCallback(xhr, success) {
 function getAveragePartySizeSuccessCallback(xhr, success) {
     if (xhr.average_party_size) {
         $("#average_party_size").append("average party size:\t" + xhr.average_party_size);
+        $("#average_party_size").append("<br>");
+    }
+}
+
+function getAveragePartySizeSuccessCallback(xhr, success) {
+    if ("average_wait_hours" in xhr) {
+        $("#average_party_size").append("average wait hours:\t" + xhr.average_wait_hours);
+        $("#average_party_size").append("<br>");
+    }
+    if (xhr.average_wait_minutes) {
+        $("#average_party_size").append("average wait minutes:\t" + xhr.average_wait_minutes);
         $("#average_party_size").append("<br>");
     }
 }
