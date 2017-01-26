@@ -158,11 +158,11 @@ function repopulateTable(activeParties) {
       if(activeParties[i].IsTableReady)
       {
         htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" disabled="disabled" type="button">Buzz!</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" disabled="disabled" type="button">Buzz!</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
       }
       else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" type="button">Buzz!</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Buzz!</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
       }
     }
     htmlStr += "</tr>";
@@ -196,8 +196,8 @@ function registerSeatPartyClickHandlers() {
 // register click handlers for buzz button
 function registerBuzzClickHandlers() {
   $(".buzz-button").click(function(){
-    console.log($(this).closest('tr').attr('activePartyID'));
     activePartyID = $(this).closest('tr').attr('activePartyID');
+    $(this).attr('disabled', 'disabled');
     AjaxJSONPOST('/frontend_api/activate_buzzer', JSON.stringify({"active_party_id": activePartyID}), buzzPartyErrorCallback, completeCallback, completeCallback);
   });
 }

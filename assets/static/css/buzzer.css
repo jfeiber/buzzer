@@ -200,12 +200,16 @@ color:#ffffff;
     /*border-color: #426BE7; set the color you want here*/
 }
 
-.seat-party {
+.seat-party-button {
     background-color: #006400;
     color: #FFFFFF;
 }
 
-.seat-party.btn-default:hover{
+.seat-party-button:active{
+    background-color: #006400 !important;
+}
+
+.seat-party-button.btn-default:hover{
     background-color: #004B00 !important;
 }
 
