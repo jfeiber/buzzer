@@ -155,7 +155,7 @@ function repopulateTable(activeParties) {
       htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     } else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar">'
+      htmlStr += '<td><div class="btn-toolbar">';
       if (activeParties[i].BuzzerID !== 0){
         htmlStr += '<button class="btn btn-default buzz-button" type="button">Buzz!</button>';
       } else {
@@ -198,7 +198,6 @@ function registerBuzzClickHandlers() {
 // register click handlers for asign buzzer button
 function registerAssignBuzzerClickHandlers() {
   $(".assign-buzzer-button").click(function(){
-    console.log("clicked \"Assign Buzzer\"")
     console.log($(this).closest('tr').attr('activePartyID'));
     activePartyID = $(this).closest('tr').attr('activePartyID');
     AjaxJSONPOST('/frontend_api/update_phone_ahead_status', JSON.stringify({"active_party_id": activePartyID}), buzzPartyErrorCallback, addPartySuccessCallbackBuzzer, completeCallback);
