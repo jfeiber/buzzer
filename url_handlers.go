@@ -603,7 +603,7 @@ func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     } else if ParseReqBody(r, responseObj, reqBodyObj) {
         activePartyID := reqBodyObj["active_party_id"]
         wasPartySeated := reqBodyObj["was_party_seated"]
-        if activePartyID == nil || wasPartySeated == nil {
+        if activePartyID == nil || wasPartySeated == nil{
             responseObj["status"] = "failure"
             responseObj["error_message"] = "Missing POST parameter."
         } else {
@@ -623,7 +623,7 @@ func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
                         activeParty.PartyName, PartySize: activeParty.PartySize, TimeCreated:
                         activeParty.TimeCreated, TimeSeated: time.Now().UTC(), WaitTimeExpected:
                         activeParty.WaitTimeExpected, WaitTimeCalculated: activeParty.WaitTimeCalculated,
-                        });
+                        WasPartySeated: wasPartySeated.(bool)})
               dbInfo := db.Delete(&activeParty)
               if dbInfo.Error == nil {
                   responseObj["status"] = "success"
