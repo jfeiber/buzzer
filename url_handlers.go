@@ -919,6 +919,7 @@ func validateStartEndDateJson(startEndInfo map[string] interface{}, returnObj ma
         returnObj["error_message"] = "start date undefined"
         return false
     }
+
     if _, ok := startEndInfo["end_date"].(string); !ok {
         returnObj["status"] = "failure"
         returnObj["error_message"] = "end date undefined"
@@ -937,6 +938,7 @@ func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
       HandleAuthErrorJson(w, returnObj)
     } else if r.Method == "POST" {
         startEndInfo := map[string] interface{}{}
+
         if ParseReqBody(r, returnObj, startEndInfo) {
             username, _ := session.Values["username"]
             restaurantID := GetRestaurantIDFromUsername(username.(string))
