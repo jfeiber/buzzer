@@ -40,6 +40,7 @@ type HistoricalParty struct {
     TimeSeated time.Time `gorm:"not null"`
     WaitTimeExpected int `gorm:"not null"`
     WaitTimeCalculated int `gorm:"not null"`
+    WasPartySeated bool `gorm:"not null"`
 }
 
 type User struct {
