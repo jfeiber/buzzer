@@ -221,7 +221,6 @@ function registerGetAverageWaitTimeClickHandler() {
          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
              "end_date": $(".form-control.endDate").val()
          });
-         console.log("hell yeah");
          AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
          AjaxJSONPOST("/analytics_api/get_average_wait_time", jsonObj, function(response) { console.log(response); }, getAveragePartySizeSuccessCallback, completeCallback);
     });
@@ -341,7 +340,6 @@ function getAveragePartySizeSuccessCallback(xhr, success) {
 }
 
 function getAveragePartySizeSuccessCallback(xhr, success) {
-    console.log(xhr);
     if ("average_wait_hours" in xhr) {
         $("#average_party_size").append("average wait hours:\t" + xhr.average_wait_hours);
         $("#average_party_size").append("<br>");
