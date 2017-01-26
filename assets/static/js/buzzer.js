@@ -155,10 +155,10 @@ function repopulateTable(activeParties) {
       htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Assign Buzzer</button><button class="btn btn-default seat-party" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     }
     else {
-      if(activeParties[i].isTableReady)
+      if(activeParties[i].IsTableReady)
       {
         htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" type="button">Buzzing</button><button class="btn btn-default seat-party" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" disabled="disabled" type="button">Buzz!</button><button class="btn btn-default seat-party" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
       }
       else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";

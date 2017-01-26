@@ -8,18 +8,11 @@
 {{ template "header.html.tmpl" .}}
 </head>
 <script type='text/javascript'>
+//Function to disable the buzz button once clicked.
 $(document).ready(function () {
-$('#buzzid').click(function() {
-   $(this).html('<span class="glyphicon glyphicon-ok"></span> Buzzing').attr('disabled', true);
-});
-$('#buzzid').click(function() {
-   $(this).html('Buzzing').attr('disabled', true);
-   // document.getElementById("buzzid").classList.add("seat-party");
-   // $(this).button().addClass("seat-party");
-   // setTimeout(function () {
-   //          $(this).button('reset').addClass("btn-success");
-   //      }, 200);
-});
+  $('#buzzid').click(function() {
+     $(this).attr('disabled', true);
+  });
 });
 </script>
 <body>

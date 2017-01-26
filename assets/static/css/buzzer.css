@@ -201,12 +201,12 @@ color:#ffffff;
 }
 
 .seat-party {
-    background-color: #42E76C;
+    background-color: #006400;
     color: #FFFFFF;
 }
 
 .seat-party.btn-default:hover{
-    background-color: #2B9646 !important;
+    background-color: #004B00 !important;
 }
 
 /* Waitlist/phone-ahead switch */
