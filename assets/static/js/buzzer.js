@@ -182,7 +182,7 @@ function updateWaitlistSuccessCallback(xhr, data) {
 function registerDeletePartyClickHandlers() {
   $(".delete-party-button").click(function(){
     activePartyID = $(this).closest('tr').attr('activePartyID');
-    AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
+    AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated" : false}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
   });
 }
 
