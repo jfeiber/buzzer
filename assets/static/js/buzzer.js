@@ -170,6 +170,7 @@ function repopulateTable(activeParties) {
   }
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
+  registerSeatPartyClickHandlers();
   registerBuzzClickHandlers();
 }
 
@@ -188,6 +189,7 @@ function registerDeletePartyClickHandlers() {
 
 function registerSeatPartyClickHandlers() {
   $(".seat-party-button").click(function(){
+    console.log("asdfhkasjhdf");
     activePartyID = $(this).closest('tr').attr('activePartyID');
     AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated": true}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
   });
