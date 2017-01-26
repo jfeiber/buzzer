@@ -233,6 +233,17 @@ function registerGetAveragePartySizeClickHandler() {
          AjaxJSONPOST("/analytics_api/get_average_party_size", jsonObj, function(response) { console.log(response); }, getAveragePartySizeSuccessCallback, completeCallback);
     });
 }
+
+function registerGetAverageWaitTimeClickHandler() {
+    $(".get_average_wait_time_button").on('click', function() {
+         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+             "end_date": $(".form-control.endDate").val()
+         });
+         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
+         AjaxJSONPOST("/analytics_api/get_average_wait_time", jsonObj, function(response) { console.log(response); }, getAveragePartySizeSuccessCallback, completeCallback);
+    });
+}
+
 // reset add party fields after ADD button is hit
 function resetAddPartyFields() {
   // party name
@@ -299,6 +310,7 @@ $(document).ready(function() {
   registerUnlinkBuzzerClickHandlers();
   registerGetHistoricalClickHandlers();
   registerGetAveragePartySizeClickHandler();
+  registerGetAverageWaitTimeClickHandler();
   registerAddPartyHandlers();
 
   // spinner parameters
@@ -342,6 +354,17 @@ function getHistoricalPartiesSuccessCallback(xhr, success) {
 function getAveragePartySizeSuccessCallback(xhr, success) {
     if (xhr.average_party_size) {
         $("#average_party_size").append("average party size:\t" + xhr.average_party_size);
+        $("#average_party_size").append("<br>");
+    }
+}
+
+function getAveragePartySizeSuccessCallback(xhr, success) {
+    if ("average_wait_hours" in xhr) {
+        $("#average_party_size").append("average wait hours:\t" + xhr.average_wait_hours);
+        $("#average_party_size").append("<br>");
+    }
+    if (xhr.average_wait_minutes) {
+        $("#average_party_size").append("average wait minutes:\t" + xhr.average_wait_minutes);
         $("#average_party_size").append("<br>");
     }
 }
