@@ -326,3 +326,43 @@ function getAveragePartySizeSuccessCallback(xhr, success) {
         $("#average_party_size").append("<br>");
     }
 }
+
+
+$(document).ready(function() {
+  var ctx = document.getElementById("myChart");
+  var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ["A", "B", "C", "D"],
+        datasets: [{
+            label: '# of Guests',
+            data: [12,23,10,11],
+            backgroundColor: [
+                'rgba(66, 107, 231, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(66, 107, 231, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    maintainAspectRatio: false,
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+  });
+});
