@@ -150,12 +150,20 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
     htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
-    if (activeParties[i].PhoneAhead) {
+ if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Assign Buzzer</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
-    } else {
+      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Assign Buzzer</button><button class="btn btn-default seat-party" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+    }
+    else {
+      if(activeParties[i].isTableReady)
+      {
+        htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
+        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" type="button">Buzzing</button><button class="btn btn-default seat-party" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      }
+      else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Buzz!</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" type="button">Buzz!</button><button class="btn btn-default seat-party" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      }
     }
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);

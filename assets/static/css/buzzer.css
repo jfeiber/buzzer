@@ -200,6 +200,15 @@ color:#ffffff;
     /*border-color: #426BE7; set the color you want here*/
 }
 
+.seat-party {
+    background-color: #42E76C;
+    color: #FFFFFF;
+}
+
+.seat-party.btn-default:hover{
+    background-color: #2B9646 !important;
+}
+
 /* Waitlist/phone-ahead switch */
 #btnrocker {
     background-color: #F1F4F6;
