@@ -406,12 +406,12 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
           if foundActiveParty == (ActiveParty{}) {
             AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
           } else {
+                responseObj["active_party_id"] = activePartyID
                 db.Model(&foundActiveParty).Update("phone_ahead", false)
             }
           }
         }
       }
-
     RenderJSONFromMap(w, responseObj)
   }
 }
@@ -937,7 +937,6 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
           returnObj["status"] = "failure"
           returnObj["error_message"] = "Party with the provided ID not found"
         }
-        log.Println(activeParty);
         if (activeParty.BuzzerID == 0) {
           returnObj["is_party_assigned_buzzer"] = false
         } else {
