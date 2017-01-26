@@ -602,9 +602,10 @@ func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
       HandleAuthErrorJson(w, responseObj)
     } else if ParseReqBody(r, responseObj, reqBodyObj) {
         activePartyID := reqBodyObj["active_party_id"]
-        if activePartyID == nil {
+        wasPartySeated := reqBodyObj["was_party_seated"]
+        if activePartyID == nil || wasPartySeated == nil {
             responseObj["status"] = "failure"
-            responseObj["error_message"] = "Missing active_party_id parameter"
+            responseObj["error_message"] = "Missing POST parameter."
         } else {
             var activeParty ActiveParty
             db.First(&activeParty, "ID=?", activePartyID)
@@ -618,6 +619,11 @@ func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
               }
             }
             if !failedBuzzerUpdate {
+              db.Create(&HistoricalParty{RestaurantID: activeParty.RestaurantID, PartyName:
+                        activeParty.PartyName, PartySize: activeParty.PartySize, TimeCreated:
+                        activeParty.TimeCreated, TimeSeated: time.Now().UTC(), WaitTimeExpected:
+                        activeParty.WaitTimeExpected, WaitTimeCalculated: activeParty.WaitTimeCalculated,
+                        });
               dbInfo := db.Delete(&activeParty)
               if dbInfo.Error == nil {
                   responseObj["status"] = "success"
