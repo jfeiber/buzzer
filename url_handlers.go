@@ -945,7 +945,7 @@ func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
             username, _ := session.Values["username"]
             restaurantID := GetRestaurantIDFromUsername(username.(string))
 
-            if validateStartEndDateJson(startEndInfo, returnObj) {
+            if validateStartEndDateJSON(startEndInfo, returnObj) {
                 historicalParties := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
                 var totalHours, totalMinutes float64
                 var count int
