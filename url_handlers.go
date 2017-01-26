@@ -913,7 +913,8 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
     }
     RenderJSONFromMap(w, returnObj)
 }
-func validateStartEndDateJson(startEndInfo map[string] interface{}, returnObj map[string] interface{}) bool {
+
+func validateStartEndDateJSON(startEndInfo map[string] interface{}, returnObj map[string] interface{}) bool {
     if _, ok := startEndInfo["start_date"].(string); !ok {
         returnObj["status"] = "failure"
         returnObj["error_message"] = "start date undefined"
@@ -929,6 +930,7 @@ func validateStartEndDateJson(startEndInfo map[string] interface{}, returnObj ma
     return true
 }
 
+// GetAverageWaitTimehandler Returns the average wait time of historical parties given a start and end date
 func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetAverageWaitTimehandler]")
     returnObj := map[string] interface{} {"status": "success"}
