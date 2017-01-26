@@ -150,8 +150,12 @@ $(document).ready(function () {
             <button class="btn btn-default seat-party" type="button">Seat Party</button>
           {{else}}
             <div class="btn-toolbar">
-            <button id="buzzid" class="btn btn-default" type="button">Buzz!</button>
-            <button class="btn btn-default seat-party" type="button">Seat Party</button>
+            {{if .IsTableReady}}
+              <button id="buzzid" class="btn btn-default" disabled="disabled" type="button">Buzz!</button>
+              {{else}}
+              <button id="buzzid" class="btn btn-default" type="button">Buzz!</button>
+              {{end}}
+              <button class="btn btn-default seat-party-button" type="button">Seat Party</button>
           {{end}}
             <button class="btn btn-default delete-party-button" type="button">Delete</button>
             </div>

@@ -152,17 +152,17 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
  if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Assign Buzzer</button><button class="btn btn-default seat-party" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Assign Buzzer</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     }
     else {
       if(activeParties[i].IsTableReady)
       {
         htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" disabled="disabled" type="button">Buzz!</button><button class="btn btn-default seat-party" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+        htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" disabled="disabled" type="button">Buzz!</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
       }
       else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" type="button">Buzz!</button><button class="btn btn-default seat-party" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button pulse-button" type="button">Buzz!</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
       }
     }
     htmlStr += "</tr>";
@@ -181,9 +181,15 @@ function updateWaitlistSuccessCallback(xhr, data) {
 // register click handlers for deleting a party
 function registerDeletePartyClickHandlers() {
   $(".delete-party-button").click(function(){
-    console.log($(this).closest('tr').attr('activePartyID'));
     activePartyID = $(this).closest('tr').attr('activePartyID');
     AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
+  });
+}
+
+function registerSeatPartyClickHandlers() {
+  $(".seat-party-button").click(function(){
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated": true}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
   });
 }
 
@@ -284,6 +290,7 @@ function registerAddPartyHandlers() {
 $(document).ready(function() {
 
   registerDeletePartyClickHandlers();
+  registerSeatPartyClickHandlers();
   registerBuzzClickHandlers();
   registerUnlinkBuzzerClickHandlers();
   registerGetHistoricalClickHandlers();
