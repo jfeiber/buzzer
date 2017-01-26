@@ -152,16 +152,23 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Assign Buzzer</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     } else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default buzz-button" type="button">Buzz!</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      htmlStr += '<td><div class="btn-toolbar">';
+      if (activeParties[i].BuzzerID !== 0){
+        htmlStr += '<button class="btn btn-default buzz-button" type="button">Buzz!</button>';
+      } else {
+        htmlStr += '<button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>';
+      }
+      htmlStr +=    '<button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     }
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
   }
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
+  registerAssignBuzzerClickHandlers();
   registerBuzzClickHandlers();
 }
 
@@ -188,6 +195,16 @@ function registerBuzzClickHandlers() {
   });
 }
 
+// register click handlers for asign buzzer button
+function registerAssignBuzzerClickHandlers() {
+  $(".assign-buzzer-button").click(function(){
+    console.log($(this).closest('tr').attr('activePartyID'));
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/update_phone_ahead_status', JSON.stringify({"active_party_id": activePartyID}), buzzPartyErrorCallback, addPartySuccessCallbackBuzzer, completeCallback);
+
+  });
+}
+
 // register click handlers for unlink buzzer button
 function registerUnlinkBuzzerClickHandlers() {
   $(".unlink-buzzer-button").click(function(){
@@ -206,6 +223,7 @@ function registerGetHistoricalClickHandlers() {
     });
 }
 
+// another placeholder until Joon comments this
 function registerGetAveragePartySizeClickHandler() {
     $(".get_average_party_size_button").on('click', function() {
          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
@@ -277,6 +295,7 @@ $(document).ready(function() {
 
   registerDeletePartyClickHandlers();
   registerBuzzClickHandlers();
+  registerAssignBuzzerClickHandlers();
   registerUnlinkBuzzerClickHandlers();
   registerGetHistoricalClickHandlers();
   registerGetAveragePartySizeClickHandler();
