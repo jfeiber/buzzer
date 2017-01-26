@@ -853,18 +853,18 @@ func GetHistoricalPartiesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // getHistoricalPartiesHelper returns a list of historical parties given a start and end date and restaurant id
-func getHistoricalPartiesHelper(startDate string, endDate string, restaurantID int, returnObj map[string] interface{}) []HistoricalParty {
+func getHistoricalPartiesHelper(startEndInfo map[string] interface{}, restaurantID int, returnObj map[string] interface{}) []HistoricalParty {
     var format = "01/02/2006"
     var startTime, endTime time.Time
     var err interface{}
-    startTime, err = time.Parse(format, startDate)
+    startTime, err = time.Parse(format, startEndInfo["start_date"].(string))
     if err != nil {
         returnObj["status"] = "failure"
         returnObj["error_message"] = "time.Parse failed"
         return nil
     }
 
-    endTime, err = time.Parse(format, endDate)
+    endTime, err = time.Parse(format, startEndInfo["end_date"].(string))
     if err != nil {
         returnObj["status"] = "failure"
         returnObj["error_message"] = "time.Parse failed"
@@ -894,18 +894,16 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
             username, _ := session.Values["username"]
             restaurantID := GetRestaurantIDFromUsername(username.(string))
 
-            var startDate, endDate string
-            var ok bool
-            if startDate, ok = startEndInfo["start_date"].(string); !ok {
+            if _, ok := startEndInfo["start_date"].(string); !ok {
                 returnObj["status"] = "failure"
                 returnObj["error_message"] = "start date undefined"
             }
-            if endDate, ok = startEndInfo["end_date"].(string); !ok {
+            if _, ok := startEndInfo["end_date"].(string); !ok {
                 returnObj["status"] = "failure"
                 returnObj["error_message"] = "end date undefined"
             }
 
-            historicalParties := getHistoricalPartiesHelper(startDate, endDate, restaurantID, returnObj)
+            historicalParties := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
             var total int
             for _, historicalParty := range historicalParties {
                 total += historicalParty.PartySize
@@ -915,7 +913,51 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
     }
     RenderJSONFromMap(w, returnObj)
 }
+func validateStartEndDateJson(startEndInfo map[string] interface{}, returnObj map[string] interface{}) bool {
+    if _, ok := startEndInfo["start_date"].(string); !ok {
+        returnObj["status"] = "failure"
+        returnObj["error_message"] = "start date undefined"
+        return false
+    }
+    if _, ok := startEndInfo["end_date"].(string); !ok {
+        returnObj["status"] = "failure"
+        returnObj["error_message"] = "end date undefined"
+        return false
+    }
 
+    return true
+}
+
+func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetAverageWaitTimehandler]")
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, returnObj)
+    } else if r.Method == "POST" {
+        startEndInfo := map[string] interface{}{}
+        if ParseReqBody(r, returnObj, startEndInfo) {
+            username, _ := session.Values["username"]
+            restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+            if validateStartEndDateJson(startEndInfo, returnObj) {
+                historicalParties := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
+                var totalHours, totalMinutes float64
+                var count int
+                for _, historicalParty := range historicalParties {
+                    currWaitTime := historicalParty.TimeSeated.Sub(historicalParty.TimeCreated)
+                    totalHours += currWaitTime.Hours()
+                    totalMinutes += currWaitTime.Minutes()
+                    count += 1
+                }
+                returnObj["average_wait_hours"] = int(totalHours) / count
+                returnObj["average_wait_minutes"] = int(totalMinutes) / count
+            }
+        }
+    }
+    RenderJSONFromMap(w, returnObj)
+}
 // IsPartyAssignedBuzzerHandler is a frontend API method to check if specified active party is
 // assigned buzzer. Passed object r contains 'active_party_id' to be quieried for, returnObj
 // contains response 'is_party_assigned_buzzer'. Used by fronted to check if buzzer has been
