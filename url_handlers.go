@@ -953,7 +953,7 @@ func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
                     currWaitTime := historicalParty.TimeSeated.Sub(historicalParty.TimeCreated)
                     totalHours += currWaitTime.Hours()
                     totalMinutes += currWaitTime.Minutes()
-                    count += 1
+                    count ++
                 }
                 returnObj["average_wait_hours"] = int(totalHours) / count
                 returnObj["average_wait_minutes"] = int(totalMinutes) / count
