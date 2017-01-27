@@ -144,27 +144,19 @@ $(document).ready(function () {
             <td><span class="glyphicon glyphicon-user"></span></td>
           {{end}}
           <td>
-          {{if .BuzzerID}}
             <div class="btn-toolbar">
-<<<<<<< HEAD
-            <button class="btn btn-default buzz-button" type="button">Assign Buzzer</button>
-            <button class="btn btn-default seat-party" type="button">Seat Party</button>
-          {{else}}
-            <div class="btn-toolbar">
-            {{if .IsTableReady}}
-              <button id="buzzid" class="btn btn-default" disabled="disabled" type="button">Buzz!</button>
+              {{if .BuzzerID}}
+                {{if .IsTableReady}}
+                  <button id="buzzid" class="btn btn-default" disabled="disabled" type="button">Buzz!</button>
+                {{else}}
+                  <button id="buzzid" class="btn btn-default buzz-button" type="button">Buzz!</button>
+                {{end}}
+                <button class="btn btn-default seat-party-button" type="button">Seat Party</button>
               {{else}}
-              <button id="buzzid" class="btn btn-default" type="button">Buzz!</button>
+                <button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>
+                <button class="btn btn-default seat-party-button" type="button">Seat Party</button>
               {{end}}
-              <button class="btn btn-default seat-party-button" type="button">Seat Party</button>
-=======
-            <button class="btn btn-default buzz-button" type="button">Buzz!</button>
-          {{else}}
-            <div class="btn-toolbar">
-            <button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>
->>>>>>> origin
-          {{end}}
-            <button class="btn btn-default delete-party-button" type="button">Delete</button>
+              <button class="btn btn-default delete-party-button" type="button">Delete</button>
             </div>
           </td>
         </tr>
