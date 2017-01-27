@@ -140,7 +140,7 @@ function refreshWaitlistTable() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
 }
 
-// repopulate waitlist table
+// repopulate waitlist table. This method is so jank it's crazy
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
   $('#waitlist-table').append('<tbody>');
@@ -152,22 +152,28 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     } else {
       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
       htmlStr += '<td><div class="btn-toolbar">';
-      if (activeParties[i].BuzzerID !== 0){
-        htmlStr += '<button class="btn btn-default buzz-button" type="button">Buzz!</button>';
+      if(activeParties[i].IsTableReady) {
+        htmlStr += '<button class="btn btn-default buzz-button" disabled="disabled" type="button">Buzz!</button>';
       } else {
-        htmlStr += '<button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>';
+        if (activeParties[i].BuzzerID !== 0){
+          htmlStr += '<button class="btn btn-default buzz-button" type="button">Buzz!</button>';
+        } else {
+          htmlStr += '<button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>';
+        }
+        htmlStr += '<button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button>';
       }
-      htmlStr +=    '<button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
+      htmlStr += "</div></td>";
     }
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
   }
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
+  registerSeatPartyClickHandlers();
   registerAssignBuzzerClickHandlers();
   registerBuzzClickHandlers();
 }
@@ -180,17 +186,24 @@ function updateWaitlistSuccessCallback(xhr, data) {
 // register click handlers for deleting a party
 function registerDeletePartyClickHandlers() {
   $(".delete-party-button").click(function(){
-    console.log($(this).closest('tr').attr('activePartyID'));
     activePartyID = $(this).closest('tr').attr('activePartyID');
-    AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
+    AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated" : false}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
+  });
+}
+
+function registerSeatPartyClickHandlers() {
+  $(".seat-party-button").click(function(){
+    console.log("asdfhkasjhdf");
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated": true}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
   });
 }
 
 // register click handlers for buzz button
 function registerBuzzClickHandlers() {
   $(".buzz-button").click(function(){
-    console.log($(this).closest('tr').attr('activePartyID'));
     activePartyID = $(this).closest('tr').attr('activePartyID');
+    $(this).attr('disabled', 'disabled');
     AjaxJSONPOST('/frontend_api/activate_buzzer', JSON.stringify({"active_party_id": activePartyID}), buzzPartyErrorCallback, completeCallback, completeCallback);
   });
 }
@@ -305,6 +318,7 @@ function registerAddPartyHandlers() {
 $(document).ready(function() {
 
   registerDeletePartyClickHandlers();
+  registerSeatPartyClickHandlers();
   registerBuzzClickHandlers();
   registerAssignBuzzerClickHandlers();
   registerUnlinkBuzzerClickHandlers();

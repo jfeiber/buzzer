@@ -7,6 +7,14 @@
 <head>
 {{ template "header.html.tmpl" .}}
 </head>
+<script type='text/javascript'>
+//Function to disable the buzz button once clicked.
+$(document).ready(function () {
+  $('#buzzid').click(function() {
+     $(this).attr('disabled', true);
+  });
+});
+</script>
 <body>
 {{ template "navbar.html.tmpl" .}}
 <div class="row login-alert">
@@ -136,14 +144,19 @@
             <td><span class="glyphicon glyphicon-user"></span></td>
           {{end}}
           <td>
-          {{if .BuzzerID}}
             <div class="btn-toolbar">
-            <button class="btn btn-default buzz-button" type="button">Buzz!</button>
-          {{else}}
-            <div class="btn-toolbar">
-            <button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>
-          {{end}}
-            <button class="btn btn-default delete-party-button" type="button">Delete</button>
+              {{if .BuzzerID}}
+                {{if .IsTableReady}}
+                  <button id="buzzid" class="btn btn-default" disabled="disabled" type="button">Buzz!</button>
+                {{else}}
+                  <button id="buzzid" class="btn btn-default buzz-button" type="button">Buzz!</button>
+                {{end}}
+                <button class="btn btn-default seat-party-button" type="button">Seat Party</button>
+              {{else}}
+                <button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>
+                <button class="btn btn-default seat-party-button" type="button">Seat Party</button>
+              {{end}}
+              <button class="btn btn-default delete-party-button" type="button">Delete</button>
             </div>
           </td>
         </tr>
