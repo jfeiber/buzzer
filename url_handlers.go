@@ -914,7 +914,7 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
 
             historicalPartiesByDate := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
             var labels []string
-            var average_party_sizes []int
+            var averagePartySizes []int
 
             for date, historicalParties := range historicalPartiesByDate {
                 labels = append(labels, date)
@@ -923,7 +923,7 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
                     total += historicalParty.PartySize
                 }
                 var averagePartySize = total / len(historicalParties)
-                average_party_sizes = append(average_party_sizes, averagePartySize)
+                averagePartySizes = append(average_party_sizes, averagePartySize)
             }
             returnObj["labels"] = labels
             returnObj["data"] = average_party_sizes
