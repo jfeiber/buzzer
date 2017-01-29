@@ -21,7 +21,11 @@
       {{else}}
       <li><a href="/buzzer_management">Buzzer Management</a></li>
       {{end}}
+      {{ if eq .template_name "assets/templates/analytics.html.tmpl" }}
+      <li class="active"><a href="/analytics">Analytics</a></li>
+      {{else}}
       <li><a href="/analytics">Analytics</a></li>
+      {{end}}
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li class="dropdown">
