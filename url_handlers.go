@@ -778,33 +778,184 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/login", 302)
     return
   }
-  //get current session values
-  username, _ := session.Values["username"]
-  restaurantID := GetRestaurantIDFromUsername(username.(string))
 
-  rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ?", restaurantID).Group("date(time_created)").Rows()
-  if err != nil {
-    log.Println("Error")
-  }
+  RenderTemplate(w, "assets/templates/analytics.html.tmpl",  map[string]interface{}{})
+}
 
-  var DateArray  []string
-  var TotalSizeArray []int
-
-  for rows.Next() {
-    var date time.Time
-    var tsize int
-    rows.Scan(&date, &tsize)
-    formatDate := date.Format("01/02/2006")
-    log.Println(formatDate)
-    DateArray = append(DateArray, formatDate)
-    TotalSizeArray = append(TotalSizeArray, tsize)
-  }
-
+// GetTotalCustomersChartHandler TODO: comment
+func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetTotalCustomersChartHandler]")
     resultData := map[string]interface{}{}
-    resultData["label_data"] = DateArray
-    resultData["graph_data"] = TotalSizeArray
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+    //confirms valid session
+    if !IsUserLoggedIn(session) {
+      http.Redirect(w, r, "/login", 302)
+      return
+    }
+    //get current session values
+    username, _ := session.Values["username"]
+    restaurantID := GetRestaurantIDFromUsername(username.(string))
 
-  RenderTemplate(w, "assets/templates/analytics.html.tmpl", resultData)
+    if r.Method == "POST" {
+      startEndInfo := map[string] interface{}{}
+      if ParseReqBody(r, returnObj, startEndInfo) {
+
+        if _, ok := startEndInfo["start_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "start date undefined"
+        }
+        if _, ok := startEndInfo["end_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "end date undefined"
+        }
+
+        startDate := startEndInfo["start_date"]
+        endDate := startEndInfo["end_date"]
+
+        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+        var DateArray  []string
+        var TotalSizeArray []interface{}
+
+        dateToPartySizeMap := map[string]int{}
+
+        for rows.Next() {
+          var date time.Time
+          var tsize int
+          rows.Scan(&date, &tsize)
+          formatDate := date.Format("01/02/2006")
+
+          dateToPartySizeMap[formatDate] = tsize
+        }
+
+        start, err := time.Parse("01/02/2006", startDate.(string))
+        end, err := time.Parse("01/02/2006", endDate.(string))
+
+        // set d to starting date and keep adding 1 day to it as long as month doesn't change
+        for d := start; d != end.AddDate(0, 0, 1); d = d.AddDate(0, 0, 1) {
+            dStr := d.Format("01/02/2006")
+            DateArray = append(DateArray, dStr)
+            if val, ok := dateToPartySizeMap[dStr]; ok {
+              TotalSizeArray = append(TotalSizeArray, val)
+            } else {
+              TotalSizeArray = append(TotalSizeArray, nil)
+            }
+        }
+
+        resultData["label_data"] = DateArray
+        resultData["graph_data"] = TotalSizeArray
+      }
+    }
+    RenderJSONFromMap(w, resultData)
+}
+
+// GetAveragePartySizeChartHandler returns the average Party size from all historical parties in between certain dates
+func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetAveragePartySizeChartHandler]")
+    resultData := map[string]interface{}{}
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+    //confirms valid session
+    if !IsUserLoggedIn(session) {
+      http.Redirect(w, r, "/login", 302)
+      return
+    }
+    //get current session values
+    username, _ := session.Values["username"]
+    restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+    if r.Method == "POST" {
+      startEndInfo := map[string] interface{}{}
+      if ParseReqBody(r, returnObj, startEndInfo) {
+
+        if _, ok := startEndInfo["start_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "start date undefined"
+        }
+        if _, ok := startEndInfo["end_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "end date undefined"
+        }
+
+        startDate := startEndInfo["start_date"]
+        endDate := startEndInfo["end_date"]
+
+        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, ROUND(avg(party_size), 0) as avgSize").Where("restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+        var DateArray  []string
+        var AvgSizeArray []interface{}
+
+        dateToPartySizeMap := map[string]int{}
+
+        for rows.Next() {
+          var date time.Time
+          var tsize int
+          rows.Scan(&date, &tsize)
+          formatDate := date.Format("01/02/2006")
+
+          dateToPartySizeMap[formatDate] = tsize
+        }
+
+        start, err := time.Parse("01/02/2006", startDate.(string))
+        end, err := time.Parse("01/02/2006", endDate.(string))
+
+        // set d to starting date and keep adding 1 day to it as long as month doesn't change
+        for d := start; d != end.AddDate(0, 0, 1); d = d.AddDate(0, 0, 1) {
+            dStr := d.Format("01/02/2006")
+            DateArray = append(DateArray, dStr)
+            if val, ok := dateToPartySizeMap[dStr]; ok {
+              AvgSizeArray = append(AvgSizeArray, val)
+            } else {
+              AvgSizeArray = append(AvgSizeArray, nil)
+            }
+        }
+
+        resultData["label_data"] = DateArray
+        resultData["graph_data"] = AvgSizeArray
+      }
+    }
+    RenderJSONFromMap(w, resultData)
+}
+
+// GetAveragePartySizeHandler returns the average Party size from all historical parties in between certain dates
+func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetAveragePartySizeHandler]")
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, returnObj)
+    } else if r.Method == "POST" {
+        startEndInfo := map[string] interface{}{}
+        if ParseReqBody(r, returnObj, startEndInfo) {
+            username, _ := session.Values["username"]
+            restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+            if _, ok := startEndInfo["start_date"].(string); !ok {
+                returnObj["status"] = "failure"
+                returnObj["error_message"] = "start date undefined"
+            }
+            if _, ok := startEndInfo["end_date"].(string); !ok {
+                returnObj["status"] = "failure"
+                returnObj["error_message"] = "end date undefined"
+            }
+
+            historicalParties := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
+            var total int
+            for _, historicalParty := range historicalParties {
+                total += historicalParty.PartySize
+            }
+            returnObj["average_party_size"] = total / len(historicalParties)
+        }
+    }
+    RenderJSONFromMap(w, returnObj)
 }
 
 // GetHistoricalPartiesHandler Returns a json of historicalparties within a time range
@@ -889,51 +1040,7 @@ func getHistoricalPartiesHelper(startEndInfo map[string] interface{}, restaurant
     return historicalPartiesByDate
 }
 
-// GetAveragePartySizeHandler returns the average Party size from all historical parties in between certain dates
-func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
-    log.SetPrefix("[GetAveragePartySizeHandler]")
-    returnObj := map[string] interface{} {"status": "success"}
-    session := GetSession(w, r)
-
-    if !IsUserLoggedIn(session) {
-      HandleAuthErrorJson(w, returnObj)
-    } else if r.Method == "POST" {
-        startEndInfo := map[string] interface{}{}
-        if ParseReqBody(r, returnObj, startEndInfo) {
-            username, _ := session.Values["username"]
-            restaurantID := GetRestaurantIDFromUsername(username.(string))
-
-            if _, ok := startEndInfo["start_date"].(string); !ok {
-                returnObj["status"] = "failure"
-                returnObj["error_message"] = "start date undefined"
-            }
-            if _, ok := startEndInfo["end_date"].(string); !ok {
-                returnObj["status"] = "failure"
-                returnObj["error_message"] = "end date undefined"
-            }
-
-            historicalPartiesByDate := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
-            var labels []string
-            var averagePartySizes []int
-
-            for date, historicalParties := range historicalPartiesByDate {
-                labels = append(labels, date)
-
-                var total int
-                for _, historicalParty := range historicalParties {
-                    total += historicalParty.PartySize
-                }
-
-                var averagePartySize = total / len(historicalParties)
-                averagePartySizes = append(averagePartySizes, averagePartySize)
-            }
-            returnObj["labels"] = labels
-            returnObj["data"] = averagePartySizes
-        }
-    }
-    RenderJSONFromMap(w, returnObj)
-}
-
+// validateStartEndDateJSON TODO: comment
 func validateStartEndDateJSON(startEndInfo map[string] interface{}, returnObj map[string] interface{}) bool {
     if _, ok := startEndInfo["start_date"].(string); !ok {
         returnObj["status"] = "failure"

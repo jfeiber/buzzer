@@ -336,6 +336,7 @@ $(document).ready(function() {
   registerGetAveragePartySizeClickHandler();
   registerGetAverageWaitTimeClickHandler();
   registerAddPartyHandlers();
+  registerAnalyticsChartButtonHandler();
 
   // spinner parameters
   var opts = {
@@ -402,4 +403,92 @@ function getAverageWaitTimeSuccessCallback(xhr, success) {
             $("#historical_parties").append("AverageWaitTime: " + datapiece + "---- " + "\t" + "<br>");
         });
     }
+}
+
+//  ANALYTICS STUFF   ************************
+$(document).ready(function() {
+  var ctx = document.getElementById("analyticsLineChart");
+  var data = {
+        labels: [],
+        datasets: [{
+            label: '',
+            data: [],
+            backgroundColor: [
+                'rgba(66, 107, 231, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(66, 107, 231, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    var analyticsLineChart = Chart.Line(ctx, {
+      data:data
+    });
+
+  });
+
+function registerAnalyticsChartButtonHandler() {
+    $(".get_average_party_chart_button").on('click', function() {
+         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+             "end_date": $(".form-control.endDate").val()
+         });
+        AjaxJSONPOST("/analytics_api/get_average_party_chart", jsonObj, function(response) { console.log(response); }, getAveragePartySizeChartSuccessCallback, completeCallback);
+    });
+
+    $(".get_total_party_chart_button").on('click', function() {
+         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+             "end_date": $(".form-control.endDate").val()
+         });
+        AjaxJSONPOST("/analytics_api/get_total_customers_chart", jsonObj, function(response) { console.log(response); }, getTotalCustomersChartSuccessCallback, completeCallback);
+    });
+}
+
+function getAveragePartySizeChartSuccessCallback(xhr, success) {
+  console.log(xhr);
+  updateAnalyticsChart(xhr.graph_data, xhr.label_data);
+}
+
+function getTotalCustomersChartSuccessCallback(xhr, success) {
+  console.log(xhr);
+  updateAnalyticsChart(xhr.graph_data, xhr.label_data);
+}
+
+function updateAnalyticsChart(graphData, labelData) {
+    var ctx = document.getElementById("analyticsLineChart");
+    var data = {
+          labels: labelData,
+          datasets: [{
+              label: '# of Guests',
+              data: graphData,
+              backgroundColor: [
+                  'rgba(66, 107, 231, 0.2)',
+                  'rgba(255, 206, 86, 0.2)',
+                  'rgba(75, 192, 192, 0.2)',
+                  'rgba(153, 102, 255, 0.2)',
+                  'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(66, 107, 231, 1)',
+                  'rgba(255, 206, 86, 1)',
+                  'rgba(75, 192, 192, 1)',
+                  'rgba(153, 102, 255, 1)',
+                  'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1
+          }]
+      };
+
+      var analyticsLineChart = Chart.Line(ctx, {
+        data:data
+      });
 }
