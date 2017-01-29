@@ -9,19 +9,18 @@
 {{ template "navbar.html.tmpl" .}}
 <body>
     {{.flash}}
-	<div class= "row add_user" align="center">
+	<div class= "row login">
 		<h2>Add User</h2>
-		<form action="/add_user" method="POST">
-			<p>
-			<!--Input fields for username, password, and restaurant name-->
-
-				User Name: <input type="text" name="username"><br>
-				Password: <input type="text" name="password"><br>
-  				Restaurant Name: <input type="text" name="restaurant_name"><br>
-                <br>
-                <button class="btn btn-lg btn-primary" type="submit">Add User</button>
-			</p>
+		<form action="/add_user" method="POST" class="form-login">
+		  <!--Input fields for username, password, and restaurant name-->
+		  <label for="username" class="sr-only">Username</label>
+		  <input id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+		  <label for="password" class="sr-only">Password</label>
+		  <input type="text" id="password" class="form-control" name="password" placeholder="Password" required>
+		  <label for="restaurant_name" class="sr-only">Restaurant Name</label>
+		  <input type="text" id="restaurant_name" class="form-control" name="restaurant_name" placeholder="Restaurant Name" required>
+		  <button class="btn btn-lg btn-primary btn-block" type="submit">Go</button>
 		</form>
-        </div>
+	</div>
 </body>
 </html>
