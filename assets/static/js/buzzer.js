@@ -369,9 +369,9 @@ $(document).ready(function() {
 function getHistoricalPartiesSuccessCallback(xhr, success) {
     if (xhr.historical_parties) {
         for (var date in xhr.historical_parties) {
-            xhr.historical_parties[date].forEach(function(party) {
-                $("#historical_parties").append("date: " + date + "---- " + party.PartyName + "\t" + "<br>")
-            })
+            for (var party in xhr.historical_parties[date]) {
+                $("#historical_parties").append("date: " + date + "---- " + party.PartyName + "\t" + "<br>");
+            }
         }
     }
 }
@@ -379,13 +379,13 @@ function getHistoricalPartiesSuccessCallback(xhr, success) {
 function getAveragePartySizeSuccessCallback(xhr, success) {
     if (xhr.labels) {
         xhr.labels.forEach(function(date) {
-            $("#historical_parties").append("date: " + date + "---- " + "\t" + "<br>")
+            $("#historical_parties").append("date: " + date + "---- " + "\t" + "<br>");
         });
     }
 
     if (xhr.data) {
         xhr.data.forEach(function(datapiece) {
-            $("#historical_parties").append("averagePartySize: " + datapiece + "---- " + "\t" + "<br>")
+            $("#historical_parties").append("averagePartySize: " + datapiece + "---- " + "\t" + "<br>");
         });
     }
 }
