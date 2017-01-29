@@ -776,6 +776,7 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/analytics.html.tmpl",  map[string]interface{}{})
 }
 
+// GetTotalCustomersChartHandler TODO: comment
 func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetTotalCustomersChartHandler]")
     resultData := map[string]interface{}{}
@@ -845,7 +846,6 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
     }
     RenderJSONFromMap(w, resultData)
 }
-
 
 // GetAveragePartySizeHandler returns the average Party size from all historical parties in between certain dates
 func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
@@ -1031,6 +1031,7 @@ func getHistoricalPartiesHelper(startEndInfo map[string] interface{}, restaurant
     return historicalParties
 }
 
+// validateStartEndDateJSON TODO: comment
 func validateStartEndDateJSON(startEndInfo map[string] interface{}, returnObj map[string] interface{}) bool {
     if _, ok := startEndInfo["start_date"].(string); !ok {
         returnObj["status"] = "failure"

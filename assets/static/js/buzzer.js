@@ -312,7 +312,7 @@ $(document).ready(function() {
   registerGetAveragePartySizeClickHandler();
   registerGetAverageWaitTimeClickHandler();
   registerAddPartyHandlers();
-  registerAnalyticsChartButtonHandler()
+  registerAnalyticsChartButtonHandler();
 
   // spinner parameters
   var opts = {
