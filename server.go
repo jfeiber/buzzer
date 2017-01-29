@@ -72,7 +72,7 @@ func main() {
   router.HandleFunc("/frontend_api/unlink_buzzer", UnlinkBuzzerHandler)
   router.HandleFunc("/analytics_api/get_historical_parties", GetHistoricalPartiesHandler)
   router.HandleFunc("/analytics_api/get_average_party_size", GetAveragePartySizeHandler)
-  router.HandleFunc("/analytics_api/get_average_wait_time", GetAverageWaitTimehandler)
+  // router.HandleFunc("/analytics_api/get_average_wait_time", GetAverageWaitTimehandler)
   router.HandleFunc("/logout", LogoutHandler)
   router.HandleFunc("/frontend_api/get_linked_buzzers", GetLinkedBuzzersHandler)
 

@@ -236,6 +236,16 @@ function registerGetHistoricalClickHandlers() {
     });
 }
 
+// Going to delete
+function registerGetHistoricalPartiesClickHandler() {
+    $(".get_parties_button").on('click', function() {
+         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+             "end_date": $(".form-control.endDate").val()
+         });
+         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
+    });
+}
+
 // another placeholder until Joon comments this
 function registerGetAveragePartySizeClickHandler() {
     $(".get_average_party_size_button").on('click', function() {
@@ -253,7 +263,7 @@ function registerGetAverageWaitTimeClickHandler() {
              "end_date": $(".form-control.endDate").val()
          });
          AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
-         AjaxJSONPOST("/analytics_api/get_average_wait_time", jsonObj, function(response) { console.log(response); }, getAveragePartySizeSuccessCallback, completeCallback);
+         AjaxJSONPOST("/analytics_api/get_average_wait_time", jsonObj, function(response) { console.log(response); }, getAverageWaitTimeSuccessCallback, completeCallback);
     });
 }
 
@@ -358,21 +368,29 @@ $(document).ready(function() {
 
 function getHistoricalPartiesSuccessCallback(xhr, success) {
     if (xhr.historical_parties) {
-        xhr.historical_parties.forEach( function (party) {
-            $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated + "\t" + party.PartySize);
-            $("#historical_parties").append("<br>");
+        for (var date in xhr.historical_parties) {
+            xhr.historical_parties[date].forEach(function(party) {
+                $("#historical_parties").append("date: " + date + "---- " + party.PartyName + "\t" + "<br>")
+            })
+        }
+    }
+}
+
+function getAveragePartySizeSuccessCallback(xhr, success) {
+    if (xhr.labels) {
+        xhr.labels.forEach(function(date) {
+            $("#historical_parties").append("date: " + date + "---- " + "\t" + "<br>")
+        });
+    }
+
+    if (xhr.data) {
+        xhr.data.forEach(function(datapiece) {
+            $("#historical_parties").append("averagePartySize: " + datapiece + "---- " + "\t" + "<br>")
         });
     }
 }
 
-function getAveragePartySizeSuccessCallback(xhr, success) {
-    if (xhr.average_party_size) {
-        $("#average_party_size").append("average party size:\t" + xhr.average_party_size);
-        $("#average_party_size").append("<br>");
-    }
-}
-
-function getAveragePartySizeSuccessCallback(xhr, success) {
+function getAverageWaitTimeSuccessCallback(xhr, success) {
     if ("average_wait_hours" in xhr) {
         $("#average_party_size").append("average wait hours:\t" + xhr.average_wait_hours);
         $("#average_party_size").append("<br>");
