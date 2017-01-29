@@ -39,83 +39,31 @@
         </div>
 
         <div class="input-group input-daterange">
-            <input type="text" class="form-control startDate" value="10/30/2016">
+            <input type="text" class="form-control startDate" value="Start Date">
             <div class="input-group-addon">to</div>
-            <input type="text" class="form-control endDate" value="11/30/2016">
+            <input type="text" class="form-control endDate" value="End Date">
         </div>
     </div>
 </div>
 
-<div class="container">
-  <div class="row">
-        <div id="historical_parties" class="col-md-12">
-            <h2>Historical Parties</h2>
-        </div>
-        <button class="btn btn-default get_parties_button" type="button">Get Historical</button>
-        <div id="average_party_size" class="col-md-12">
-            <h2>Average Party Size</h2>
-        </div>
-        <button class="btn btn-default get_average_party_size_button" type="button">Get historical and average_party_size</button>
-        <button class="btn btn-default get_average_wait_time_button" type="button">Get historical and average wait time</button>
-</div>
-
-
-
   <!-- div for basic chart loaded on render -->
-  <div align="center" style="padding-top:100px">
+  <div class="container" style="padding-top:10px">
+    <div class="row">
+      <div id="historical_parties" class="col-md-12">
+        <button class="btn btn-default get_average_party_chart_button" type="button">Avg Party Size Chart</button>
+        <button class="btn btn-default get_total_party_chart_button" type="button">Total Customers Chart</button>
+      </div>
+    </div>
+  </div>
+
+  <div align="center" style="padding-top:30px">
       <div style="width:800px;height:600px">
-          <canvas id="myChart"></canvas>
+          <canvas id="analyticsLineChart"></canvas>
       </div>
     </div>
   </div>
 
 
-  <!-- js script to build base chart from passed data -->
-    <script>
-
-      $(document).ready(function() {
-
-        var labelData = {{.label_data}}
-        var dateData = {{.graph_data}}
-
-        var ctx = document.getElementById("myChart");
-        var myChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-              labels: labelData,
-              datasets: [{
-                  label: '# of Guests',
-                  data: dateData,
-                  backgroundColor: [
-                      'rgba(66, 107, 231, 0.2)',
-                      'rgba(255, 206, 86, 0.2)',
-                      'rgba(75, 192, 192, 0.2)',
-                      'rgba(153, 102, 255, 0.2)',
-                      'rgba(255, 159, 64, 0.2)'
-                  ],
-                  borderColor: [
-                      'rgba(66, 107, 231, 1)',
-                      'rgba(255, 206, 86, 1)',
-                      'rgba(75, 192, 192, 1)',
-                      'rgba(153, 102, 255, 1)',
-                      'rgba(255, 159, 64, 1)'
-                  ],
-                  borderWidth: 1
-              }]
-          },
-          maintainAspectRatio: false,
-          options: {
-              scales: {
-                  yAxes: [{
-                      ticks: {
-                          beginAtZero:true
-                      }
-                  }]
-              }
-          }
-        });
-      });
-    </script>
 
 </body>
 </html>
