@@ -795,9 +795,11 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
     var tsize int
     rows.Scan(&date, &tsize)
     formatDate := date.Format("01/02/2006")
+    log.Println(formatDate)
     DateArray = append(DateArray, formatDate)
     TotalSizeArray = append(TotalSizeArray, tsize)
   }
+
     resultData := map[string]interface{}{}
     resultData["label_data"] = DateArray
     resultData["graph_data"] = TotalSizeArray
@@ -844,7 +846,6 @@ func GetHistoricalPartiesHandler(w http.ResponseWriter, r *http.Request) {
             }
 
             historicalPartiesByDate := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
-            log.Println(historicalPartiesByDate)
             if len(historicalPartiesByDate) > 0 {
                 returnObj["historical_parties"] = historicalPartiesByDate
             }
