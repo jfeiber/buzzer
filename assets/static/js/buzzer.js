@@ -244,21 +244,6 @@ function registerGetAverageWaitTimeClickHandler() {
     });
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // reset add party fields after ADD button is hit
 function resetAddPartyFields() {
   // party name
