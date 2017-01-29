@@ -918,10 +918,12 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
 
             for date, historicalParties := range historicalPartiesByDate {
                 labels = append(labels, date)
+
                 var total int
                 for _, historicalParty := range historicalParties {
                     total += historicalParty.PartySize
                 }
+
                 var averagePartySize = total / len(historicalParties)
                 averagePartySizes = append(averagePartySizes, averagePartySize)
             }
@@ -949,6 +951,7 @@ func validateStartEndDateJSON(startEndInfo map[string] interface{}, returnObj ma
 }
 
 // GetAverageWaitTimehandler Returns the average wait time of historical parties given a start and end date
+// http://stackoverflow.com/questions/14895782/average-difference-between-two-dates-grouped-by-a-third-field
 func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetAverageWaitTimehandler]")
     returnObj := map[string] interface{} {"status": "success"}
@@ -965,6 +968,7 @@ func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
 
             if validateStartEndDateJSON(startEndInfo, returnObj) {
                 historicalPartiesByDate := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
+
                 var labels []string
                 var averageWaitTimes []int
 
@@ -978,7 +982,9 @@ func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
                         totalMinutes += currWaitTime.Minutes()
                     }
 
-                    var averageWaitTime = int(totalHours * 60 + totalMinutes + 60) / len(historicalParties)
+                    var totalWaitTimeInMinutes = int(totalHours * 60 + totalMinutes)
+                    var averageWaitTime =  totalWaitTimeInMinutes/ len(historicalParties)
+
                     averageWaitTimes = append(averageWaitTimes, averageWaitTime)
                 }
                 returnObj["labels"] = labels

@@ -391,12 +391,15 @@ function getAveragePartySizeSuccessCallback(xhr, success) {
 }
 
 function getAverageWaitTimeSuccessCallback(xhr, success) {
-    if ("average_wait_hours" in xhr) {
-        $("#average_party_size").append("average wait hours:\t" + xhr.average_wait_hours);
-        $("#average_party_size").append("<br>");
+    if (xhr.labels) {
+        xhr.labels.forEach(function(date) {
+            $("#historical_parties").append("date: " + date + "---- " + "\t" + "<br>");
+        });
     }
-    if (xhr.average_wait_minutes) {
-        $("#average_party_size").append("average wait minutes:\t" + xhr.average_wait_minutes);
-        $("#average_party_size").append("<br>");
+
+    if (xhr.data) {
+        xhr.data.forEach(function(datapiece) {
+            $("#historical_parties").append("AverageWaitTime: " + datapiece + "---- " + "\t" + "<br>");
+        });
     }
 }
