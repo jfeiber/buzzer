@@ -923,10 +923,10 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
                     total += historicalParty.PartySize
                 }
                 var averagePartySize = total / len(historicalParties)
-                averagePartySizes = append(average_party_sizes, averagePartySize)
+                averagePartySizes = append(averagePartySizes, averagePartySize)
             }
             returnObj["labels"] = labels
-            returnObj["data"] = average_party_sizes
+            returnObj["data"] = averagePartySizes
         }
     }
     RenderJSONFromMap(w, returnObj)
@@ -949,37 +949,45 @@ func validateStartEndDateJSON(startEndInfo map[string] interface{}, returnObj ma
 }
 
 // GetAverageWaitTimehandler Returns the average wait time of historical parties given a start and end date
-// func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
-//     log.SetPrefix("[GetAverageWaitTimehandler]")
-//     returnObj := map[string] interface{} {"status": "success"}
-//     session := GetSession(w, r)
-//
-//     if !IsUserLoggedIn(session) {
-//       HandleAuthErrorJson(w, returnObj)
-//     } else if r.Method == "POST" {
-//         startEndInfo := map[string] interface{}{}
-//
-//         if ParseReqBody(r, returnObj, startEndInfo) {
-//             username, _ := session.Values["username"]
-//             restaurantID := GetRestaurantIDFromUsername(username.(string))
-//
-//             if validateStartEndDateJSON(startEndInfo, returnObj) {
-//                 historicalParties := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
-//                 var totalHours, totalMinutes float64
-//                 var count int
-//                 for _, historicalParty := range historicalParties {
-//                     currWaitTime := historicalParty.TimeSeated.Sub(historicalParty.TimeCreated)
-//                     totalHours += currWaitTime.Hours()
-//                     totalMinutes += currWaitTime.Minutes()
-//                     count ++
-//                 }
-//                 returnObj["average_wait_hours"] = int(totalHours) / count
-//                 returnObj["average_wait_minutes"] = int(totalMinutes) / count
-//             }
-//         }
-//     }
-//     RenderJSONFromMap(w, returnObj)
-// }
+func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetAverageWaitTimehandler]")
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, returnObj)
+    } else if r.Method == "POST" {
+        startEndInfo := map[string] interface{}{}
+
+        if ParseReqBody(r, returnObj, startEndInfo) {
+            username, _ := session.Values["username"]
+            restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+            if validateStartEndDateJSON(startEndInfo, returnObj) {
+                historicalPartiesByDate := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
+                var labels []string
+                var averageWaitTimes []int
+
+                for date, historicalParties := range historicalPartiesByDate {
+                    labels = append(labels, date)
+
+                    var totalHours, totalMinutes float64
+                    for _, historicalParty := range historicalParties {
+                        currWaitTime := historicalParty.TimeSeated.Sub(historicalParty.TimeCreated)
+                        totalHours += currWaitTime.Hours()
+                        totalMinutes += currWaitTime.Minutes()
+                    }
+
+                    var averageWaitTime = int(totalHours * 60 + totalMinutes + 60) / len(historicalParties)
+                    averageWaitTimes = append(averageWaitTimes, averageWaitTime)
+                }
+                returnObj["labels"] = labels
+                returnObj["data"] = averageWaitTimes
+            }
+        }
+    }
+    RenderJSONFromMap(w, returnObj)
+}
 
 // IsPartyAssignedBuzzerHandler is a frontend API method to check if specified active party is
 // assigned buzzer. Passed object r contains 'active_party_id' to be quieried for, returnObj
