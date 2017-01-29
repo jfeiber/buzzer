@@ -847,7 +847,7 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, resultData)
 }
 
-// GetAveragePartySizeHandler returns the average Party size from all historical parties in between certain dates
+// GetAveragePartySizeChartHandler returns the average Party size from all historical parties in between certain dates
 func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetAveragePartySizeChartHandler]")
     resultData := map[string]interface{}{}
