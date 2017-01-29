@@ -952,33 +952,6 @@ func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, returnObj)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // GetHistoricalPartiesHandler Returns a json of historicalparties within a time range
 func GetHistoricalPartiesHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetHistoricalPartiesHandler]")
