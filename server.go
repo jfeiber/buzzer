@@ -77,9 +77,7 @@ func main() {
   router.HandleFunc("/analytics_api/get_average_wait_time", GetAverageWaitTimehandler)
   router.HandleFunc("/analytics_api/get_average_party_chart", GetAveragePartySizeChartHandler)
   router.HandleFunc("/analytics_api/get_total_customers_chart", GetTotalCustomersChartHandler)
-
-
-
+  
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
 
   //Tell the router to server the assets folder as static files
