@@ -430,6 +430,13 @@ function registerAnalyticsChartButtonHandler() {
          });
         AjaxJSONPOST("/analytics_api/get_total_customers_chart", jsonObj, function(response) { console.log(response); }, getTotalCustomersChartSuccessCallback, completeCallback);
     });
+
+    $(".get_parties_hour_chart_button").on('click', function() {
+         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+             "end_date": $(".form-control.endDate").val()
+         });
+        AjaxJSONPOST("/analytics_api/get_parties_hour_chart", jsonObj, function(response) { console.log(response); }, getPartiesPerHourChartSuccessCallback, completeCallback);
+    });
 }
 
 function getAveragePartySizeChartSuccessCallback(xhr, success) {
@@ -438,6 +445,11 @@ function getAveragePartySizeChartSuccessCallback(xhr, success) {
 }
 
 function getTotalCustomersChartSuccessCallback(xhr, success) {
+  console.log(xhr);
+  updateAnalyticsChart(xhr.graph_data, xhr.label_data);
+}
+
+function getPartiesPerHourChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.graph_data, xhr.label_data);
 }

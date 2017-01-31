@@ -770,6 +770,7 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // AnalyticsHandler renders the analytics page and load data for default chart.
+//TODO: add comment
 func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[AnalyticsHandler] ")
   session := GetSession(w, r)
@@ -853,7 +854,10 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, resultData)
 }
 
+
+
 // GetAveragePartySizeChartHandler returns the average Party size from all historical parties in between certain dates
+//TODO: add comment
 func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetAveragePartySizeChartHandler]")
     resultData := map[string]interface{}{}
@@ -919,6 +923,73 @@ func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
 
         resultData["label_data"] = DateArray
         resultData["graph_data"] = AvgSizeArray
+      }
+    }
+    RenderJSONFromMap(w, resultData)
+}
+
+// GetParitesPerHourChartHandler queries and returns the data for the chart of number of parties by hour
+//TODO: add comment
+func GetParitesPerHourChartHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetParitesPerHourChartHandler]")
+    resultData := map[string]interface{}{}
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+    //confirms valid session
+    if !IsUserLoggedIn(session) {
+      http.Redirect(w, r, "/login", 302)
+      return
+    }
+    //get current session values
+    username, _ := session.Values["username"]
+    restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+    if r.Method == "POST" {
+      startEndInfo := map[string] interface{}{}
+      if ParseReqBody(r, returnObj, startEndInfo) {
+
+        if _, ok := startEndInfo["start_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "start date undefined"
+        }
+        if _, ok := startEndInfo["end_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "end date undefined"
+        }
+
+        startDate := startEndInfo["start_date"]
+        endDate := startEndInfo["end_date"]
+
+        //select date_part('hour', time_created), count(id) from historical_parties group by date_part('hour', time_created)
+        rows, err := db.Order("date_part('hour', time_created) asc").Table("historical_parties").Select("date_part('hour', time_created), count(id)").Where("restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date_part('hour', time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+        var HourArray  []int
+        var TotalPartyArray []interface{}
+
+        dateToPartySizeMap := map[int]int{}
+
+        for rows.Next() {
+          var hour int
+          var tsize int
+          rows.Scan(&hour, &tsize)
+
+          dateToPartySizeMap[hour] = tsize
+        }
+
+        for t := 0; t <= 24; t++ {
+            HourArray = append(HourArray, t)
+            if val, ok := dateToPartySizeMap[t]; ok {
+              TotalPartyArray = append(TotalPartyArray, val)
+            } else {
+              TotalPartyArray = append(TotalPartyArray, nil)
+            }
+        }
+
+        resultData["label_data"] = HourArray
+        resultData["graph_data"] = TotalPartyArray
       }
     }
     RenderJSONFromMap(w, resultData)
