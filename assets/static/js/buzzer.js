@@ -494,7 +494,7 @@ function updateAnalyticsChart(graphData, labelData, titleString, labelString, xA
                 }
               }]
             }
-          }
+          };
 
       var analyticsLineChart = Chart.Line(ctx, {
         data:data,
