@@ -392,28 +392,18 @@ $(document).ready(function() {
         datasets: [{
             label: '',
             data: [],
-            backgroundColor: [
-                'rgba(66, 107, 231, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(66, 107, 231, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
             borderWidth: 1
         }]
     };
-
+    var options =  {
+      legend: {
+        display: false
+      }
+    };
     var analyticsLineChart = Chart.Line(ctx, {
-      data:data
+      data:data,
+      options:options
     });
-
   });
 
 function registerAnalyticsChartButtonHandler() {
@@ -441,45 +431,150 @@ function registerAnalyticsChartButtonHandler() {
 
 function getAveragePartySizeChartSuccessCallback(xhr, success) {
   console.log(xhr);
-  updateAnalyticsChart(xhr.graph_data, xhr.label_data);
+  updateAnalyticsChart(xhr.graph_data, xhr.label_data, 'Average Party Size by Date', '', 'Date', 'Avg. Customers in Party');
 }
 
 function getTotalCustomersChartSuccessCallback(xhr, success) {
   console.log(xhr);
-  updateAnalyticsChart(xhr.graph_data, xhr.label_data);
+  updateTotalCustChart(xhr.date_data, xhr.breakfast_data, xhr.lunch_data, xhr.dinner_data);
 }
 
 function getPartiesPerHourChartSuccessCallback(xhr, success) {
   console.log(xhr);
-  updateAnalyticsChart(xhr.graph_data, xhr.label_data);
+  updateAnalyticsChart(xhr.graph_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
 }
 
-function updateAnalyticsChart(graphData, labelData) {
+function updateAnalyticsChart(graphData, labelData, titleString, labelString, xAxisString, yAxisString) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
           labels: labelData,
           datasets: [{
-              label: '# of Guests',
+              label: labelString,
               data: graphData,
               backgroundColor: [
                   'rgba(66, 107, 231, 0.2)',
-                  'rgba(255, 206, 86, 0.2)',
-                  'rgba(75, 192, 192, 0.2)',
-                  'rgba(153, 102, 255, 0.2)',
-                  'rgba(255, 159, 64, 0.2)'
               ],
               borderColor: [
                   'rgba(66, 107, 231, 1)',
-                  'rgba(255, 206, 86, 1)',
+              ],
+              borderWidth: 1
+          }]
+      };
+
+      var options = {
+            title: {
+                display: true,
+                text: titleString,
+                fontSize:25,
+                fontColor:'#000000',
+                fontFamily: 'Lato',
+                fontStyle: 'oblique'
+            },
+            legend: {
+              display: false
+            },
+            scales: {
+
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: yAxisString,
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: xAxisString,
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }]
+            }
+          }
+
+      var analyticsLineChart = Chart.Line(ctx, {
+        data:data,
+        options:options
+      });
+}
+
+
+function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
+    var ctx = document.getElementById("analyticsLineChart");
+    var data = {
+          labels: dateData,
+          datasets: [{
+              label: 'Breakfast',
+              data: breakfastData,
+              backgroundColor: [
+                  'rgba(66, 107, 231, 0.2)',
+              ],
+              borderColor: [
+                  'rgba(66, 107, 231, 1)',
+              ],
+              borderWidth: 1
+          },
+          {
+              label: 'Lunch',
+              data: lunchData,
+              backgroundColor: [
+                  'rgba(75, 192, 192, 0.2)',
+              ],
+              borderColor: [
                   'rgba(75, 192, 192, 1)',
-                  'rgba(153, 102, 255, 1)',
+              ],
+              borderWidth: 1
+          },
+          {
+              label: 'Dinner',
+              data: dinnerData,
+              backgroundColor: [
+                  'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
                   'rgba(255, 159, 64, 1)'
               ],
               borderWidth: 1
           }]
       };
 
+      var options = {
+            title: {
+                display: true,
+                text: 'Total Customers by Date',
+                fontSize:25,
+                fontColor:'#000000',
+                fontFamily: 'Lato',
+                fontStyle: 'oblique'
+            },
+            scales: {
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Number of Customers',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Date of Visit',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }]
+            }
+          }
+
       var analyticsLineChart = Chart.Line(ctx, {
-        data:data
+        data:data,
+        options:options
       });
 }
