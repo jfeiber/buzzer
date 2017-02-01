@@ -388,7 +388,7 @@ $(document).ready(function() {
     shadow: false, // Whether to render a shadow
     hwaccel: false, // Whether to use hardware acceleration
     position: 'relative' // Element positioning
-  }
+  };
   target = document.getElementById('datepicker-spinner');
   var spinner_datepicker = new Spinner(opts).spin(target);
   $('.datepicker-spinner').hide();
