@@ -57,7 +57,7 @@ function unlinkBuzzerErrorCallback(xhr, error) {
 // clear buzzer assignment modal
 function clearModalCallback() {
   $('#buzzer-party-modal').modal('hide');
-  $('.spinner').show();
+  $('.spinner_buzzer_modal').show();
   $('#buzzer-modal-success-message').hide();
 }
 
@@ -72,7 +72,7 @@ function isPartyAssignedBuzzerSuccessCallback(xhr, success) {
   console.log(xhr);
   if (xhr.is_party_assigned_buzzer) {
     refreshWaitlistTable();
-    $('.spinner').hide();
+    $('.spinner_buzzer_modal').hide();
     $('#buzzer-modal-success-message').show();
     setTimeout(clearModalCallback, 2000);
   } else {
@@ -328,13 +328,13 @@ $(document).ready(function() {
   registerAddPartyHandlers();
   registerAnalyticsChartButtonHandler();
 
-  // spinner parameters
+  // spinner_buzzer_modal parameters
   var opts = {
     lines: 15, // The number of lines to draw
     length: 56, // The length of each line
     width: 14, // The line thickness
     radius: 72, // The radius of the inner circle
-    scale: 0.50, // Scales overall size of the spinner
+    scale: 0.50, // Scales overall size of the spinner_buzzer_modal
     corners: 1, // Corner roundness (0..1)
     color: '#9B9B9B', // #rgb or #rrggbb or array of colors
     opacity: 0, // Opacity of the lines
@@ -344,7 +344,7 @@ $(document).ready(function() {
     trail: 56, // Afterglow percentage
     fps: 20, // Frames per second when using setTimeout() as a fallback for CSS
     zIndex: 2e9, // The z-index (defaults to 2000000000)
-    className: 'spinner', // The CSS class to assign to the spinner
+    className: 'spinner_buzzer_modal', // The CSS class to assign to the spinner_buzzer_modal
     top: '50%', // Top position relative to parent
     left: '50%', // Left position relative to parent
     shadow: false, // Whether to render a shadow
@@ -352,7 +352,32 @@ $(document).ready(function() {
     position: 'absolute', // Element positioning
   };
   var target = document.getElementById('buzzer-modal');
-  var spinner = new Spinner(opts).spin(target);
+  var spinner_buzzer_modal = new Spinner(opts).spin(target);
+
+  opts = {
+    lines: 11 // The number of lines to draw
+  , length: 34 // The length of each line
+  , width: 6 // The line thickness
+  , radius: 28 // The radius of the inner circle
+  , scale: 0.22 // Scales overall size of the spinner
+  , corners: 1 // Corner roundness (0..1)
+  , color: '#000' // #rgb or #rrggbb or array of colors
+  , opacity: 0.25 // Opacity of the lines
+  , rotate: 0 // The rotation offset
+  , direction: 1 // 1: clockwise, -1: counterclockwise
+  , speed: 1 // Rounds per second
+  , trail: 60 // Afterglow percentage
+  , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+  , zIndex: 2e9 // The z-index (defaults to 2000000000)
+  , className: 'datepicker-spinner' // The CSS class to assign to the spinner
+  , top: '50%' // Top position relative to parent
+  , left: '50%' // Left position relative to parent
+  , shadow: false // Whether to render a shadow
+  , hwaccel: false // Whether to use hardware acceleration
+  , position: 'absolute' // Element positioning
+  }
+  target = document.getElementById('datepicker-spinner');
+  var spinner_datepicker = new Spinner(opts).spin(target);
 
   setTimeout(refreshWaitlistTableRepeat, 2000);
 });

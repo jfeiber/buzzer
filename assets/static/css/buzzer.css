@@ -213,6 +213,10 @@ color:#ffffff;
     background-color: #004B00 !important;
 }
 
+.analytics-date-picker {
+  width: 300px;
+}
+
 /* Waitlist/phone-ahead switch */
 #btnrocker {
     background-color: #F1F4F6;
