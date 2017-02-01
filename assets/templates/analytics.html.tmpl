@@ -19,7 +19,6 @@
 <title>Analytics | Buzzer</title>
 
 <script>
-    console.log($('.input-daterange input') === undefined)
     $(document).ready(function(){
         $('.input-daterange input').each(function() {
             $(this).datepicker({
@@ -34,56 +33,39 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 add-party-container">
+    <div class="col-md-12 chart-selection-container">
       <div class="row">
 
         <!-- Party Name/Party Size button grouping -->
-        <div class="col-md-4" align="left">
-          <div class="btn-group dropdown">
-            <button type="button" class="btn btn-default dropdown-toggle" id="minutes-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="">
-              Minutes <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu scrollable-menu" role="menu">
-               <li><a href="#">5</a></li>
-               <li><a href="#">10</a></li>
-               <li><a href="#">15</a></li>
-               <li><a href="#">20</a></li>
-               <li><a href="#">25</a></li>
-               <li><a href="#">30</a></li>
-               <li><a href="#">35</a></li>
-               <li><a href="#">40</a></li>
-               <li><a href="#">45</a></li>
-               <li><a href="#">50</a></li>
-               <li><a href="#">55</a></li>
-               <li><a href="#">60</a></li>
-               <li><a href="#">65</a></li>
-               <li><a href="#">70</a></li>
-               <li><a href="#">75</a></li>
-               <li><a href="#">80</a></li>
-               <li><a href="#">85</a></li>
-               <li><a href="#">90</a></li>
-               <li><a href="#">95</a></li>
-               <li><a href="#">100</a></li>
-               <li><a href="#">105</a></li>
-               <li><a href="#">110</a></li>
-               <li><a href="#">115</a></li>
-               <li><a href="#">120</a></li>
-             </ul>
+        <div class="col-md-4">
+          <div class="chart-type-dropdown-container">
+            <div class="btn-group chart-type-dropdown">
+              <button type="button" class="btn btn-default dropdown-toggle" id="chart-type-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="">
+                Chart Type <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu scrollable-menu" role="menu">
+                 <li><a href="#">Avg Party Size</a></li>
+                 <li><a href="#">Total Customers</a></li>
+                 <li><a href="#">Parties Per Hour</a></li>
+               </ul>
+            </div>
           </div>
         </div>
 
         <div class="col-md-8">
+          <div class="datepicker-container">
           <div class="input-group input-daterange analytics-date-picker">
               <input type="text" class="form-control startDate" value="Start Date">
               <div class="input-group-addon">to</div>
               <input type="text" class="form-control endDate" value="End Date">
           </div>
           <div class="datepicker-spinner" id="datepicker-spinner"></div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-md-12 add-party-container">
-      <div class="row">
+    <div class="col-md-12" align="center">
+      <div class="row analytics-line-chart">
         <canvas id="analyticsLineChart"></canvas>
       </div>
     </div>

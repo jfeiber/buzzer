@@ -18,6 +18,13 @@ function errorAlert(errorStr) {
   $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">'+errorStr+'</div>');
 }
 
+function getAnalyticsChartErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Chart request failed.");
+  $('.datepicker-spinner').hide();
+}
+
 // error callback for add party failure
 function addPartyErrorCallback(xhr, error) {
   console.debug(xhr);
@@ -226,37 +233,6 @@ function registerUnlinkBuzzerClickHandlers() {
   });
 }
 
-// placeholder until Joon comments this
-function registerGetHistoricalClickHandlers() {
-    $(".get_parties_button").on('click', function() {
-         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
-             "end_date": $(".form-control.endDate").val()
-         });
-         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
-    });
-}
-
-// another placeholder until Joon comments this
-function registerGetAveragePartySizeClickHandler() {
-    $(".get_average_party_size_button").on('click', function() {
-         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
-             "end_date": $(".form-control.endDate").val()
-         });
-         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
-         AjaxJSONPOST("/analytics_api/get_average_party_size", jsonObj, function(response) { console.log(response); }, getAveragePartySizeSuccessCallback, completeCallback);
-    });
-}
-
-function registerGetAverageWaitTimeClickHandler() {
-    $(".get_average_wait_time_button").on('click', function() {
-         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
-             "end_date": $(".form-control.endDate").val()
-         });
-         AjaxJSONPOST("/analytics_api/get_historical_parties", jsonObj, function(response) { console.log(response); }, getHistoricalPartiesSuccessCallback, completeCallback);
-         AjaxJSONPOST("/analytics_api/get_average_wait_time", jsonObj, function(response) { console.log(response); }, getAveragePartySizeSuccessCallback, completeCallback);
-    });
-}
-
 // reset add party fields after ADD button is hit
 function resetAddPartyFields() {
   // party name
@@ -310,8 +286,47 @@ function registerAddPartyHandlers() {
     successCallback = (phoneAhead) ? addPartySuccessCallbackPA : addPartySuccessCallbackBuzzer;
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, successCallback, completeCallback);
     resetAddPartyFields();
+  });
+}
 
-    });
+function updateAnalyicsChartWithSelection(chartType) {
+  $('.datepicker-spinner').show();
+  jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(), "end_date": $(".form-control.endDate").val()});
+  if (chartType === "Avg Party Size"){
+    AjaxJSONPOST("/analytics_api/get_average_party_chart", jsonObj, getAnalyticsChartErrorCallback, getAveragePartySizeChartSuccessCallback, completeCallback);
+  } else if (chartType === "Total Customers") {
+    AjaxJSONPOST("/analytics_api/get_total_customers_chart", jsonObj, getAnalyticsChartErrorCallback, getTotalCustomersChartSuccessCallback, completeCallback);
+  } else if (chartType === "Parties Per Hour") {
+    AjaxJSONPOST("/analytics_api/get_parties_hour_chart", jsonObj, getAnalyticsChartErrorCallback, getPartiesPerHourChartSuccessCallback, completeCallback);
+  }
+}
+
+function checkIfChartSelectionComplete() {
+  chartType = $('.btn#chart-type-dropdown').val();
+  startDate = $('.form-control.startDate').val();
+  endDate = $('.form-control.endDate').val();
+  console.log(startDate);
+  console.log(endDate);
+  if (chartType !== "" && startDate !== "Start Date" && endDate !== "End Date") {
+    updateAnalyicsChartWithSelection(chartType);
+  }
+}
+
+function registerChartTypeSelectionHandler() {
+  $(".chart-type-dropdown li a").click(function(){
+    $(this).parents(".chart-type-dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+    $(this).parents(".chart-type-dropdown").find('.btn').val($(this).text());
+    checkIfChartSelectionComplete();
+  });
+
+  $('.startDate').change(function(){
+    checkIfChartSelectionComplete();
+  });
+
+  $('.endDate').change(function(){
+    checkIfChartSelectionComplete();
+  });
+
 }
 
 // get party info when ADD button is selected
@@ -322,11 +337,9 @@ $(document).ready(function() {
   registerBuzzClickHandlers();
   registerAssignBuzzerClickHandlers();
   registerUnlinkBuzzerClickHandlers();
-  registerGetHistoricalClickHandlers();
-  registerGetAveragePartySizeClickHandler();
-  registerGetAverageWaitTimeClickHandler();
   registerAddPartyHandlers();
-  registerAnalyticsChartButtonHandler();
+  // registerAnalyticsChartButtonHandler();
+  registerChartTypeSelectionHandler();
 
   // spinner_buzzer_modal parameters
   var opts = {
@@ -370,44 +383,18 @@ $(document).ready(function() {
   , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
   , zIndex: 2e9 // The z-index (defaults to 2000000000)
   , className: 'datepicker-spinner' // The CSS class to assign to the spinner
-  , top: '50%' // Top position relative to parent
-  , left: '50%' // Left position relative to parent
+  // , top: '50%' // Top position relative to parent
+  // , left: '50%' // Left position relative to parent
   , shadow: false // Whether to render a shadow
   , hwaccel: false // Whether to use hardware acceleration
-  , position: 'absolute' // Element positioning
+  , position: 'relative' // Element positioning
   }
   target = document.getElementById('datepicker-spinner');
   var spinner_datepicker = new Spinner(opts).spin(target);
+  $('.datepicker-spinner').hide();
 
   setTimeout(refreshWaitlistTableRepeat, 2000);
 });
-
-function getHistoricalPartiesSuccessCallback(xhr, success) {
-    if (xhr.historical_parties) {
-        xhr.historical_parties.forEach( function (party) {
-            $("#historical_parties").append("partyName:\t" + party.PartyName + "\t" + "TimeSeated:\t" + party.TimeSeated + "\t" + party.PartySize);
-            $("#historical_parties").append("<br>");
-        });
-    }
-}
-
-function getAveragePartySizeSuccessCallback(xhr, success) {
-    if (xhr.average_party_size) {
-        $("#average_party_size").append("average party size:\t" + xhr.average_party_size);
-        $("#average_party_size").append("<br>");
-    }
-}
-
-function getAveragePartySizeSuccessCallback(xhr, success) {
-    if ("average_wait_hours" in xhr) {
-        $("#average_party_size").append("average wait hours:\t" + xhr.average_wait_hours);
-        $("#average_party_size").append("<br>");
-    }
-    if (xhr.average_wait_minutes) {
-        $("#average_party_size").append("average wait minutes:\t" + xhr.average_wait_minutes);
-        $("#average_party_size").append("<br>");
-    }
-}
 
 //  ANALYTICS STUFF   ************************
 $(document).ready(function() {
@@ -441,42 +428,45 @@ $(document).ready(function() {
 
   });
 
-function registerAnalyticsChartButtonHandler() {
-    $(".get_average_party_chart_button").on('click', function() {
-         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
-             "end_date": $(".form-control.endDate").val()
-         });
-        AjaxJSONPOST("/analytics_api/get_average_party_chart", jsonObj, function(response) { console.log(response); }, getAveragePartySizeChartSuccessCallback, completeCallback);
-    });
-
-    $(".get_total_party_chart_button").on('click', function() {
-         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
-             "end_date": $(".form-control.endDate").val()
-         });
-        AjaxJSONPOST("/analytics_api/get_total_customers_chart", jsonObj, function(response) { console.log(response); }, getTotalCustomersChartSuccessCallback, completeCallback);
-    });
-
-    $(".get_parties_hour_chart_button").on('click', function() {
-         jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
-             "end_date": $(".form-control.endDate").val()
-         });
-        AjaxJSONPOST("/analytics_api/get_parties_hour_chart", jsonObj, function(response) { console.log(response); }, getPartiesPerHourChartSuccessCallback, completeCallback);
-    });
-}
+// function registerAnalyticsChartButtonHandler() {
+//     $(".get_average_party_chart_button").on('click', function() {
+//          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+//              "end_date": $(".form-control.endDate").val()
+//          });
+//         AjaxJSONPOST("/analytics_api/get_average_party_chart", jsonObj, function(response) { console.log(response); }, getAveragePartySizeChartSuccessCallback, completeCallback);
+//     });
+//
+//     $(".get_total_party_chart_button").on('click', function() {
+//          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+//              "end_date": $(".form-control.endDate").val()
+//          });
+//         AjaxJSONPOST("/analytics_api/get_total_customers_chart", jsonObj, function(response) { console.log(response); }, getTotalCustomersChartSuccessCallback, completeCallback);
+//     });
+//
+//     $(".get_parties_hour_chart_button").on('click', function() {
+//          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
+//              "end_date": $(".form-control.endDate").val()
+//          });
+//         AjaxJSONPOST("/analytics_api/get_parties_hour_chart", jsonObj, function(response) { console.log(response); }, getPartiesPerHourChartSuccessCallback, completeCallback);
+//     });
+// }
 
 function getAveragePartySizeChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.graph_data, xhr.label_data);
+  $('.datepicker-spinner').hide();
 }
 
 function getTotalCustomersChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.graph_data, xhr.label_data);
+  $('.datepicker-spinner').hide();
 }
 
 function getPartiesPerHourChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.graph_data, xhr.label_data);
+  $('.datepicker-spinner').hide();
 }
 
 function updateAnalyticsChart(graphData, labelData) {
