@@ -814,13 +814,26 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
         startDate := startEndInfo["start_date"]
         endDate := startEndInfo["end_date"]
 
-        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        var DateArray  []string
+
+        start, err := time.Parse("01/02/2006", startDate.(string))
+        end, err := time.Parse("01/02/2006", endDate.(string))
+
+        // set d to starting date and keep adding 1 day to it as long as month doesn't change
+        for d := start; d != end.AddDate(0, 0, 1); d = d.AddDate(0, 0, 1) {
+            dStr := d.Format("01/02/06")
+            DateArray = append(DateArray, dStr)
+        }
+
+
+        // BREAKFAST
+        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND date_part('hour', time_created) >= 4 AND date_part('hour', time_created) < 11 AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
         if err != nil {
           log.Println("Error")
         }
 
-        var DateArray  []string
-        var TotalSizeArray []interface{}
+
+        var TotalBreakfastArray []interface{}
 
         dateToPartySizeMap := map[string]int{}
 
@@ -828,33 +841,86 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
           var date time.Time
           var tsize int
           rows.Scan(&date, &tsize)
-          formatDate := date.Format("01/02/2006")
+          formatDate := date.Format("01/02/06")
 
           dateToPartySizeMap[formatDate] = tsize
         }
 
-        start, err := time.Parse("01/02/2006", startDate.(string))
-        end, err := time.Parse("01/02/2006", endDate.(string))
-
-        // set d to starting date and keep adding 1 day to it as long as month doesn't change
-        for d := start; d != end.AddDate(0, 0, 1); d = d.AddDate(0, 0, 1) {
-            dStr := d.Format("01/02/2006")
-            DateArray = append(DateArray, dStr)
-            if val, ok := dateToPartySizeMap[dStr]; ok {
-              TotalSizeArray = append(TotalSizeArray, val)
+        for d := 0; d < len(DateArray); d++ {
+            if val, ok := dateToPartySizeMap[DateArray[d]]; ok {
+              TotalBreakfastArray = append(TotalBreakfastArray, val)
             } else {
-              TotalSizeArray = append(TotalSizeArray, nil)
+              TotalBreakfastArray = append(TotalBreakfastArray, nil)
             }
         }
 
-        resultData["label_data"] = DateArray
-        resultData["graph_data"] = TotalSizeArray
+
+        // LUNCH
+        rows, err = db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND date_part('hour', time_created) >=11  AND date_part('hour', time_created) < 16 AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+        var TotalLunchArray []interface{}
+
+        dateToPartySizeMap = map[string]int{}
+
+        for rows.Next() {
+          var date time.Time
+          var tsize int
+          rows.Scan(&date, &tsize)
+          formatDate := date.Format("01/02/06")
+
+          dateToPartySizeMap[formatDate] = tsize
+        }
+
+        // set d to starting date and keep adding 1 day to it as long as month doesn't change
+        for d := 0; d < len(DateArray); d++ {
+            if val, ok := dateToPartySizeMap[DateArray[d]]; ok {
+              TotalLunchArray = append(TotalLunchArray, val)
+            } else {
+              TotalLunchArray = append(TotalLunchArray, nil)
+            }
+        }
+
+
+        // DINNER
+        rows, err = db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND (date_part('hour', time_created) >= 16  OR date_part('hour', time_created) < 3) AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+        var TotalDinnerArray []interface{}
+
+        dateToPartySizeMap = map[string]int{}
+
+        for rows.Next() {
+          var date time.Time
+          var tsize int
+          rows.Scan(&date, &tsize)
+          formatDate := date.Format("01/02/06")
+
+          dateToPartySizeMap[formatDate] = tsize
+        }
+
+        for d := 0; d < len(DateArray); d++ {
+            if val, ok := dateToPartySizeMap[DateArray[d]]; ok {
+              TotalDinnerArray = append(TotalDinnerArray, val)
+            } else {
+              TotalDinnerArray = append(TotalDinnerArray, nil)
+            }
+        }
+
+
+
+        resultData["date_data"] = DateArray
+        resultData["breakfast_data"] = TotalBreakfastArray
+        resultData["lunch_data"] = TotalLunchArray
+        resultData["dinner_data"] = TotalDinnerArray
       }
     }
     RenderJSONFromMap(w, resultData)
 }
-
-
 
 // GetAveragePartySizeChartHandler returns the average Party size from all historical parties in between certain dates
 //TODO: add comment
@@ -961,7 +1027,8 @@ func GetParitesPerHourChartHandler(w http.ResponseWriter, r *http.Request) {
         endDate := startEndInfo["end_date"]
 
         //select date_part('hour', time_created), count(id) from historical_parties group by date_part('hour', time_created)
-        rows, err := db.Order("date_part('hour', time_created) asc").Table("historical_parties").Select("date_part('hour', time_created), count(id)").Where("restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date_part('hour', time_created)").Rows()
+        rows, err := db.Raw("SELECT partyHour, round(avg(partyCount), 0) FROM (SELECT date_part('hour', time_created) AS partyHour, date(time_created) AS partyDate, count(id) AS partyCount FROM historical_parties WHERE restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ? GROUP BY date(time_created), date_part('hour', time_created)) AS query GROUP BY partyHour", restaurantID, startDate, endDate).Rows()
+        //db.Order("date_part('hour', time_created) asc").Table("historical_parties").Select("date_part('hour', time_created), count(id)").Where("restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date_part('hour', time_created)").Rows()
         if err != nil {
           log.Println("Error")
         }
@@ -995,119 +1062,6 @@ func GetParitesPerHourChartHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, resultData)
 }
 
-// GetAveragePartySizeHandler returns the average Party size from all historical parties in between certain dates
-func GetAveragePartySizeHandler(w http.ResponseWriter, r *http.Request) {
-    log.SetPrefix("[GetAveragePartySizeHandler]")
-    returnObj := map[string] interface{} {"status": "success"}
-    session := GetSession(w, r)
-
-    if !IsUserLoggedIn(session) {
-      HandleAuthErrorJson(w, returnObj)
-    } else if r.Method == "POST" {
-        startEndInfo := map[string] interface{}{}
-        if ParseReqBody(r, returnObj, startEndInfo) {
-            username, _ := session.Values["username"]
-            restaurantID := GetRestaurantIDFromUsername(username.(string))
-
-            if _, ok := startEndInfo["start_date"].(string); !ok {
-                returnObj["status"] = "failure"
-                returnObj["error_message"] = "start date undefined"
-            }
-            if _, ok := startEndInfo["end_date"].(string); !ok {
-                returnObj["status"] = "failure"
-                returnObj["error_message"] = "end date undefined"
-            }
-
-            historicalParties := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
-            var total int
-            for _, historicalParty := range historicalParties {
-                total += historicalParty.PartySize
-            }
-            returnObj["average_party_size"] = total / len(historicalParties)
-        }
-    }
-    RenderJSONFromMap(w, returnObj)
-}
-
-// GetHistoricalPartiesHandler Returns a json of historicalparties within a time range
-func GetHistoricalPartiesHandler(w http.ResponseWriter, r *http.Request) {
-    log.SetPrefix("[GetHistoricalPartiesHandler]")
-    returnObj := map[string] interface{} {"status": "success"}
-    session := GetSession(w, r)
-
-    if !IsUserLoggedIn(session) {
-      HandleAuthErrorJson(w, returnObj)
-    } else if r.Method == "POST" {
-        startEndInfo := map[string] interface{}{}
-        if ParseReqBody(r, returnObj, startEndInfo) {
-            username, _ := session.Values["username"]
-            restaurantID := GetRestaurantIDFromUsername(username.(string))
-
-            var format = "01/02/2006"
-            var startDate, endDate time.Time
-            var err interface{}
-            if val, ok := startEndInfo["start_date"].(string); ok {
-                startDate, err = time.Parse(format, val)
-                if err != nil {
-                    returnObj["status"] = "failure"
-                    returnObj["error_message"] = "time.Parse failed"
-                }
-            } else {
-                returnObj["status"] = "failure"
-                returnObj["error_message"] = "start date undefined"
-            }
-
-            if val, ok := startEndInfo["end_date"].(string); ok {
-                endDate, err = time.Parse(format, val)
-                if err != nil {
-                    returnObj["status"] = "failure"
-                    returnObj["error_message"] = "time.Parse failed"
-                }
-            } else {
-                returnObj["status"] = "failure"
-                returnObj["error_message"] = "end date undefined"
-            }
-
-            startDateFormatted := startDate.Format("2006-01-02 15:04:05")
-            endDateFormatted := endDate.Format("2006-01-02 15:04:05")
-            var historicalParties []HistoricalParty
-            db.Where("restaurant_id = ? AND time_created >= ? AND time_seated <= ?", restaurantID, startDateFormatted, endDateFormatted).Find(&historicalParties)
-            if len(historicalParties) > 0 {
-                returnObj["historical_parties"] = historicalParties
-            }
-        }
-    }
-    RenderJSONFromMap(w, returnObj)
-}
-
-// getHistoricalPartiesHelper returns a list of historical parties given a start and end date and restaurant id
-func getHistoricalPartiesHelper(startEndInfo map[string] interface{}, restaurantID int, returnObj map[string] interface{}) []HistoricalParty {
-    var format = "01/02/2006"
-    var startTime, endTime time.Time
-    var err interface{}
-    startTime, err = time.Parse(format, startEndInfo["start_date"].(string))
-    if err != nil {
-        returnObj["status"] = "failure"
-        returnObj["error_message"] = "time.Parse failed"
-        return nil
-    }
-
-    endTime, err = time.Parse(format, startEndInfo["end_date"].(string))
-    if err != nil {
-        returnObj["status"] = "failure"
-        returnObj["error_message"] = "time.Parse failed"
-    }
-
-    startDateFormatted := startTime.Format("2006-01-02 15:04:05")
-    endDateFormatted := endTime.Format("2006-01-02 15:04:05")
-    var historicalParties []HistoricalParty
-    db.Where("restaurant_id = ? AND time_created >= ? AND time_seated <= ?", restaurantID, startDateFormatted, endDateFormatted).Find(&historicalParties)
-    if len(historicalParties) == 0 {
-        return nil
-    }
-    return historicalParties
-}
-
 // validateStartEndDateJSON TODO: comment
 func validateStartEndDateJSON(startEndInfo map[string] interface{}, returnObj map[string] interface{}) bool {
     if _, ok := startEndInfo["start_date"].(string); !ok {
@@ -1125,38 +1079,6 @@ func validateStartEndDateJSON(startEndInfo map[string] interface{}, returnObj ma
     return true
 }
 
-// GetAverageWaitTimehandler Returns the average wait time of historical parties given a start and end date
-func GetAverageWaitTimehandler(w http.ResponseWriter, r *http.Request) {
-    log.SetPrefix("[GetAverageWaitTimehandler]")
-    returnObj := map[string] interface{} {"status": "success"}
-    session := GetSession(w, r)
-
-    if !IsUserLoggedIn(session) {
-      HandleAuthErrorJson(w, returnObj)
-    } else if r.Method == "POST" {
-        startEndInfo := map[string] interface{}{}
-
-        if ParseReqBody(r, returnObj, startEndInfo) {
-            username, _ := session.Values["username"]
-            restaurantID := GetRestaurantIDFromUsername(username.(string))
-
-            if validateStartEndDateJSON(startEndInfo, returnObj) {
-                historicalParties := getHistoricalPartiesHelper(startEndInfo, restaurantID, returnObj)
-                var totalHours, totalMinutes float64
-                var count int
-                for _, historicalParty := range historicalParties {
-                    currWaitTime := historicalParty.TimeSeated.Sub(historicalParty.TimeCreated)
-                    totalHours += currWaitTime.Hours()
-                    totalMinutes += currWaitTime.Minutes()
-                    count ++
-                }
-                returnObj["average_wait_hours"] = int(totalHours) / count
-                returnObj["average_wait_minutes"] = int(totalMinutes) / count
-            }
-        }
-    }
-    RenderJSONFromMap(w, returnObj)
-}
 // IsPartyAssignedBuzzerHandler is a frontend API method to check if specified active party is
 // assigned buzzer. Passed object r contains 'active_party_id' to be quieried for, returnObj
 // contains response 'is_party_assigned_buzzer'. Used by fronted to check if buzzer has been

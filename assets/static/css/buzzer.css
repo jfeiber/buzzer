@@ -219,7 +219,7 @@ color:#ffffff;
 }
 
 .datepicker-container{
-  float: right;
+  /*float: left;*/
 }
 
 /* Waitlist/phone-ahead switch */
@@ -241,7 +241,7 @@ color:#ffffff;
 
 .analytics-line-chart {
   width: 90%;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 /* Active button style */
