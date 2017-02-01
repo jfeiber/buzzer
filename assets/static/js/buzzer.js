@@ -200,7 +200,6 @@ function registerDeletePartyClickHandlers() {
 
 function registerSeatPartyClickHandlers() {
   $(".seat-party-button").click(function(){
-    console.log("asdfhkasjhdf");
     activePartyID = $(this).closest('tr').attr('activePartyID');
     AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated": true}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
   });
@@ -289,6 +288,8 @@ function registerAddPartyHandlers() {
   });
 }
 
+// Based on the selected chart type, this method calls the appropriate API endpoint and updates the
+// chart. 
 function updateAnalyicsChartWithSelection(chartType) {
   $('.datepicker-spinner').show();
   jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(), "end_date": $(".form-control.endDate").val()});
@@ -301,17 +302,19 @@ function updateAnalyicsChartWithSelection(chartType) {
   }
 }
 
+// Checks if all the elements that are needed to select a chart have been filled out. That would be
+// the chart type and the date range. If all the elements have been filled out, then the chart is
+// updated.
 function checkIfChartSelectionComplete() {
   chartType = $('.btn#chart-type-dropdown').val();
   startDate = $('.form-control.startDate').val();
   endDate = $('.form-control.endDate').val();
-  console.log(startDate);
-  console.log(endDate);
   if (chartType !== "" && startDate !== "Start Date" && endDate !== "End Date") {
     updateAnalyicsChartWithSelection(chartType);
   }
 }
 
+// Registers click handlers for the elements associated with selecting a chart.
 function registerChartTypeSelectionHandler() {
   $(".chart-type-dropdown li a").click(function(){
     $(this).parents(".chart-type-dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
@@ -338,7 +341,6 @@ $(document).ready(function() {
   registerAssignBuzzerClickHandlers();
   registerUnlinkBuzzerClickHandlers();
   registerAddPartyHandlers();
-  // registerAnalyticsChartButtonHandler();
   registerChartTypeSelectionHandler();
 
   // spinner_buzzer_modal parameters
@@ -368,26 +370,24 @@ $(document).ready(function() {
   var spinner_buzzer_modal = new Spinner(opts).spin(target);
 
   opts = {
-    lines: 11 // The number of lines to draw
-  , length: 34 // The length of each line
-  , width: 6 // The line thickness
-  , radius: 28 // The radius of the inner circle
-  , scale: 0.22 // Scales overall size of the spinner
-  , corners: 1 // Corner roundness (0..1)
-  , color: '#000' // #rgb or #rrggbb or array of colors
-  , opacity: 0.25 // Opacity of the lines
-  , rotate: 0 // The rotation offset
-  , direction: 1 // 1: clockwise, -1: counterclockwise
-  , speed: 1 // Rounds per second
-  , trail: 60 // Afterglow percentage
-  , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
-  , zIndex: 2e9 // The z-index (defaults to 2000000000)
-  , className: 'datepicker-spinner' // The CSS class to assign to the spinner
-  // , top: '50%' // Top position relative to parent
-  // , left: '50%' // Left position relative to parent
-  , shadow: false // Whether to render a shadow
-  , hwaccel: false // Whether to use hardware acceleration
-  , position: 'relative' // Element positioning
+    lines: 11, // The number of lines to draw
+    length: 34, // The length of each line
+    width: 6, // The line thickness
+    radius: 28, // The radius of the inner circle
+    scale: 0.22, // Scales overall size of the spinner
+    corners: 1, // Corner roundness (0..1)
+    color: '#000', // #rgb or #rrggbb or array of colors
+    opacity: 0.25, // Opacity of the lines
+    rotate: 0, // The rotation offset
+    direction: 1, // 1: clockwise, -1: counterclockwise
+    speed: 1, // Rounds per second
+    trail: 60, // Afterglow percentage
+    fps: 20, // Frames per second when using setTimeout() as a fallback for CSS
+    zIndex: 2e9, // The z-index (defaults to 2000000000)
+    className: 'datepicker-spinner', // The CSS class to assign to the spinner
+    shadow: false, // Whether to render a shadow
+    hwaccel: false, // Whether to use hardware acceleration
+    position: 'relative' // Element positioning
   }
   target = document.getElementById('datepicker-spinner');
   var spinner_datepicker = new Spinner(opts).spin(target);
@@ -427,29 +427,6 @@ $(document).ready(function() {
     });
 
   });
-
-// function registerAnalyticsChartButtonHandler() {
-//     $(".get_average_party_chart_button").on('click', function() {
-//          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
-//              "end_date": $(".form-control.endDate").val()
-//          });
-//         AjaxJSONPOST("/analytics_api/get_average_party_chart", jsonObj, function(response) { console.log(response); }, getAveragePartySizeChartSuccessCallback, completeCallback);
-//     });
-//
-//     $(".get_total_party_chart_button").on('click', function() {
-//          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
-//              "end_date": $(".form-control.endDate").val()
-//          });
-//         AjaxJSONPOST("/analytics_api/get_total_customers_chart", jsonObj, function(response) { console.log(response); }, getTotalCustomersChartSuccessCallback, completeCallback);
-//     });
-//
-//     $(".get_parties_hour_chart_button").on('click', function() {
-//          jsonObj = JSON.stringify({"start_date": $(".form-control.startDate").val(),
-//              "end_date": $(".form-control.endDate").val()
-//          });
-//         AjaxJSONPOST("/analytics_api/get_parties_hour_chart", jsonObj, function(response) { console.log(response); }, getPartiesPerHourChartSuccessCallback, completeCallback);
-//     });
-// }
 
 function getAveragePartySizeChartSuccessCallback(xhr, success) {
   console.log(xhr);
