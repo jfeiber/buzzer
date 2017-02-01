@@ -571,7 +571,7 @@ function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
                 }
               }]
             }
-          }
+        };
 
       var analyticsLineChart = Chart.Line(ctx, {
         data:data,
