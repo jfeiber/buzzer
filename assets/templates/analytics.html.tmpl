@@ -19,7 +19,6 @@
 <title>Analytics | Buzzer</title>
 
 <script>
-    console.log($('.input-daterange input') === undefined)
     $(document).ready(function(){
         $('.input-daterange input').each(function() {
             $(this).datepicker({
@@ -34,33 +33,43 @@
 
 <div class="container">
   <div class="row">
-        <div class="input-group input-daterange">
-            <input type="text" class="form-control startDate" value="10/01/2016">
-            <div class="input-group-addon">to</div>
-            <input type="text" class="form-control endDate" value="10/29/2016">
+    <div class="col-md-12 chart-selection-container">
+      <div class="row">
+
+        <!-- Party Name/Party Size button grouping -->
+        <div class="col-md-4">
+          <div class="chart-type-dropdown-container">
+            <div class="btn-group chart-type-dropdown">
+              <button type="button" class="btn btn-default dropdown-toggle" id="chart-type-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="">
+                Chart Type <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu scrollable-menu" role="menu">
+                 <li><a href="#">Avg Party Size</a></li>
+                 <li><a href="#">Total Customers</a></li>
+                 <li><a href="#">Parties Per Hour</a></li>
+               </ul>
+            </div>
+          </div>
         </div>
+
+        <div class="col-md-8">
+          <div class="datepicker-container">
+          <div class="input-group input-daterange analytics-date-picker">
+              <input type="text" class="form-control startDate" value="Start Date">
+              <div class="input-group-addon">to</div>
+              <input type="text" class="form-control endDate" value="End Date">
+          </div>
+          <div class="datepicker-spinner" id="datepicker-spinner"></div>
+          </div>
+        </div>
+      </div>
     </div>
+    <div class="col-md-12" align="center">
+      <div class="row analytics-line-chart">
+        <canvas id="analyticsLineChart"></canvas>
+      </div>
+    </div>
+  </div>
 </div>
-
-  <!-- div for basic chart loaded on render -->
-  <div class="container" style="padding-top:10px">
-    <div class="row">
-      <div id="historical_parties" class="col-md-12">
-        <button class="btn btn-default get_average_party_chart_button" type="button">Avg Party Size Chart</button>
-        <button class="btn btn-default get_total_party_chart_button" type="button">Total Customers Chart</button>
-        <button class="btn btn-default get_parties_hour_chart_button" type="button">Parties Per Hour Chart</button>
-      </div>
-    </div>
-  </div>
-
-  <div align="center" style="padding-top:30px">
-      <div style="width:800px;height:600px">
-          <canvas id="analyticsLineChart"></canvas>
-      </div>
-    </div>
-  </div>
-
-
-
 </body>
 </html>

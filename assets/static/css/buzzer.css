@@ -213,6 +213,15 @@ color:#ffffff;
     background-color: #004B00 !important;
 }
 
+.analytics-date-picker {
+  width: 300px;
+  margin-right: 30px;
+}
+
+.datepicker-container{
+  /*float: left;*/
+}
+
 /* Waitlist/phone-ahead switch */
 #btnrocker {
     background-color: #F1F4F6;
@@ -228,6 +237,11 @@ color:#ffffff;
 #btnrocker.btn.active {
     background-color: #426BE7;
     color: #FFFFFF !important;
+}
+
+.analytics-line-chart {
+  width: 90%;
+  margin-top: 20px;
 }
 
 /* Active button style */
@@ -318,6 +332,16 @@ color:#ffffff;
   margin-bottom: 25px;
 }
 
+.datepicker-spinner {
+  /*top: 50%;*/
+  margin-top: -17px;
+  margin-left: 110px;
+  /*margin-left: -100px;*/
+  /*width: 100px;*/
+  /*height: 100px;*/
+  /*bottom: 50%;*/
+}
+
 /* Alert spacing */
 #alert_placeholder {
     display: block;
@@ -335,10 +359,17 @@ color:#ffffff;
     height:5%;
 }*/
 
+.datepicker-container{
+  float: left;
+}
+
 @media (min-width: 991px){
   .add-party-justify {
     margin-top: 0px;
     text-align: right;
+  }
+  .datepicker-container{
+    float: right;
   }
 }
 
