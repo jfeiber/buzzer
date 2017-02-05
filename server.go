@@ -76,6 +76,9 @@ func main() {
   router.HandleFunc("/analytics_api/get_total_customers_chart", GetTotalCustomersChartHandler)
   router.HandleFunc("/analytics_api/get_parties_hour_chart", GetParitesPerHourChartHandler)
   router.HandleFunc("/analytics_api/get_party_loss_chart", GetPartyLossChartHandler)
+  router.HandleFunc("/analytics_api/get_avg_wait_chart", GetAvgWaittimeChartHandler)
+
+
 
 
 
