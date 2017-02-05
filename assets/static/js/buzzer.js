@@ -301,8 +301,11 @@ function updateAnalyicsChartWithSelection(chartType) {
     AjaxJSONPOST("/analytics_api/get_parties_hour_chart", jsonObj, getAnalyticsChartErrorCallback, getPartiesPerHourChartSuccessCallback, completeCallback);
   } else if (chartType === "Parties Seated vs Lost") {
     AjaxJSONPOST("/analytics_api/get_party_loss_chart", jsonObj, getAnalyticsChartErrorCallback, getPartyLossChartSuccessCallback, completeCallback);
+  } else if (chartType === "Average Wait Time") {
+    AjaxJSONPOST("/analytics_api/get_avg_wait_chart", jsonObj, getAnalyticsChartErrorCallback, getAvgWaitChartSuccessCallback, completeCallback);
   }
 }
+
 
 // Checks if all the elements that are needed to select a chart have been filled out. That would be
 // the chart type and the date range. If all the elements have been filled out, then the chart is
@@ -438,12 +441,19 @@ function getPartyLossChartSuccessCallback(xhr, success) {
   $('.datepicker-spinner').hide();
 }
 
-
 function getPartiesPerHourChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
   $('.datepicker-spinner').hide();
 }
+
+function getAvgWaitChartSuccessCallback(xhr, success) {
+  console.log(xhr);
+  updateAvgWaitChart(xhr.date_data, xhr.breakfast_data, xhr.lunch_data, xhr.dinner_data);
+  $('.datepicker-spinner').hide();
+}
+
+
 
 function updateAnalyticsChart(graphData, labelData, titleString, labelString, xAxisString, yAxisString) {
     var ctx = document.getElementById("analyticsLineChart");
@@ -503,7 +513,6 @@ function updateAnalyticsChart(graphData, labelData, titleString, labelString, xA
       });
 }
 
-
 function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
@@ -557,6 +566,82 @@ function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
                 scaleLabel: {
                   display: true,
                   labelString: 'Number of Customers',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Date of Visit',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }]
+            }
+        };
+
+      var analyticsLineChart = Chart.Line(ctx, {
+        data:data,
+        options:options
+      });
+}
+
+function updateAvgWaitChart(dateData, breakfastData, lunchData, dinnerData) {
+    var ctx = document.getElementById("analyticsLineChart");
+    var data = {
+          labels: dateData,
+          datasets: [{
+              label: 'Breakfast',
+              data: breakfastData,
+              backgroundColor: [
+                  'rgba(66, 107, 231, 0.2)',
+              ],
+              borderColor: [
+                  'rgba(66, 107, 231, 1)',
+              ],
+              borderWidth: 1
+          },
+          {
+              label: 'Lunch',
+              data: lunchData,
+              backgroundColor: [
+                  'rgba(75, 192, 192, 0.2)',
+              ],
+              borderColor: [
+                  'rgba(75, 192, 192, 1)',
+              ],
+              borderWidth: 1
+          },
+          {
+              label: 'Dinner',
+              data: dinnerData,
+              backgroundColor: [
+                  'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1
+          }]
+      };
+
+      var options = {
+            title: {
+                display: true,
+                text: 'Average Wait Time by Date',
+                fontSize:25,
+                fontColor:'#000000',
+                fontFamily: 'Lato',
+                fontStyle: 'oblique'
+            },
+            scales: {
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Average Time in Waitlist',
                   fontSize:16,
                   fontColor:'#000000',
                   fontFamily: 'Lato'
