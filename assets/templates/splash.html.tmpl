@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--Buzzer management page (status info and admin functionality for buzzer fleet)-->
+
+<title>Device Management | Buzzer</title>
+
+
+<head>
+{{ template "header.html.tmpl" .}}
+<link href="/assets/static/css/splash.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+        <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/waitlist">Buzzer</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavBar">
+
+         <ul class="nav navbar-nav navbar-right">
+           <li class="dropdown">
+               <!--Cog with logout functionality and room for more links (currently a couple fun easter eggs)-->
+               <a href="#" class="glyphicon glyphicon-cog white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
+               <ul class="dropdown-menu">
+                 <li><a href="https://www.facebook.com/michael.machlin">Contact Buzzer</a></li>
+                 <li><a href="https://www.linkedin.com/in/michaelmachlin">Kevin's LinkedIn</a></li>
+                 <li><a href="/logout">Logout</a></li>
+               </ul>
+           </li>
+         </ul>
+        </div>
+    </nav>
+     <div>
+         <img class="banner" src="http://static.wixstatic.com/media/8e58bc_6b4419fd3837a26fc432911dd835884b.jpg_srz_4256_2832_85_22_0.50_1.20_0.00_jpg_srz">
+         <div class="info">
+            <div class="container">
+                <div class="text">
+                    Buzzer is your restaurant party management solution.
+                </div>
+            </div>
+         </div>
+     </div>
+<body>

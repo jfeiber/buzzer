@@ -1190,6 +1190,12 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, returnObj)
 }
 
+func SplashPageHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[SplashPageHandler] ")
+
+    RenderTemplate(w, "assets/templates/splash.html.tmpl",  map[string]interface{}{})
+}
+
 // NotFoundHandler is a handler to render 404 Not Found page.
 func NotFoundHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[NotFoundHandler] ")
