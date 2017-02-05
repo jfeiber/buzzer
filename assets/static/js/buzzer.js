@@ -301,8 +301,11 @@ function updateAnalyicsChartWithSelection(chartType) {
     AjaxJSONPOST("/analytics_api/get_parties_hour_chart", jsonObj, getAnalyticsChartErrorCallback, getPartiesPerHourChartSuccessCallback, completeCallback);
   } else if (chartType === "Parties Seated vs Lost") {
     AjaxJSONPOST("/analytics_api/get_party_loss_chart", jsonObj, getAnalyticsChartErrorCallback, getPartyLossChartSuccessCallback, completeCallback);
+  } else if (chartType === "Average Waitime") {
+    AjaxJSONPOST("/analytics_api/get_avg_wait_chart", jsonObj, getAnalyticsChartErrorCallback, getAvgWaitChartSuccessCallback, completeCallback);
   }
 }
+
 
 // Checks if all the elements that are needed to select a chart have been filled out. That would be
 // the chart type and the date range. If all the elements have been filled out, then the chart is
@@ -438,12 +441,18 @@ function getPartyLossChartSuccessCallback(xhr, success) {
   $('.datepicker-spinner').hide();
 }
 
-
 function getPartiesPerHourChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
   $('.datepicker-spinner').hide();
 }
+
+function getAvgWaitChartSuccessCallback(xhr, success) {
+  console.log(xhr);
+  updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
+  $('.datepicker-spinner').hide();
+}
+
 
 function updateAnalyticsChart(graphData, labelData, titleString, labelString, xAxisString, yAxisString) {
     var ctx = document.getElementById("analyticsLineChart");
