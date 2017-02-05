@@ -299,6 +299,8 @@ function updateAnalyicsChartWithSelection(chartType) {
     AjaxJSONPOST("/analytics_api/get_total_customers_chart", jsonObj, getAnalyticsChartErrorCallback, getTotalCustomersChartSuccessCallback, completeCallback);
   } else if (chartType === "Parties Per Hour") {
     AjaxJSONPOST("/analytics_api/get_parties_hour_chart", jsonObj, getAnalyticsChartErrorCallback, getPartiesPerHourChartSuccessCallback, completeCallback);
+  } else if (chartType === "Parties Seated vs Lost") {
+    AjaxJSONPOST("/analytics_api/get_party_loss_chart", jsonObj, getAnalyticsChartErrorCallback, getPartyLossChartSuccessCallback, completeCallback);
   }
 }
 
@@ -420,7 +422,7 @@ $(document).ready(function() {
 
 function getAveragePartySizeChartSuccessCallback(xhr, success) {
   console.log(xhr);
-  updateAnalyticsChart(xhr.graph_data, xhr.label_data, 'Average Party Size by Date', '', 'Date', 'Avg. Customers in Party');
+  updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Party Size by Date', '', 'Date', 'Avg. Customers in Party');
   $('.datepicker-spinner').hide();
 }
 
@@ -430,9 +432,16 @@ function getTotalCustomersChartSuccessCallback(xhr, success) {
   $('.datepicker-spinner').hide();
 }
 
+function getPartyLossChartSuccessCallback(xhr, success) {
+  console.log(xhr);
+  updatePartyLostChart(xhr.date_data, xhr.seated_data, xhr.lost_data);
+  $('.datepicker-spinner').hide();
+}
+
+
 function getPartiesPerHourChartSuccessCallback(xhr, success) {
   console.log(xhr);
-  updateAnalyticsChart(xhr.graph_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
+  updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
   $('.datepicker-spinner').hide();
 }
 
@@ -548,6 +557,71 @@ function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
                 scaleLabel: {
                   display: true,
                   labelString: 'Number of Customers',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Date of Visit',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }]
+            }
+        };
+
+      var analyticsLineChart = Chart.Line(ctx, {
+        data:data,
+        options:options
+      });
+}
+
+function updatePartyLostChart(dateData, seatedData, lostData) {
+    var ctx = document.getElementById("analyticsLineChart");
+    var data = {
+          labels: dateData,
+          datasets: [{
+              label: 'Seated',
+              data: seatedData,
+              backgroundColor: [
+                  'rgba(66, 107, 231, 0.2)',
+              ],
+              borderColor: [
+                  'rgba(66, 107, 231, 1)',
+              ],
+              borderWidth: 1
+          },
+          {
+              label: 'Lost',
+              data: lostData,
+              backgroundColor: [
+                  'rgba(230, 46, 0, 0.2)',
+              ],
+              borderColor: [
+                  'rgba(230, 46, 0, 1)',
+              ],
+              borderWidth: 1
+          }]
+      };
+
+      var options = {
+            title: {
+                display: true,
+                text: 'Parties Seated vs Lost',
+                fontSize:25,
+                fontColor:'#000000',
+                fontFamily: 'Lato',
+                fontStyle: 'oblique'
+            },
+            scales: {
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Number of Parties',
                   fontSize:16,
                   fontColor:'#000000',
                   fontFamily: 'Lato'
