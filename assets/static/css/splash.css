@@ -53,3 +53,45 @@
     max-width: 900px;
     float: none;
 }
+
+.points-background {
+    background-color: white;
+}
+
+.points {
+    margin-top: 0px;
+    margin-left: 0%;
+    margin-right: 0rem;
+    margin-bottom: 2em;
+    padding-top: 2em;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 4em;
+    width: 31%;
+    float: none;
+    display: inline-block;
+    vertical-align: middle;
+    color: rgb(32, 32, 32);
+    text-align: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    border-style: solid;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-color: rgb(236, 236, 236);
+    transition: top ease .5s;
+    position:relative;
+    top: 0;
+
+
+}
+.points:hover {
+  top: -10px;
+}
+
+.demo-container {
+    background-color: rgb(249, 249, 249);
+}
