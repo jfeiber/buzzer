@@ -50,13 +50,12 @@
     padding-right: 0em;
     padding-bottom: 4em;
     min-height: 50px;
-    max-width: 900px;
     float: none;
 }
-<<<<<<< HEAD
 
 .points-background {
     background-color: white;
+    text-align: center;
 }
 
 .points {
@@ -68,7 +67,8 @@
     padding-left: 1rem;
     padding-right: 1rem;
     padding-bottom: 4em;
-    width: 31%;
+    width: 240px;
+    height:280px;
     float: none;
     display: inline-block;
     vertical-align: middle;
@@ -91,10 +91,15 @@
 }
 .points:hover {
   top: -10px;
+  border-color: #426BE7;
+
+}
+
+.points-image {
+    height: 150px;
+    width: 100px;
 }
 
 .demo-container {
     background-color: rgb(249, 249, 249);
 }
-=======
->>>>>>> a954e1709d9433aec6d712f8d3d90ae3c26f9454
