@@ -4,7 +4,7 @@
     padding-right: 2%;
     padding-bottom: 5rem;
     padding-left: 2%;
-    background-color: rgb(255, 255, 255);
+    background-color: #F1F4F6;
     float: left;
     display: block;
     border-style: solid;
@@ -54,7 +54,7 @@
 }
 
 .points-background {
-    background-color: white;
+    background-color: #F1F4F6;
     text-align: center;
 }
 
@@ -101,5 +101,50 @@
 }
 
 .demo-container {
-    background-color: rgb(249, 249, 249);
+    background-color: #F1F4F6;
 }
+
+.info-container {
+    text-align: center;
+}
+
+.info-text {
+    font-family: 'Lato', light;
+    font-weight: 300;
+    color: rgb(32, 32, 32);
+    font-size: 3rem;
+}
+
+.info-button {
+    width: 200px;
+    height: 80px;
+    display: inline-block;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
+    font-size: 1rem;
+    line-height: 1;
+    color: #426BE7;
+    border-color: #426BE7;
+    font-family: 'Lato', light;
+    font-weight: 300;
+    font-size: 2.5rem;
+    border-style: solid;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    background-color: #F1F4F6;
+}
+.info-button:hover {
+    color: #F1F4F6;
+    background-color: #426BE7;
+}
+
+.padded-container {
+    padding-bottom: 2em;
+}
+.demo-background {
+    height: 400px;
+    background-color: #F1F4F6;}
