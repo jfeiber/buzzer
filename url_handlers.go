@@ -1112,6 +1112,7 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, returnObj)
 }
 
+// SplashPageHandler renders the splash page
 func SplashPageHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[SplashPageHandler] ")
 
