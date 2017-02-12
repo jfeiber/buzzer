@@ -37,9 +37,34 @@ body {
 }
 
 /*Fix text color changing when menu collapsed issue.*/
-.navbar-default .navbar-nav .open .dropdown-menu>li>a {
-    color: #FFFFFF;
+.navbar-toggle.collapsed .navbar-nav .open .dropdown-menu >li>a {
+    color: #FFFFFF !important;
 }
+
+/*.navbar-default .navbar-nav>li>a:focus, .navbar-default .navbar-nav>li>a:hover {
+    color: #FFFFFF;
+}*/
+
+.navbar-default .dropdown-menu>li>a {
+    color: #000000;
+}
+
+/*.navbar-collapse
+{
+    color: #426BE7 !important;
+} 
+*/
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #FFFFFF;
+  }
+}
+
+/*.navbar-collapse .navbar-nav .open .dropdown-menu>li>a {
+    color: #FFFFFF;
+}*/
+
+
 
 /* Buzzer logo */
 .navbar-default .navbar-brand {
