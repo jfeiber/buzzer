@@ -31,22 +31,15 @@ body {
 /* Navbar hover behavior */
 .navbar .nav > li.dropdown.open.active > a:hover,
 .navbar .nav > li.dropdown.open > a {
-   color: #fff;
+   color: #FFFFFF;
    background-color: #0F48B4;
    border-color: #fff;
 }
 
-/*-- change navbar dropdown color --*/
-/*.navbar-default .navbar-nav .open .dropdown-menu > li > a, .navbar-default .navbar-nav .open .dropdown-menu {
-background-color: #3344ff;
-color:#ffffff;
+/*Fix text color changing when menu collapsed issue.*/
+.navbar-default .navbar-nav .open .dropdown-menu>li>a {
+    color: #FFFFFF;
 }
-*/
-/*@media (max-width: 200px) {
-  .navbar-header {
-      float: none;
-  }
-}*/
 
 /* Buzzer logo */
 .navbar-default .navbar-brand {
