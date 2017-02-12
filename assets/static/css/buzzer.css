@@ -159,19 +159,6 @@ color:#ffffff;
     /*border-color: #426BE7; set the color you want here*/
 }
 
-/* Formatting for ellipsis button (extra actions) */
-/* Source- https://goo.gl/qyg9Sp */
-#elipsis {
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  padding: 6px 0;
-  font-size: 14px;
-  line-height: 1.42;
-  border-radius: 15px;
-  margin: 8px; /* Modifies spacing of buttons */
-}
-
 /* Custom ID for modifying the buzzer management glyphicons */
 #buzzer-status-ok {
     font-size: 3.0em;
