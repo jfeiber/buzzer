@@ -15,6 +15,12 @@ body {
     border-radius: 0;
 }
 
+/*Color of Navbar brand Buzzer is same hover color as other links*/
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+  color: #333333;
+}
+
 /* Navbar text */
 .navbar-default .navbar- {
     background-color: #426BE7;
