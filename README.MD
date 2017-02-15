@@ -66,6 +66,34 @@ the production database, run `goose -env production up`.
 ### Deploying to Heroku
 [Heroku Deployment Instructions](https://devcenter.heroku.com/articles/git). Ask Josh to add you as a contributor to the web app on Heroku if you need to deploy.
 
+### General Repo Organization
+* `/`
+  * `/assets/`: Contains all the frontend assets for the web app.
+    * `/static/`
+      * `/css/`: Contains all the CSS stylesheets used by the web app.
+      * `/fonts/`: Contains fonts/glyphicons used by the web app.
+      * `/img/`: Contains any static images used by the web app. Mostly just pictures of Kevin.
+      * `/js/`: Contains all the Javascript used by the web app.
+  * `/templates/`: Contains all the HTML templates used by the web app.
+  * `/db/`: Used by goose to run manage the databases. `dbconf.yml` contains the dev and production database info.
+    * `/migrations/`: Contains the actual migration files.
+  * `/Godeps/`: Used by Godep to manage dependencies.
+  * `/Mockups/`: Contains our original frontend mockups.
+  * `/Screenshots/`: Contains current screenshots of the web app.
+  * `/vendor/`: Dependencies.
+  * `buzzer_name_generator.go`: Contains the code that generates a Heroku-style name for the buzzers.
+  * `Dockerfile`: Provisioning info for the Docker container used for local development.
+  * `ExampleData.sql`: Bogus data used for testing.
+  * `models.go`: Our DB models.
+  * `Procfile`: Heroku procfile.
+  * `README.MD`: The READme you are currently reading.
+  * `server.go`: Used to setup and run the actual web app. Creates a session, opens a connection to the database, sets up the router and routes, sets up the middleware, and starts the actual web server.
+  * `url_handlers.go`: Contains all the URL handlers attached to routes created in `server.go`. 
+  
+
+
+
+
 ## Authors
 
 * **Kevin Neilson**
