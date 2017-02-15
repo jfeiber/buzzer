@@ -9,24 +9,21 @@ To see this live: http://restaur-anteater.herokuapp.com/. Username: anteater, pa
 We are allowing restaurants to manage their clients better with a web app that displays analytics registered by proprietary restaurant pagers.
 
 ### Login
-![Login Page](/Mockups/loginpage.png?raw=true)
+![Login Page](/Screenshots/Logout.png?raw_true)
 
 ### Waitlist
-![Login Page](/Mockups/waitlist.png?raw=true)
+![Login Page](/Screenshots/Waitlist.png?raw=true)
 
 ### Buzzer Management
-![Buzzer Management](/Mockups/buzzer_management.png?raw=true)
+![Buzzer Management](/Screenshots/BuzzerManagement.png?raw=true)
 
 ### Analytics
-![Analytics](/Mockups/analytics.png?raw=true)
+![Analytics](/Screenshots/Analytics.png?raw=true)
 
 ## Architecture
 
 Web App Stack:
 Golang with [Gorilla Mux](https://github.com/gorilla/mux) for routing, [GORM](https://github.com/jinzhu/gorm) for the ORM, [Negroni](https://github.com/urfave/negroni) for the HTTP middleware, [Gorilla Sessions](https://github.com/gorilla/sessions) for session handling, and PostgreSQL for the database. Hosted on Heroku.
-
-Embedded Stack:
-All embedded code written in C++. 1 library is used, the [text only Adafruit OLED display driver](https://github.com/greiman/SSD1306Ascii).
 
 ## Setup and Deployment
 
