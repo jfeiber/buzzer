@@ -29,6 +29,7 @@ type ActiveParty struct {
     WaitTimeExpected int
     WaitTimeCalculated int
     BuzzerID int `sql:"DEFAULT:null"`
+    PartyNotes string `gorm:"size:150"`
 }
 
 type HistoricalParty struct {

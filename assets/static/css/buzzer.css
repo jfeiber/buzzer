@@ -15,6 +15,12 @@ body {
     border-radius: 0;
 }
 
+/*Color of Navbar brand Buzzer is same hover color as other links*/
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+  color: #333333;
+}
+
 /* Navbar text */
 .navbar-default .navbar- {
     background-color: #426BE7;
@@ -25,22 +31,23 @@ body {
 /* Navbar hover behavior */
 .navbar .nav > li.dropdown.open.active > a:hover,
 .navbar .nav > li.dropdown.open > a {
-   color: #fff;
+   color: #FFFFFF;
    background-color: #0F48B4;
    border-color: #fff;
 }
 
-/*-- change navbar dropdown color --*/
-/*.navbar-default .navbar-nav .open .dropdown-menu > li > a, .navbar-default .navbar-nav .open .dropdown-menu {
-background-color: #3344ff;
-color:#ffffff;
+/*The following 2 sections fix text color changing when menu collapsed issue.*/
+/*When not collapsed*/
+.navbar-default .dropdown-menu>li>a {
+    color: #000000;
 }
-*/
-/*@media (max-width: 200px) {
-  .navbar-header {
-      float: none;
+
+/*Change stuff here for when collapsed (what the max-width thing does)*/
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #FFFFFF;
   }
-}*/
+}
 
 /* Buzzer logo */
 .navbar-default .navbar-brand {
@@ -157,19 +164,6 @@ color:#ffffff;
     color: #FFFFFF;
     background-color: #AA0000 !important;
     /*border-color: #426BE7; set the color you want here*/
-}
-
-/* Formatting for ellipsis button (extra actions) */
-/* Source- https://goo.gl/qyg9Sp */
-#elipsis {
-  width: 30px;
-  height: 30px;
-  text-align: center;
-  padding: 6px 0;
-  font-size: 14px;
-  line-height: 1.42;
-  border-radius: 15px;
-  margin: 8px; /* Modifies spacing of buttons */
 }
 
 /* Custom ID for modifying the buzzer management glyphicons */

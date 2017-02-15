@@ -17,6 +17,16 @@ import (
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
+const buzzerAPIErrorField string = "e"
+const buzzerAPIErrorMsgField string = "e_msg"
+const buzzerAPIBuzzerNameField string = "bn"
+const buzzerAPIPartyIDField string = "id"
+const buzzerAPIIsPartyAvailField string = "p_a"
+const buzzerAPIPartyNameField string = "n"
+const buzzerAPIPartyEstimatedWaitTimeField string = "t"
+const buzzerAPIIsPartyActiveField string = "i_a"
+const buzzerAPIBuzzField string = "b"
+
 // RootHandler Handles roots.
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
@@ -61,13 +71,13 @@ func RenderTemplate(w http.ResponseWriter, template_name string, template_params
 }
 
 // RenderJSONFromMap is a back-end method to create JSON object from passed object map.
-func RenderJSONFromMap(w http.ResponseWriter, obj_map map[string] interface{}) {
-  json_obj, err := json.Marshal(obj_map)
+func RenderJSONFromMap(w http.ResponseWriter, objMap map[string] interface{}) {
+  jsonObj, err := json.Marshal(objMap)
   if err != nil {
     Handle500Error(w, err)
   }
   w.Header().Set("Content-Type", "application/json")
-  w.Write(json_obj)
+  w.Write(jsonObj)
 }
 
 // ParseReqBody is a back-end method to parse recieved JSON into reqBodyObj object.
@@ -91,7 +101,7 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
 // but uses the more succinct response language for Buzzer API methods.
 func ParseReqBodyBuzzer(r *http.Request, responseObj map[string] interface{},
                   reqBodyObj map[string] interface{}) bool {
-  responseObj["e"] = 0
+  responseObj[buzzerAPIErrorField] = 0
   body, err := ioutil.ReadAll(r.Body)
   if err != nil {
     AddErrorMessageToResponseObjBuzzer(responseObj, "Failed to parse request body.")
@@ -122,8 +132,8 @@ func AddErrorMessageToResponseObj(responseObj map[string] interface{}, errMessag
 // AddErrorMessageToResponseObjBuzzer performs the same functionality as the above method but
 // use the more succinct API response used for API endpoints that interact with the Buzzer.
 func AddErrorMessageToResponseObjBuzzer(responseObj map[string] interface{}, errMessage string) {
-  responseObj["e"] = 1
-  responseObj["e_msg"] = errMessage
+  responseObj[buzzerAPIErrorField] = 1
+  responseObj[buzzerAPIErrorMsgField] = errMessage
 }
 
 // LoginHandler checks credentials against database and establish session if valid.
@@ -419,7 +429,7 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
 // GetBuzzerObjFromName is a back-end method to return all information (as object) on a buzzer based on buzzerName.
 // Passed reqBodyObj contains 'buzzer_name' which is the buzzerName to query by.
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
-  buzzerName := reqBodyObj["bn"]
+  buzzerName := reqBodyObj[buzzerAPIBuzzerNameField]
   if buzzerName == nil {
     AddErrorMessageToResponseObjBuzzer(responseObj, "buzzer_name field required.")
     return false
@@ -463,7 +473,7 @@ func GetActivePartyFromBuzzerID(responseObj map[string] interface{}, buzzer Buzz
 // Returns false if party does not exist, else returns true and sets passed activeParty
 // pointer to found party.
 func GetActivePartyFromID(reqBodyObj map[string] interface{}, responseObj map[string] interface{}, activeParty *ActiveParty) bool {
-  db.First(activeParty, "id = ?", reqBodyObj["id"])
+  db.First(activeParty, "id = ?", reqBodyObj[buzzerAPIPartyIDField])
   if *activeParty == (ActiveParty{}) {
     AddErrorMessageToResponseObjBuzzer(responseObj, "Party with that ID not found.")
     return false
@@ -486,17 +496,17 @@ func GetAvailablePartyHandler(w http.ResponseWriter, r *http.Request) {
     if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
       var activeParty ActiveParty
       db.First(&activeParty, "restaurant_id = ? and buzzer_id is null and phone_ahead is false", buzzer.RestaurantID)
-      responseObj["p_a"] = 1;
+      responseObj[buzzerAPIIsPartyAvailField] = 1;
       if activeParty != (ActiveParty{}) {
-        responseObj["n"] = activeParty.PartyName
+        responseObj[buzzerAPIPartyNameField] = activeParty.PartyName
         // Only send 20 chars of the party name to the buzzer.
         if len(activeParty.PartyName) > 20 {
-          responseObj["n"] = activeParty.PartyName[:20]
+          responseObj[buzzerAPIPartyNameField] = activeParty.PartyName[:20]
         }
-        responseObj["t"] = activeParty.WaitTimeExpected
-        responseObj["id"] = activeParty.ID
+        responseObj[buzzerAPIPartyEstimatedWaitTimeField] = activeParty.WaitTimeExpected
+        responseObj[buzzerAPIPartyIDField] = activeParty.ID
       } else {
-        responseObj["p_a"] = 0;
+        responseObj[buzzerAPIIsPartyAvailField] = 0;
       }
     }
   }
@@ -512,7 +522,7 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
   responseObj := map[string] interface{} {}
   reqBodyObj := map[string] interface{}{}
   if ParseReqBodyBuzzer(r, responseObj, reqBodyObj) {
-    if reqBodyObj["bn"] == nil || reqBodyObj["id"] == nil {
+    if reqBodyObj[buzzerAPIBuzzerNameField] == nil || reqBodyObj[buzzerAPIPartyIDField] == nil {
       AddErrorMessageToResponseObjBuzzer(responseObj, "Missing required fields.")
     } else {
       var activeParty ActiveParty
@@ -538,8 +548,8 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
 // The 'i_a' field in the response indicates whether or not a party is active. In the future
 // this should return that a party is inactive if it's not in the ActiveParties DB as parties
 // that are no longer active will be moved to HistoricalParties.
-// The "t" field represents the expected wait time.
-// When the "b" field is 1 the buzzer will buzz.
+// The buzzerAPIPartyEstimatedWaitTimeField field represents the expected wait time.
+// When the buzzerAPIBuzzField field is 1 the buzzer will buzz.
 func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[HeartbeatHandler] ")
   responseObj := map[string] interface{} {}
@@ -548,18 +558,18 @@ func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
     log.Println(reqBodyObj)
     var buzzer Buzzer
     if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
-      responseObj["i_a"] = 0
+      responseObj[buzzerAPIIsPartyActiveField] = 0
       if buzzer.IsActive {
-        responseObj["i_a"] = 1
+        responseObj[buzzerAPIIsPartyActiveField] = 1
       }
       if buzzer.IsActive {
         db.Model(&buzzer).Update("last_heartbeat", time.Now().UTC())
         var activeParty ActiveParty
         if GetActivePartyFromBuzzerID(responseObj, buzzer, &activeParty) {
-          responseObj["t"] = activeParty.WaitTimeExpected
-          responseObj["b"] = 0
+          responseObj[buzzerAPIPartyEstimatedWaitTimeField] = activeParty.WaitTimeExpected
+          responseObj[buzzerAPIBuzzField] = 0
           if activeParty.IsTableReady {
-            responseObj["b"] = 1
+            responseObj[buzzerAPIBuzzField] = 1
           }
         }
       }
@@ -592,7 +602,6 @@ func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
 // given ID. Retrieves specified activePartyID from reqBodyObj 'active_party_id' and deletes from
 // activeParty table. Removed party and all related information is then stored in historicalParty
 // table by called fucntion.
-//TODO: Move the active parties into historical parties.
 func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[DeleteActivePartyHandler] ")
     responseObj := map[string] interface{} {}
@@ -654,8 +663,8 @@ func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   if err := db.Create(&buzzer).Error; err != nil {
     Handle500Error(w, err)
   }
-  obj_map := map[string] interface{} {"e": 0, "bn": buzzerName}
-  RenderJSONFromMap(w, obj_map)
+  objMap := map[string] interface{} {buzzerAPIErrorField: 0, buzzerAPIBuzzerNameField: buzzerName}
+  RenderJSONFromMap(w, objMap)
 }
 
 // HandleAuthErrorJson is a back-end method to handle authorization error message output.
@@ -694,6 +703,7 @@ func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
       partySize := reqBodyObj["party_size"]
       waitTimeExpected := reqBodyObj["wait_time_expected"]
       phoneAhead := reqBodyObj["phone_ahead"]
+      partyNotes := reqBodyObj["party_notes"]
       if partyName == nil || partySize == nil || waitTimeExpected == nil || phoneAhead == nil {
         responseObj["status"] = "failure"
         responseObj["error_message"] = "Missing parameters."
@@ -703,7 +713,7 @@ func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
         if restaurantID == -1 {
           Handle500Error(w, errors.New("Big problem: The user that is currently logged in does not have an entry in the users table."))
         } else {
-          activeParty := ActiveParty{RestaurantID: restaurantID, PartyName: partyName.(string), PartySize: int(partySize.(float64)), PhoneAhead: phoneAhead.(bool), WaitTimeExpected: int(waitTimeExpected.(float64))}
+          activeParty := ActiveParty{RestaurantID: restaurantID, PartyName: partyName.(string), PartySize: int(partySize.(float64)), PhoneAhead: phoneAhead.(bool), PartyNotes: partyNotes.(string),WaitTimeExpected: int(waitTimeExpected.(float64))}
           db.Create(&activeParty)
           responseObj["status"] = "success"
           responseObj["active_party_id"] = activeParty.ID
