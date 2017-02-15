@@ -306,6 +306,12 @@ func BuzzerManagementHandler(w http.ResponseWriter, r *http.Request) {
   if flashes := session.Flashes(); len(flashes) > 0 {
     buzzerData["failure_message"] = flashes[0]
   }
+
+  //This function is called by the template to format the LastHeartbeat date
+  buzzerData["formatLastHeartbeatDate"] = func (heartbeatTime time.Time) string {
+    return heartbeatTime.Format("15:04:05 3/4/2006")
+  }
+
   session.Save(r, w)
 
   //render buzzer management page and pass along buzzer data
@@ -329,6 +335,11 @@ func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   db.Order("buzzer_name asc").Find(&devices, "restaurant_id = ?", restaurantID)
   buzzerData := map[string]interface{}{}
   buzzerData["buzzer_data"] = devices
+
+  //This function is called by the template to format the LastHeartbeat date
+  buzzerData["formatLastHeartbeatDate"] = func (heartbeatTime time.Time) string {
+    return heartbeatTime.Format("15:04:05 3/4/2006")
+  }
 
   RenderJSONFromMap(w, buzzerData)
 }
