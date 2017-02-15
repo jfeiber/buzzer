@@ -298,9 +298,9 @@ func BuzzerManagementHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   //This function is called by the template to format the LastHeartbeat date
-/*  buzzerData["formatLastHeartbeatDate"] = func (duration time.Time) string {
-    return duration.Format("2015-02-30 05:20:00")
-  }*/
+  buzzerData["formatLastHeartbeatDate"] = func (heartbeatTime time.Time) string {
+    return heartbeatTime.Format("15:04:05 3/4/2006")
+  }
 
   session.Save(r, w)
 
@@ -326,9 +326,10 @@ func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   buzzerData := map[string]interface{}{}
   buzzerData["buzzer_data"] = devices
 
-  /*buzzerData["formatLastHeartbeatDate"] = func (duration time.Time) string {
-    return "hello" //duration.Format("2015-02-30 05:20:00")
-  }*/
+  //This function is called by the template to format the LastHeartbeat date
+  buzzerData["formatLastHeartbeatDate"] = func (heartbeatTime time.Time) string {
+    return heartbeatTime.Format("15:04:05 3/4/2006")
+  }
 
   RenderJSONFromMap(w, buzzerData)
 }
