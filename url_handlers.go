@@ -426,6 +426,40 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+// UpdatePartySizeHandler is a frontend API call to update party size as entered/displayed in Waitlist.
+//  POST contains 'active_party_id' which is the party whose size is to be updated and 'new_party_size' which is the size to be inputed.
+func UpdatePartySizeHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UpdatePartySizeHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        newPartySize := reqBodyObj["new_party_size"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else if newPartySize == nil{
+          AddErrorMessageToResponseObj(responseObj, "New party size not specified.")
+        } else{
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+          } else {
+                responseObj["active_party_id"] = activePartyID
+                db.Model(&foundActiveParty).Update("party_size", int(newPartySize.(float64)))
+            }
+          }
+        }
+      }
+    RenderJSONFromMap(w, responseObj)
+  }
+}
+
 // GetBuzzerObjFromName is a back-end method to return all information (as object) on a buzzer based on buzzerName.
 // Passed reqBodyObj contains 'buzzer_name' which is the buzzerName to query by.
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
