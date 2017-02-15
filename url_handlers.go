@@ -72,12 +72,12 @@ func RenderTemplate(w http.ResponseWriter, template_name string, template_params
 
 // RenderJSONFromMap is a back-end method to create JSON object from passed object map.
 func RenderJSONFromMap(w http.ResponseWriter, objMap map[string] interface{}) {
-  json_obj, err := json.Marshal(objMap)
+  jsonObj, err := json.Marshal(objMap)
   if err != nil {
     Handle500Error(w, err)
   }
   w.Header().Set("Content-Type", "application/json")
-  w.Write(json_obj)
+  w.Write(jsonObj)
 }
 
 // ParseReqBody is a back-end method to parse recieved JSON into reqBodyObj object.
