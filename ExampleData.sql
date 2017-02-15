@@ -17,15 +17,15 @@ INSERT INTO users (restaurant_id, username, password, pass_salt) VALUES
 
 
 INSERT INTO buzzers (restaurant_id, buzzer_name, is_active) VALUES
-  (3, 'loud-turtle-1212', 'FALSE'),
-  (3, 'dumb-cat-2222', 'FALSE'),
-  (3, 'smart-burd-4322', 'TRUE'),
-  (3, 'sad-dog-3213', 'FALSE'),
-  (3, 'cold-spider-1234', 'FALSE'),
-  (3, 'fast-dog-5432', 'TRUE'),
-  (3, 'loud-turtle-4444', 'FALSE'),
-  (3, 'mad-fox-8765', 'FALSE'),
-  (3, 'slow-dog-4367', 'TRUE');
+  (3, 'loud-turtle-1212', 'FALSE', '2016-10-30 10:23:54'),
+  (3, 'dumb-cat-2222', 'FALSE', '2016-10-30 10:23:54'),
+  (3, 'smart-burd-4322', 'TRUE', '2016-10-30 10:23:54'),
+  (3, 'sad-dog-3213', 'FALSE', '2016-10-30 10:23:54'),
+  (3, 'cold-spider-1234', 'FALSE', '2016-10-30 10:23:54'),
+  (3, 'fast-dog-5432', 'TRUE', '2016-10-30 10:23:54'),
+  (3, 'loud-turtle-4444', 'FALSE', '2016-10-30 10:23:54'),
+  (3, 'mad-fox-8765', 'FALSE', '2016-10-30 10:23:54'),
+  (3, 'slow-dog-4367', 'TRUE', '2016-10-30 10:23:54');
 
 INSERT INTO active_parties (restaurant_id, party_name, party_size, time_created, phone_ahead, wait_time_expected, wait_time_calculated, is_table_ready, buzzer_id, party_notes) VALUES
   (1, 'Josh', 11, '2016-10-30 08:43:24', 'FALSE', 27, 25, 'FALSE', 1, ''),
