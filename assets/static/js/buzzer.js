@@ -1,4 +1,4 @@
-console.log("sup");
+console.log("Hey y'all! It's me, Dirty Kev!");
 
 // POST payload
 function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCallback) {
@@ -175,8 +175,10 @@ function repopulateTable(activeParties) {
       }
       htmlStr += "</div></td>";
     }
+    htmlStr += "<td>" + activeParties[i].PartyNotes + "</td>";
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
+
   }
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
@@ -245,6 +247,10 @@ function resetAddPartyFields() {
   // wait time in minutes
   $('.btn#minutes-dropdown').html('Minutes ' + '<span class="caret"></span>');
   $('.btn#minutes-dropdown').val(null);
+
+  // party notes
+  $('#party-notes-field').html('Notes (Optional)');
+  $('#party-notes-field').val(null);
 }
 
 function checkIfAddPartyFormComplete() {
@@ -278,10 +284,11 @@ function registerAddPartyHandlers() {
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown-button').val();
     waitMins = $('.btn#minutes-dropdown').val();
+    partyNotes = $('#party-notes-field').val();
     phoneAhead = $('.phone-ahead-toggle .active input').attr('id') === "phone" ? true : false;
     $('#alert_placeholder').html('');
     waitTimeExpected = parseInt(waitMins);
-    jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
+    jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead, "party_notes": partyNotes});
     successCallback = (phoneAhead) ? addPartySuccessCallbackPA : addPartySuccessCallbackBuzzer;
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, successCallback, completeCallback);
     resetAddPartyFields();
