@@ -15,7 +15,6 @@ INSERT INTO users (restaurant_id, username, password, pass_salt) VALUES
   (2, 'hugom', 'fakepass', 'salt'),
   (6, 'johnw', 'fakepass', 'salt');
 
-
 INSERT INTO buzzers (restaurant_id, buzzer_name, is_active, last_heartbeat) VALUES
   (3, 'loud-turtle-1212', 'FALSE', '2016-10-30 08:43:24'),
   (3, 'dumb-cat-2222', 'FALSE', '2016-10-30 08:43:24'),

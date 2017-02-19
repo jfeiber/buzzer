@@ -53,7 +53,7 @@
           {{else}}
             <td class="text-center"><span class="glyphicon glyphicon-remove" id="buzzer-status-remove"></span></td>
           {{end}}
-          <td>{{.LastHeartbeat}}</td>
+          <td>{{ (call $.formatLastHeartbeatDate .LastHeartbeat) }}</td> 
           <td class="text-center">
             <button class="btn btn-default unlink-buzzer-button" type="button">Unlink</button>
           </td>
