@@ -46,7 +46,7 @@
       <!--Show name, status (active or not), time of last check-in, and action buttons for each buzzer-->
         <tr userID="{{.ID}}">
           <td>{{.Username}}</td>
-          <td>{{.DateCreated}}</td>
+          <td>{{ (call $.formatDateCreated .DateCreated) }}</td>
           <td>
             <button class="btn btn-default remove-user-button" type="button">Remove</button>
           </td>

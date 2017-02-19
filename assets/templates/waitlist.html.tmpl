@@ -70,7 +70,7 @@ $(document).ready(function () {
         </div>
 
         <!-- Rest of Add party stuff. Expected Wait time, phone ahead/in person selection, add button. -->
-        <div class="col-md-4 add-party-justify">
+        <div class="col-md-6 add-party-justify">
           <div class="btn-group phone-ahead-toggle" data-toggle="buttons" id="btnrocker">
             <label class="btn btn-default active" id="btnrocker">
                 <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
@@ -110,6 +110,9 @@ $(document).ready(function () {
                <li><a href="#">120</a></li>
              </ul>
           </div>
+          <div class="col-md-6">
+              <input type="text" class="form-control" id="party-notes-field" placeholder="Notes (Optional)"></input>
+          </div>
           <button class="btn btn-default add-party-button" type="button" disabled="disabled">ADD</button>
         </div>
 
@@ -129,6 +132,7 @@ $(document).ready(function () {
            <th>Estimated Wait</th>
            <th>Type</th>
            <th>Actions</th>
+           <th>Notes</th>
        </tr>
     </thead>
     <tbody>
@@ -160,6 +164,7 @@ $(document).ready(function () {
               <button class="btn btn-default delete-party-button" type="button">Delete</button>
             </div>
           </td>
+          <td>{{.PartyNotes}}</td>
         </tr>
       {{end}}
     </tbody>

@@ -9,24 +9,21 @@ To see this live: http://restaur-anteater.herokuapp.com/. Username: anteater, pa
 We are allowing restaurants to manage their clients better with a web app that displays analytics registered by proprietary restaurant pagers.
 
 ### Login
-![Login Page](/Mockups/loginpage.png?raw=true)
+![Login Page](/Screenshots/Logout.png?raw_true)
 
 ### Waitlist
-![Login Page](/Mockups/waitlist.png?raw=true)
+![Login Page](/Screenshots/Waitlist.png?raw=true)
 
 ### Buzzer Management
-![Buzzer Management](/Mockups/buzzer_management.png?raw=true)
+![Buzzer Management](/Screenshots/BuzzerManagement.png?raw=true)
 
 ### Analytics
-![Analytics](/Mockups/analytics.png?raw=true)
+![Analytics](/Screenshots/Analytics.png?raw=true)
 
 ## Architecture
 
 Web App Stack:
 Golang with [Gorilla Mux](https://github.com/gorilla/mux) for routing, [GORM](https://github.com/jinzhu/gorm) for the ORM, [Negroni](https://github.com/urfave/negroni) for the HTTP middleware, [Gorilla Sessions](https://github.com/gorilla/sessions) for session handling, and PostgreSQL for the database. Hosted on Heroku.
-
-Embedded Stack:
-All embedded code written in C++. 1 library is used, the [text only Adafruit OLED display driver](https://github.com/greiman/SSD1306Ascii).
 
 ## Setup and Deployment
 
@@ -68,6 +65,34 @@ the production database, run `goose -env production up`.
 
 ### Deploying to Heroku
 [Heroku Deployment Instructions](https://devcenter.heroku.com/articles/git). Ask Josh to add you as a contributor to the web app on Heroku if you need to deploy.
+
+### General Repo Organization
+* `/`
+  * `/assets/`: Contains all the frontend assets for the web app.
+    * `/static/`
+      * `/css/`: Contains all the CSS stylesheets used by the web app.
+      * `/fonts/`: Contains fonts/glyphicons used by the web app.
+      * `/img/`: Contains any static images used by the web app. Mostly just pictures of Kevin.
+      * `/js/`: Contains all the Javascript used by the web app.
+  * `/templates/`: Contains all the HTML templates used by the web app.
+  * `/db/`: Used by goose to run manage the databases. `dbconf.yml` contains the dev and production database info.
+    * `/migrations/`: Contains the actual migration files.
+  * `/Godeps/`: Used by Godep to manage dependencies.
+  * `/Mockups/`: Contains our original frontend mockups.
+  * `/Screenshots/`: Contains current screenshots of the web app.
+  * `/vendor/`: Dependencies.
+  * `buzzer_name_generator.go`: Contains the code that generates a Heroku-style name for the buzzers.
+  * `Dockerfile`: Provisioning info for the Docker container used for local development.
+  * `ExampleData.sql`: Bogus data used for testing.
+  * `models.go`: Our DB models.
+  * `Procfile`: Heroku procfile.
+  * `README.MD`: The READme you are currently reading.
+  * `server.go`: Used to setup and run the actual web app. Creates a session, opens a connection to the database, sets up the router and routes, sets up the middleware, and starts the actual web server.
+  * `url_handlers.go`: Contains all the URL handlers attached to routes created in `server.go`. 
+  
+
+
+
 
 ## Authors
 

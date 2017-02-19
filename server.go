@@ -73,6 +73,7 @@ func main() {
   router.HandleFunc("/frontend_api/is_party_assigned_buzzer", IsPartyAssignedBuzzerHandler)
   router.HandleFunc("/frontend_api/activate_buzzer", ActivateBuzzerHandler)
   router.HandleFunc("/frontend_api/update_phone_ahead_status", UpdatePhoneAheadStatusHandler)
+  router.HandleFunc("/frontend_api/update_party_size", UpdatePartySizeHandler)
   router.HandleFunc("/frontend_api/unlink_buzzer", UnlinkBuzzerHandler)
   router.HandleFunc("/frontend_api/get_linked_buzzers", GetLinkedBuzzersHandler)
   router.HandleFunc("/analytics_api/get_average_party_chart", GetAveragePartySizeChartHandler)
