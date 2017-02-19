@@ -40,43 +40,32 @@ $(document).ready(function () {
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 add-party-container">
+
+    <div class="add-party-container">
       <div class="row">
 
         <!-- Party Name/Party Size button grouping -->
-        <div class="col-md-4 col-md-offset-2" align="center">
+        <div class="col-sm-4">
           <div class="input-group">
             <input type="text" class="form-control" id="party-name-field" placeholder="Party Name"></input>
               <span class="input-group-btn dropdown">
-                <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
-                  Party Size <span class="caret"></span>
+                <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">Party Size <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right">
                   <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li><a href="#">4</a></li>
-                  <li><a href="#">5</a></li>
-                  <li><a href="#">6</a></li>
-                  <li><a href="#">7</a></li>
-                  <li><a href="#">8</a></li>
-                  <li><a href="#">9</a></li>
-                  <li><a href="#">10</a></li>
-                  <li><a href="#">11</a></li>
-                  <li><a href="#">12</a></li>
                 </ul>
               </span>
           </div>
         </div>
 
         <!-- Rest of Add party stuff. Expected Wait time, phone ahead/in person selection, add button. -->
-        <div class="col-md-6 add-party-justify">
+        <div class="col-sm-4">
           <div class="btn-group phone-ahead-toggle" data-toggle="buttons" id="btnrocker">
             <label class="btn btn-default active" id="btnrocker">
-                <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
+              <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
             </label>
             <label class="btn btn-default" id="btnrocker">
-                <input type="radio" name="options" id="phone" width="20"><span class="glyphicon glyphicon-earphone"></span>
+              <input type="radio" name="options" id="phone" width="20"><span class="glyphicon glyphicon-earphone"></span>
             </label>
           </div>
           <div class="btn-group dropdown">
@@ -85,40 +74,19 @@ $(document).ready(function () {
             </button>
             <ul class="dropdown-menu scrollable-menu" role="menu">
                <li><a href="#">5</a></li>
-               <li><a href="#">10</a></li>
-               <li><a href="#">15</a></li>
-               <li><a href="#">20</a></li>
-               <li><a href="#">25</a></li>
-               <li><a href="#">30</a></li>
-               <li><a href="#">35</a></li>
-               <li><a href="#">40</a></li>
-               <li><a href="#">45</a></li>
-               <li><a href="#">50</a></li>
-               <li><a href="#">55</a></li>
-               <li><a href="#">60</a></li>
-               <li><a href="#">65</a></li>
-               <li><a href="#">70</a></li>
-               <li><a href="#">75</a></li>
-               <li><a href="#">80</a></li>
-               <li><a href="#">85</a></li>
-               <li><a href="#">90</a></li>
-               <li><a href="#">95</a></li>
-               <li><a href="#">100</a></li>
-               <li><a href="#">105</a></li>
-               <li><a href="#">110</a></li>
-               <li><a href="#">115</a></li>
-               <li><a href="#">120</a></li>
-             </ul>
+            </ul>
           </div>
-          <div class="col-md-6">
-              <input type="text" class="form-control" id="party-notes-field" placeholder="Notes (Optional)"></input>
-          </div>
-          <button class="btn btn-default add-party-button" type="button" disabled="disabled">ADD</button>
         </div>
 
+          <div class="col-sm-3">
+            <input type="text" class="form-control" id="party-notes-field" placeholder="Notes (Optional)"></input>
+         </div>
+          <div class="col-sm-1">
+            <button class="btn btn-default add-party-button" type="button" disabled="disabled">ADD</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
   <!-- Main waitlist table -->
   <div class="row">
