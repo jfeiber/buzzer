@@ -39,6 +39,20 @@ function deletePartyErrorCallback(xhr, error) {
   errorAlert("Delete party request failed");
 }
 
+// error callback for delete party failure
+function removeUserErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Remove user request failed");
+}
+
+// error callback for delete party failure
+function updateUsersErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Update user table request failed");
+}
+
 // error callback for buzz party failure
 function buzzPartyErrorCallback(xhr, error) {
   console.debug(xhr);
@@ -107,6 +121,13 @@ function repopulateWaitlistSuccessCallback(xhr, success) {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
 }
 
+// success callback logging for waitlist population
+function refreshUsersSuccessCallback(xhr, success) {
+  console.debug(xhr);
+  console.debug(success);
+  AjaxJSONPOST("/frontend_api/get_users", "", updateUsersErrorCallback, updateUsersSuccessCallback, completeCallback);
+}
+
 // log callback to the console
 function completeCallback(xhr, data) {
   console.log(data);
@@ -145,6 +166,10 @@ function refreshWaitlistTableRepeat() {
 // refresh waitlist table (no built-in timeout)
 function refreshWaitlistTable() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
+}
+
+function updateUsersSuccessCallback() {
+  location.reload();
 }
 
 // repopulate waitlist table. This method is so jank it's crazy
@@ -202,6 +227,14 @@ function registerSeatPartyClickHandlers() {
   $(".seat-party-button").click(function(){
     activePartyID = $(this).closest('tr').attr('activePartyID');
     AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated": true}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
+  });
+}
+
+// register click handlers for removing a user
+function registerDeletePartyClickHandlers() {
+  $(".remove-user-button").click(function(){
+    userID = $(this).closest('tr').attr('userID');
+    AjaxJSONPOST('/frontend_api/remove_user', JSON.stringify({"user_id": userID}), removeUserErrorCallback, refreshUsersSuccessCallback, completeCallback);
   });
 }
 

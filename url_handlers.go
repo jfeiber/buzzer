@@ -335,14 +335,14 @@ func UserAdminHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   //get username and restaurantID from session
-  username, _ := session.Values["username"]
-  restaurantID := GetRestaurantIDFromUsername(username.(string))
+  currUsername, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(currUsername.(string))
 
   //process to add new user
   if r.Method == "POST" {
-    username := r.FormValue("username")
+    usernameNew := r.FormValue("username")
     password := r.FormValue("password")
-    if username != "" && password != "" {
+    if usernameNew != "" && password != "" {
 
       //salt and hash the password
       passSalt := MakeRandAlphaNumericStr(50)
@@ -352,13 +352,13 @@ func UserAdminHandler(w http.ResponseWriter, r *http.Request) {
       }
 
       var user User
-      db.First(&user, "username = ?", username)
+      db.First(&user, "username = ?", usernameNew)
 
       if user != (User{}) {
         AddFlashToSession(w, r, "Username already exists", session)
       } else {
         //add the user
-        user = User{RestaurantID: restaurantID, Username: username, Password: string(hashedPassword), PassSalt: passSalt}
+        user = User{RestaurantID: restaurantID, Username: usernameNew, Password: string(hashedPassword), PassSalt: passSalt}
         db.NewRecord(user)
         db.Create(&user)
         AddFlashToSession(w, r, "User successfully added", session)
@@ -369,8 +369,9 @@ func UserAdminHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   var persons []User
+
   //query database for all buzzers with the current restaurantID, order by buzzerName asc
-  db.Order("username asc").Find(&persons, "restaurant_id = ?", restaurantID)
+  db.Order("username asc").Find(&persons, "restaurant_id = ? AND username NOT LIKE ?", restaurantID, currUsername)
   userData := map[string]interface{}{}
   userData["user_data"] = persons
   if flashes := session.Flashes(); len(flashes) > 0 {
@@ -382,34 +383,61 @@ func UserAdminHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/admin.html.tmpl", userData)
 }
 
-// UnlinkBuzzerHandler is a frontend API call to unlink a buzzer from assigned restaurant.
-// POST 'buzzer_id' has buzzerID to be unlinked, restaurantID set to null.
-func RemoveUserHandler(w http.ResponseWriter, r *http.Request) {
-  log.SetPrefix("[UnlinkBuzzerHandler] ")
+// GetUsersHandler is a frontend API Call to update Table of Users.
+func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[GetActivePartiesHandler] ")
   session := GetSession(w, r)
-  if r.Method == "POST" {
-    responseObj := map[string] interface{} {}
-    reqBodyObj := map[string] interface{}{}
-    if !IsUserLoggedIn(session) {
-      HandleAuthErrorJson(w, responseObj)
-    } else {
-      if ParseReqBody(r, responseObj, reqBodyObj) {
-        buzzerID := reqBodyObj["buzzer_id"]
-        if buzzerID == nil {
-          AddErrorMessageToResponseObj(responseObj, "No buzzerID provided.")
-        } else {
-            var foundBuzzer Buzzer
-            db.First(&foundBuzzer, "id = ?", buzzerID)
-          if foundBuzzer == (Buzzer{}) {
-            AddErrorMessageToResponseObj(responseObj, "Buzzer with that ID not found.")
-          } else {
-              db.Model(&foundBuzzer).Update("restaurant_id", gorm.Expr("NULL"))
-          }
-        }
-      }
-    }
-    RenderJSONFromMap(w, responseObj)
+  //confirms user session is valid
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
   }
+  //retrieve username then restaurantID of current user
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  var persons []User
+  //query database for all parties with currect restaurantID, order by time partied created asc
+  db.Order("username asc").Find(&persons, "restaurant_id = ?", restaurantID)
+
+  //create struct and store resuting data from query
+  userData := map[string]interface{}{}
+  userData["user_data"] = persons
+
+  //send to format as JSON and return to frontend
+  RenderJSONFromMap(w, userData);
+}
+
+// RemoveUserHandler is a frontend API call to remove a user from database.
+// POST 'user_id' has userID to be removed.
+func RemoveUserHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[RemoveUserHandler] ")
+  responseObj := map[string] interface{} {}
+  reqBodyObj := map[string] interface{}{}
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
+    HandleAuthErrorJson(w, responseObj)
+  } else if ParseReqBody(r, responseObj, reqBodyObj) {
+      userID := reqBodyObj["user_id"]
+
+      if userID == nil {
+          responseObj["status"] = "failure"
+          responseObj["error_message"] = "Missing POST parameter."
+      } else {
+          var rmvUser User
+          db.First(&rmvUser, "ID=?", userID)
+
+          dbInfo := db.Delete(&rmvUser)
+          if dbInfo.Error == nil {
+              responseObj["status"] = "success"
+          } else {
+              responseObj["status"] = "failure"
+              responseObj["error_message"] = "db.Delete failed"
+            }
+        }
+    }
+
+  RenderJSONFromMap(w, responseObj)
 }
 
 // UnlinkBuzzerHandler is a frontend API call to unlink a buzzer from assigned restaurant.
