@@ -179,10 +179,6 @@ body {
     color:red;
 }
 
-/*.table td {
-   text-align: center;
-}*/
-
 .delete-party-button {
     background-color: #DD2A17;
     color: #FFFFFF;
@@ -210,6 +206,14 @@ body {
 .analytics-date-picker {
   width: 300px;
   margin-right: 30px;
+}
+
+.party-name-group {
+  max-width: 100px;
+}
+
+#party-name-group {
+  max-width: 100px;
 }
 
 .datepicker-container{
@@ -358,10 +362,10 @@ body {
 }
 
 @media (min-width: 991px){
-  .add-party-justify {
+  /*.add-party-justify {
     margin-top: 0px;
     text-align: right;
-  }
+  }*/
   .datepicker-container{
     float: right;
   }

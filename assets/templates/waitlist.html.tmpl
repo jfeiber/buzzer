@@ -40,11 +40,10 @@ $(document).ready(function () {
 
 <div class="container">
   <div class="row">
-
     <div class="add-party-container">
       <div class="row">
 
-        <!-- Party Name/Party Size button grouping -->
+        <!-- Party name/size button grouping -->
         <div class="col-sm-4">
           <div class="input-group">
             <input type="text" class="form-control" id="party-name-field" placeholder="Party Name"></input>
@@ -58,8 +57,8 @@ $(document).ready(function () {
           </div>
         </div>
 
-        <!-- Rest of Add party stuff. Expected Wait time, phone ahead/in person selection, add button. -->
-        <div class="col-sm-4">
+        <!-- Phone ahead/waitlist toggle, expected wait time -->
+        <div class="col-sm-4" align="center">
           <div class="btn-group phone-ahead-toggle" data-toggle="buttons" id="btnrocker">
             <label class="btn btn-default active" id="btnrocker">
               <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
@@ -78,6 +77,7 @@ $(document).ready(function () {
           </div>
         </div>
 
+          <!-- Party notes (optional), add party buton -->
           <div class="col-sm-3">
             <input type="text" class="form-control" id="party-notes-field" placeholder="Notes (Optional)"></input>
          </div>
