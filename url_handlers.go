@@ -387,6 +387,7 @@ func UserAdminHandler(w http.ResponseWriter, r *http.Request) {
     } else {
       AddFlashToSession(w, r, "Could not add user. Did you forget a field?", session)
     }
+    http.Redirect(w, r, "/admin", 302)
   }
 
   var persons []User
