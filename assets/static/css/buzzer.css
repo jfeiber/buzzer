@@ -112,6 +112,35 @@ body {
     transform: translateY(50%);
 }
 
+/* Center the login elements */
+.add-user {
+
+    /* Horizontal */
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+
+    /* Vertical */
+    position: relative;
+    top: 50%;
+}
+
+/* Center the login elements */
+.user-table {
+
+    /* Horizontal */
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+
+    /* Vertical */
+    position: relative;
+    top: 50%;
+    transform: translateY(50%);
+}
+
 /* Horizontal centering of add user elements */
 .add_user {
     text-align: center;
@@ -189,6 +218,17 @@ body {
 }
 
 .delete-party-button.btn-default:hover {
+    color: #FFFFFF;
+    background-color: #AA0000 !important;
+    /*border-color: #426BE7; set the color you want here*/
+}
+
+.remove-user-button {
+    background-color: #DD2A17;
+    color: #FFFFFF;
+}
+
+.remove-user-button.btn-default:hover {
     color: #FFFFFF;
     background-color: #AA0000 !important;
     /*border-color: #426BE7; set the color you want here*/
