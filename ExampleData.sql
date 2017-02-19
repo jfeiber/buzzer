@@ -35,9 +35,6 @@ INSERT INTO active_parties (restaurant_id, party_name, party_size, time_created,
   (3, 'Bob', 2, '2016-10-30 09:23:54', 'FALSE', 10, 15, 'FALSE', 5, ''),
   (3, 'Mark', 3, '2016-10-30 09:43:54', 'TRUE', 20, 25, 'FALSE', 6, '');
 
-
- select hour, avg(count) from (select date_part('hour', time_created) as hour, date(time_created)as date, count(id) as count from historical_parties group by date(time_created), date_part('hour', time_created)) GROUP BY hour
-
 INSERT INTO historical_parties (restaurant_id, party_name, party_size, time_created, time_seated, wait_time_expected, wait_time_calculated, was_party_seated) VALUES
   (1, 'Josh', 11, '2016-10-03 08:43:24', '2016-10-30 09:43:24', 27, 25, 'TRUE'),
   (1, 'Larson', 4, '2016-10-03 10:16:54','2016-10-30 10:59:24', 20, 25, 'TRUE'),

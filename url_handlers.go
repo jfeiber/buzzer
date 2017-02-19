@@ -323,6 +323,95 @@ func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, buzzerData)
 }
 
+//UserAdminHandler renders the Admin/User management page.
+func UserAdminHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UserAdminHandler] ")
+  session := GetSession(w, r)
+
+  //verify session
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+
+  //get username and restaurantID from session
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  //process to add new user
+  if r.Method == "POST" {
+    username := r.FormValue("username")
+    password := r.FormValue("password")
+    if username != "" && password != "" {
+
+      //salt and hash the password
+      passSalt := MakeRandAlphaNumericStr(50)
+      hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password+passSalt), bcrypt.DefaultCost)
+      if err != nil {
+        log.Fatal(err)
+      }
+
+      var user User
+      db.First(&user, "username = ?", username)
+
+      if user != (User{}) {
+        AddFlashToSession(w, r, "Username already exists", session)
+      } else {
+        //add the user
+        user = User{RestaurantID: restaurantID, Username: username, Password: string(hashedPassword), PassSalt: passSalt}
+        db.NewRecord(user)
+        db.Create(&user)
+        AddFlashToSession(w, r, "User successfully added", session)
+      }
+    } else {
+      AddFlashToSession(w, r, "Could not add user. Did you forget a field?", session)
+    }
+  }
+
+  var persons []User
+  //query database for all buzzers with the current restaurantID, order by buzzerName asc
+  db.Order("username asc").Find(&persons, "restaurant_id = ?", restaurantID)
+  userData := map[string]interface{}{}
+  userData["user_data"] = persons
+  if flashes := session.Flashes(); len(flashes) > 0 {
+    userData["failure_message"] = flashes[0]
+  }
+  session.Save(r, w)
+
+  //render buzzer management page and pass along buzzer data
+  RenderTemplate(w, "assets/templates/admin.html.tmpl", userData)
+}
+
+// UnlinkBuzzerHandler is a frontend API call to unlink a buzzer from assigned restaurant.
+// POST 'buzzer_id' has buzzerID to be unlinked, restaurantID set to null.
+func RemoveUserHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UnlinkBuzzerHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        buzzerID := reqBodyObj["buzzer_id"]
+        if buzzerID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No buzzerID provided.")
+        } else {
+            var foundBuzzer Buzzer
+            db.First(&foundBuzzer, "id = ?", buzzerID)
+          if foundBuzzer == (Buzzer{}) {
+            AddErrorMessageToResponseObj(responseObj, "Buzzer with that ID not found.")
+          } else {
+              db.Model(&foundBuzzer).Update("restaurant_id", gorm.Expr("NULL"))
+          }
+        }
+      }
+    }
+    RenderJSONFromMap(w, responseObj)
+  }
+}
+
 // UnlinkBuzzerHandler is a frontend API call to unlink a buzzer from assigned restaurant.
 // POST 'buzzer_id' has buzzerID to be unlinked, restaurantID set to null.
 func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {

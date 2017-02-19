@@ -112,6 +112,35 @@ body {
     transform: translateY(50%);
 }
 
+/* Center the login elements */
+.add-user {
+
+    /* Horizontal */
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+
+    /* Vertical */
+    position: relative;
+    top: 50%;
+}
+
+/* Center the login elements */
+.user-table {
+
+    /* Horizontal */
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+
+    /* Vertical */
+    position: relative;
+    top: 50%;
+    transform: translateY(50%);
+}
+
 /* Horizontal centering of add user elements */
 .add_user {
     text-align: center;

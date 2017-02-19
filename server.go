@@ -58,6 +58,7 @@ func main() {
   router.HandleFunc("/add_user", AddUserHandler)
   router.HandleFunc("/analytics", AnalyticsHandler)
   router.HandleFunc("/waitlist", WaitListHandler)
+  router.HandleFunc("/admin", UserAdminHandler)
   router.HandleFunc("/buzzer_management", BuzzerManagementHandler)
   router.HandleFunc("/buzzer_api/get_new_buzzer_name", GetNewBuzzerNameHandler)
   router.HandleFunc("/buzzer_api/is_buzzer_registered", IsBuzzerRegisteredHandler)
@@ -77,9 +78,6 @@ func main() {
   router.HandleFunc("/analytics_api/get_parties_hour_chart", GetParitesPerHourChartHandler)
   router.HandleFunc("/analytics_api/get_party_loss_chart", GetPartyLossChartHandler)
   router.HandleFunc("/analytics_api/get_avg_wait_chart", GetAvgWaittimeChartHandler)
-
-
-
 
 
   router.NotFoundHandler = http.HandlerFunc(NotFoundHandler)
