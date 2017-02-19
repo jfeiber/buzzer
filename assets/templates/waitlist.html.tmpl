@@ -13,6 +13,12 @@ $(document).ready(function () {
   $('#buzzid').click(function() {
      $(this).attr('disabled', true);
   });
+  // $(".dropdown li a").click(function(){
+  //   console.log("in handler");
+  //   $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+  //   $(this).parents(".dropdown").find('.btn').val($(this).text());
+    // {{.partySize}} = $('.btn#party-dropdown-button-update').val();
+  // });
 });
 </script>
 <body>
@@ -140,7 +146,27 @@ $(document).ready(function () {
         <!--Iterate through waitlist data for each buzzer (or phone-ahead party)-->
         <tr activePartyID="{{.ID}}">
           <td>{{.PartyName}}</td>
-          <td>{{.PartySize}}</td>
+                    <!-- <td>{{.PartySize}}</td> -->
+          <td><span class="input-group-btn dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button-update" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
+                  {{.PartySize}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">5</a></li>
+                  <li><a href="#">6</a></li>
+                  <li><a href="#">7</a></li>
+                  <li><a href="#">8</a></li>
+                  <li><a href="#">9</a></li>
+                  <li><a href="#">10</a></li>
+                  <li><a href="#">11</a></li>
+                  <li><a href="#">12</a></li>
+                </ul>
+              </span>
+              </td>
           <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
           <td>{{ (call $.formatEstimatedWaitingTime .WaitTimeExpected) }}</td>
           {{ if .PhoneAhead }}

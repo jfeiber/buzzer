@@ -32,6 +32,13 @@ function addPartyErrorCallback(xhr, error) {
   errorAlert("Add party request failed");
 }
 
+// error callback for updating party size.
+function updatePartyErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Update party size request failed");
+}
+
 // error callback for delete party failure
 function deletePartyErrorCallback(xhr, error) {
   console.debug(xhr);
@@ -154,7 +161,8 @@ function repopulateTable(activeParties) {
   for (var i in activeParties) {
     htmlStr = "<tr activePartyID="+ activeParties[i].ID + ">";
     htmlStr += "<td>" + activeParties[i].PartyName + "</td>";
-    htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
+    // htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
+    htmlStr += '<td><span class="input-group-btn dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button-update" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = ""> ' + activeParties[i].PartySize + ' <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu-right"><li><a href="#">1</a></li><li><a href="#">2</a></li><li><a href="#">3</a></li><li><a href="#">4</a></li><li><a href="#">5</a></li><li><a href="#">6</a></li><li><a href="#">7</a></li><li><a href="#">8</a></li><li><a href="#">9</a></li><li><a href="#">10</a></li><li><a href="#">11</a></li><li><a href="#">12</a></li></ul></span></td>';
     htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
@@ -179,12 +187,15 @@ function repopulateTable(activeParties) {
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
 
+
+
   }
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
   registerSeatPartyClickHandlers();
   registerAssignBuzzerClickHandlers();
   registerBuzzClickHandlers();
+  updatePartySize();
 }
 
 // success callback for waitlist update
@@ -262,6 +273,21 @@ function checkIfAddPartyFormComplete() {
   } else {
     $('.add-party-button').attr('disabled', 'disabled');
   }
+}
+
+//  router.HandleFunc("/frontend_api/update_party_size", UpdatePartySizeHandler)
+//
+function updatePartySize(){
+    $(".dropdown li a").click(function(){
+    console.log("in handler");
+    $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+    $(this).parents(".dropdown").find('.btn').val($(this).text());
+    partySize = $('.btn#party-dropdown-button-update').val();
+    // partySize = 12;
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    jsonStr = JSON.stringify({"new_party_size": parseInt(partySize), "active_party_id": parseInt(activePartyID)});
+    AjaxJSONPOST("/frontend_api/update_party_size", jsonStr, updatePartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
+  });
 }
 
 // Registers click/type handlers for fields/dropdowns relating to the add party menu.
