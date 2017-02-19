@@ -13,16 +13,16 @@ $(document).ready(function () {
   $('#buzzid').click(function() {
      $(this).attr('disabled', true);
   });
-  //   $(".dropdown li a").click(function(){
-  //   console.log("update Party Size called");
-  //   $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-  //   $(this).parents(".dropdown").find('.btn').val($(this).text());
-  //   partySize = $(this).parents(".dropdown").find('.btn').val();
-  //   activePartyID = $(this).closest('tr').attr('activePartyID');
-  //   console.log("active party:" + activePartyID + "for new size " + partySize);
-  //   jsonStr = JSON.stringify({"new_party_size": parseInt(partySize), "active_party_id": parseInt(activePartyID)});
-  //   AjaxJSONPOST("/frontend_api/update_party_size", jsonStr, updatePartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
-  // });
+    $(".dropdown li a").click(function(){
+    console.log("update Party Size called");
+    $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+    $(this).parents(".dropdown").find('.btn').val($(this).text());
+    partySize = $(this).parents(".dropdown").find('.btn').val();
+    activePartyID = $(this).closest('tr').attr('activePartyID');
+    console.log("active party:" + activePartyID + "for new size " + partySize);
+    jsonStr = JSON.stringify({"new_party_size": parseInt(partySize), "active_party_id": parseInt(activePartyID)});
+    AjaxJSONPOST("/frontend_api/update_party_size", jsonStr, updatePartyErrorCallback, updatePartySuccessCallback, completeCallback);
+  });
 });
 </script>
 <body>
