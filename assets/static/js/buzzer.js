@@ -161,9 +161,6 @@ function repopulateTable(activeParties) {
   for (var i in activeParties) {
     htmlStr = "<tr activePartyID="+ activeParties[i].ID + ">";
     htmlStr += "<td>" + activeParties[i].PartyName + "</td>";
-    console.log("id:" + activeParties[i].ID);
-    console.log("size: " + activeParties[i].PartySize);
-    //htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
     htmlStr += '<td><span class="input-group-btn dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button-update" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = ""> ' + activeParties[i].PartySize + ' <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu"><li><a href="#">1</a></li><li><a href="#">2</a></li><li><a href="#">3</a></li><li><a href="#">4</a></li><li><a href="#">5</a></li><li><a href="#">6</a></li><li><a href="#">7</a></li><li><a href="#">8</a></li><li><a href="#">9</a></li><li><a href="#">10</a></li><li><a href="#">11</a></li><li><a href="#">12</a></li></ul></span></td>';
     htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
@@ -205,6 +202,7 @@ function updateWaitlistSuccessCallback(xhr, data) {
   repopulateTable(xhr.waitlist_data);
 }
 
+// success callback for update party
 function updatePartySuccessCallback(xhr, data) {
   console.log("Refresh Table Success");
 }
@@ -281,15 +279,13 @@ function checkIfAddPartyFormComplete() {
   }
 }
 
+//function to handle when user updates party size in table.
 function updatePartySize(){
     $(".dropdown li a").click(function(){
-    console.log("update Party Size called");
     $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
     $(this).parents(".dropdown").find('.btn').val($(this).text());
-    //partySize = $('.btn#party-dropdown-button-update').val();
     partySize = $(this).parents(".dropdown").find('.btn').val();
     activePartyID = $(this).closest('tr').attr('activePartyID');
-    console.log("active party:" + activePartyID + "for new size " + partySize);
     jsonStr = JSON.stringify({"new_party_size": parseInt(partySize), "active_party_id": parseInt(activePartyID)});
     AjaxJSONPOST("/frontend_api/update_party_size", jsonStr, updatePartyErrorCallback, updatePartySuccessCallback, completeCallback);
   });
