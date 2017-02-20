@@ -8,11 +8,16 @@
 {{ template "header.html.tmpl" .}}
 </head>
 <script type='text/javascript'>
-//Function to disable the buzz button once clicked.
+
 $(document).ready(function () {
+  //Function to disable the buzz button once clicked.
   $('#buzzid').click(function() {
      $(this).attr('disabled', true);
   });
+
+  //Function from Buzzer.js to update the party size when changed in dropdown in table.
+  //This is necessary here because without this, you must wait for page to refresh before 
+  //you can change party size. If there you know a cleaner way to do this, please inform Kev, Jr. Bootstrap Expert
     $(".dropdown li a").click(function(){
     console.log("update Party Size called");
     $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
@@ -150,12 +155,11 @@ $(document).ready(function () {
         <!--Iterate through waitlist data for each buzzer (or phone-ahead party)-->
         <tr activePartyID="{{.ID}}">
           <td>{{.PartyName}}</td>
-                    <!-- <td>{{.PartySize}}</td> -->
           <td><span class="input-group-btn dropdown">
                 <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button-update" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
                   {{.PartySize}} <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right">
+                <ul class="dropdown-menu dropdown-menu">
                   <li><a href="#">1</a></li>
                   <li><a href="#">2</a></li>
                   <li><a href="#">3</a></li>
