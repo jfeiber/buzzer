@@ -194,7 +194,7 @@ function repopulateTable(activeParties) {
   registerSeatPartyClickHandlers();
   registerAssignBuzzerClickHandlers();
   registerBuzzClickHandlers();
-  updatePartySize();
+  registerUpdatePartySizeClickHandler();
 }
 
 // success callback for waitlist update
@@ -280,14 +280,14 @@ function checkIfAddPartyFormComplete() {
 }
 
 //function to handle when user updates party size in table.
-function updatePartySize(){
+function registerUpdatePartySizeClickHandler(){
     $(".dropdown li a").click(function(){
-    $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-    $(this).parents(".dropdown").find('.btn').val($(this).text());
-    partySize = $(this).parents(".dropdown").find('.btn').val();
-    activePartyID = $(this).closest('tr').attr('activePartyID');
-    jsonStr = JSON.stringify({"new_party_size": parseInt(partySize), "active_party_id": parseInt(activePartyID)});
-    AjaxJSONPOST("/frontend_api/update_party_size", jsonStr, updatePartyErrorCallback, updatePartySuccessCallback, completeCallback);
+      $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+      $(this).parents(".dropdown").find('.btn').val($(this).text());
+      partySize = $(this).parents(".dropdown").find('.btn').val();
+      activePartyID = $(this).closest('tr').attr('activePartyID');
+      jsonStr = JSON.stringify({"new_party_size": parseInt(partySize), "active_party_id": parseInt(activePartyID)});
+      AjaxJSONPOST("/frontend_api/update_party_size", jsonStr, updatePartyErrorCallback, updatePartySuccessCallback, completeCallback);
   });
 }
 
