@@ -381,6 +381,7 @@ $(document).ready(function() {
   registerUnlinkBuzzerClickHandlers();
   registerAddPartyHandlers();
   registerChartTypeSelectionHandler();
+  registerUpdatePartySizeClickHandler();
 
   // spinner_buzzer_modal parameters
   var opts = {

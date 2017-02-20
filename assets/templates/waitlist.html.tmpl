@@ -7,20 +7,6 @@
 <head>
 {{ template "header.html.tmpl" .}}
 </head>
-<script type='text/javascript'>
-
-$(document).ready(function () {
-  //Function to disable the buzz button once clicked.
-  // $('#buzzid').click(function() {
-  //    $(this).attr('disabled', true);
-  // });
-
-  //Function from Buzzer.js to update the party size when changed in dropdown in table.
-  //This is necessary here because without this, you must wait for page to refresh before 
-  //you can change party size. 
-  registerUpdatePartySizeClickHandler();
-});
-</script>
 <body>
 {{ template "navbar.html.tmpl" .}}
 <div class="row login-alert">
