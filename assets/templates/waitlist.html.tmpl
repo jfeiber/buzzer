@@ -7,14 +7,6 @@
 <head>
 {{ template "header.html.tmpl" .}}
 </head>
-<script type='text/javascript'>
-//Function to disable the buzz button once clicked.
-$(document).ready(function () {
-  $('#buzzid').click(function() {
-     $(this).attr('disabled', true);
-  });
-});
-</script>
 <body>
 {{ template "navbar.html.tmpl" .}}
 <div class="row login-alert">
@@ -140,7 +132,26 @@ $(document).ready(function () {
         <!--Iterate through waitlist data for each buzzer (or phone-ahead party)-->
         <tr activePartyID="{{.ID}}">
           <td>{{.PartyName}}</td>
-          <td>{{.PartySize}}</td>
+          <td><span class="input-group-btn dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button-update" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
+                  {{.PartySize}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu">
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">5</a></li>
+                  <li><a href="#">6</a></li>
+                  <li><a href="#">7</a></li>
+                  <li><a href="#">8</a></li>
+                  <li><a href="#">9</a></li>
+                  <li><a href="#">10</a></li>
+                  <li><a href="#">11</a></li>
+                  <li><a href="#">12</a></li>
+                </ul>
+              </span>
+              </td>
           <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
           <td>{{ (call $.formatEstimatedWaitingTime .WaitTimeExpected) }}</td>
           {{ if .PhoneAhead }}

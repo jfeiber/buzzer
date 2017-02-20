@@ -212,6 +212,10 @@ body {
    text-align: center;
 }*/
 
+#party-dropdown-button-update{
+  border-radius: 4px;
+}
+
 .delete-party-button {
     background-color: #DD2A17;
     color: #FFFFFF;
