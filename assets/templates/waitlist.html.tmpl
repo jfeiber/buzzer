@@ -17,17 +17,7 @@ $(document).ready(function () {
 
   //Function from Buzzer.js to update the party size when changed in dropdown in table.
   //This is necessary here because without this, you must wait for page to refresh before 
-  //you can change party size. If there you know a cleaner way to do this, please inform Kev, Jr. Bootstrap Expert
-  //   $(".dropdown li a").click(function(){
-  //   console.log("update Party Size called");
-  //   $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-  //   $(this).parents(".dropdown").find('.btn').val($(this).text());
-  //   partySize = $(this).parents(".dropdown").find('.btn').val();
-  //   activePartyID = $(this).closest('tr').attr('activePartyID');
-  //   console.log("active party:" + activePartyID + "for new size " + partySize);
-  //   jsonStr = JSON.stringify({"new_party_size": parseInt(partySize), "active_party_id": parseInt(activePartyID)});
-  //   AjaxJSONPOST("/frontend_api/update_party_size", jsonStr, updatePartyErrorCallback, updatePartySuccessCallback, completeCallback);
-  // });
+  //you can change party size. 
   registerUpdatePartySizeClickHandler();
 });
 </script>
