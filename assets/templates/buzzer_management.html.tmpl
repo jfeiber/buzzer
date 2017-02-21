@@ -53,20 +53,9 @@
           {{else}}
             <td class="text-center"><span class="glyphicon glyphicon-remove" id="buzzer-status-remove"></span></td>
           {{end}}
-          <td>{{.LastHeartbeat}}</td>
-          <td>
+          <td>{{ (call $.formatLastHeartbeatDate .LastHeartbeat) }}</td> 
+          <td class="text-center">
             <button class="btn btn-default unlink-buzzer-button" type="button">Unlink</button>
-            <div class="dropdown" style="display:inline;">
-            <button class="btn btn-default dropdown-toggle" type="buzz-button" id="elipsis" data-toggle="dropdown"><span class="glyphicon glyphicon-option-horizontal"></button>
-              <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-              <!--Easter egg until we add more buzzer actions-->
-                <li><a href="#">Kevin</a></li>
-                <li><a href="#">Has</a></li>
-                <li><a href="#">Fun</a></li>
-                <li><a href="#">With</a></li>
-                <li><a href="#">Friends</a></li>
-              </ul>
-              </div>
           </td>
         </tr>
       {{end}}

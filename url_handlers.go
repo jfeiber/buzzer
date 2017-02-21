@@ -17,6 +17,16 @@ import (
     _ "github.com/jinzhu/gorm/dialects/postgres"
   )
 
+const buzzerAPIErrorField string = "e"
+const buzzerAPIErrorMsgField string = "e_msg"
+const buzzerAPIBuzzerNameField string = "bn"
+const buzzerAPIPartyIDField string = "id"
+const buzzerAPIIsPartyAvailField string = "p_a"
+const buzzerAPIPartyNameField string = "n"
+const buzzerAPIPartyEstimatedWaitTimeField string = "t"
+const buzzerAPIIsPartyActiveField string = "i_a"
+const buzzerAPIBuzzField string = "b"
+
 // RootHandler Handles roots.
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
@@ -61,13 +71,13 @@ func RenderTemplate(w http.ResponseWriter, template_name string, template_params
 }
 
 // RenderJSONFromMap is a back-end method to create JSON object from passed object map.
-func RenderJSONFromMap(w http.ResponseWriter, obj_map map[string] interface{}) {
-  json_obj, err := json.Marshal(obj_map)
+func RenderJSONFromMap(w http.ResponseWriter, objMap map[string] interface{}) {
+  jsonObj, err := json.Marshal(objMap)
   if err != nil {
     Handle500Error(w, err)
   }
   w.Header().Set("Content-Type", "application/json")
-  w.Write(json_obj)
+  w.Write(jsonObj)
 }
 
 // ParseReqBody is a back-end method to parse recieved JSON into reqBodyObj object.
@@ -91,7 +101,7 @@ func ParseReqBody(r *http.Request, responseObj map[string] interface{},
 // but uses the more succinct response language for Buzzer API methods.
 func ParseReqBodyBuzzer(r *http.Request, responseObj map[string] interface{},
                   reqBodyObj map[string] interface{}) bool {
-  responseObj["e"] = 0
+  responseObj[buzzerAPIErrorField] = 0
   body, err := ioutil.ReadAll(r.Body)
   if err != nil {
     AddErrorMessageToResponseObjBuzzer(responseObj, "Failed to parse request body.")
@@ -122,8 +132,8 @@ func AddErrorMessageToResponseObj(responseObj map[string] interface{}, errMessag
 // AddErrorMessageToResponseObjBuzzer performs the same functionality as the above method but
 // use the more succinct API response used for API endpoints that interact with the Buzzer.
 func AddErrorMessageToResponseObjBuzzer(responseObj map[string] interface{}, errMessage string) {
-  responseObj["e"] = 1
-  responseObj["e_msg"] = errMessage
+  responseObj[buzzerAPIErrorField] = 1
+  responseObj[buzzerAPIErrorMsgField] = errMessage
 }
 
 // LoginHandler checks credentials against database and establish session if valid.
@@ -296,6 +306,12 @@ func BuzzerManagementHandler(w http.ResponseWriter, r *http.Request) {
   if flashes := session.Flashes(); len(flashes) > 0 {
     buzzerData["failure_message"] = flashes[0]
   }
+
+  //This function is called by the template to format the LastHeartbeat date
+  buzzerData["formatLastHeartbeatDate"] = func (heartbeatTime time.Time) string {
+    return heartbeatTime.Format("15:04:05 3/4/2006")
+  }
+
   session.Save(r, w)
 
   //render buzzer management page and pass along buzzer data
@@ -320,7 +336,140 @@ func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   buzzerData := map[string]interface{}{}
   buzzerData["buzzer_data"] = devices
 
+  //This function is called by the template to format the LastHeartbeat date
+  buzzerData["formatLastHeartbeatDate"] = func (heartbeatTime time.Time) string {
+    return heartbeatTime.Format("15:04:05 3/4/2006")
+  }
+
   RenderJSONFromMap(w, buzzerData)
+}
+
+//UserAdminHandler renders the Admin/User management page.
+func UserAdminHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UserAdminHandler] ")
+  session := GetSession(w, r)
+
+  //verify session
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+
+  //get username and restaurantID from session
+  currUsername, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(currUsername.(string))
+
+  //process to add new user
+  if r.Method == "POST" {
+    usernameNew := r.FormValue("username")
+    password := r.FormValue("password")
+    if usernameNew != "" && password != "" {
+
+      //salt and hash the password
+      passSalt := MakeRandAlphaNumericStr(50)
+      hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password+passSalt), bcrypt.DefaultCost)
+      if err != nil {
+        log.Fatal(err)
+      }
+
+      var user User
+      db.First(&user, "username = ?", usernameNew)
+
+      if user != (User{}) {
+        AddFlashToSession(w, r, "Username already exists", session)
+      } else {
+        //add the user
+        user = User{RestaurantID: restaurantID, Username: usernameNew, Password: string(hashedPassword), PassSalt: passSalt}
+        db.NewRecord(user)
+        db.Create(&user)
+        AddFlashToSession(w, r, "User successfully added", session)
+      }
+    } else {
+      AddFlashToSession(w, r, "Could not add user. Did you forget a field?", session)
+    }
+    http.Redirect(w, r, "/admin", 302)
+  }
+
+  var persons []User
+
+  //query database for all buzzers with the current restaurantID, order by buzzerName asc
+  db.Order("username asc").Find(&persons, "restaurant_id = ? AND username NOT LIKE ?", restaurantID, currUsername)
+  userData := map[string]interface{}{}
+  userData["user_data"] = persons
+  if flashes := session.Flashes(); len(flashes) > 0 {
+    userData["failure_message"] = flashes[0]
+  }
+
+  //This function is called by the template to format the LastHeartbeat date
+  userData["formatDateCreated"] = func (datecreated time.Time) string {
+    return datecreated.Format("3/4/2006")
+  }
+
+  session.Save(r, w)
+
+  //render buzzer management page and pass along buzzer data
+  RenderTemplate(w, "assets/templates/admin.html.tmpl", userData)
+}
+
+// GetUsersHandler is a frontend API Call to update Table of Users.
+func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[GetActivePartiesHandler] ")
+  session := GetSession(w, r)
+  //confirms user session is valid
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+  //retrieve username then restaurantID of current user
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  var persons []User
+  //query database for all parties with currect restaurantID, order by time partied created asc
+  db.Order("username asc").Find(&persons, "restaurant_id = ?", restaurantID)
+
+  //create struct and store resuting data from query
+  userData := map[string]interface{}{}
+  userData["user_data"] = persons
+
+  //This function is called by the template to format the LastHeartbeat date
+  userData["formatDateCreated"] = func (datecreated time.Time) string {
+    return datecreated.Format("3/4/2006")
+  }
+  //send to format as JSON and return to frontend
+  RenderJSONFromMap(w, userData);
+}
+
+// RemoveUserHandler is a frontend API call to remove a user from database.
+// POST 'user_id' has userID to be removed.
+func RemoveUserHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[RemoveUserHandler] ")
+  responseObj := map[string] interface{} {}
+  reqBodyObj := map[string] interface{}{}
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
+    HandleAuthErrorJson(w, responseObj)
+  } else if ParseReqBody(r, responseObj, reqBodyObj) {
+      userID := reqBodyObj["user_id"]
+
+      if userID == nil {
+          responseObj["status"] = "failure"
+          responseObj["error_message"] = "Missing POST parameter."
+      } else {
+          var rmvUser User
+          db.First(&rmvUser, "ID=?", userID)
+
+          dbInfo := db.Delete(&rmvUser)
+          if dbInfo.Error == nil {
+              responseObj["status"] = "success"
+          } else {
+              responseObj["status"] = "failure"
+              responseObj["error_message"] = "db.Delete failed"
+            }
+        }
+    }
+
+  RenderJSONFromMap(w, responseObj)
 }
 
 // UnlinkBuzzerHandler is a frontend API call to unlink a buzzer from assigned restaurant.
@@ -416,10 +565,44 @@ func UpdatePhoneAheadStatusHandler(w http.ResponseWriter, r *http.Request) {
   }
 }
 
+// UpdatePartySizeHandler is a frontend API call to update party size as entered/displayed in Waitlist.
+//  POST contains 'active_party_id' which is the party whose size is to be updated and 'new_party_size' which is the size to be inputed.
+func UpdatePartySizeHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UpdatePartySizeHandler] ")
+  session := GetSession(w, r)
+  if r.Method == "POST" {
+    responseObj := map[string] interface{} {}
+    reqBodyObj := map[string] interface{}{}
+    if !IsUserLoggedIn(session) {
+      HandleAuthErrorJson(w, responseObj)
+    } else {
+      if ParseReqBody(r, responseObj, reqBodyObj) {
+        activePartyID := reqBodyObj["active_party_id"]
+        newPartySize := reqBodyObj["new_party_size"]
+        if activePartyID == nil {
+          AddErrorMessageToResponseObj(responseObj, "No activePartyID provided.")
+        } else if newPartySize == nil{
+          AddErrorMessageToResponseObj(responseObj, "New party size not specified.")
+        } else{
+            var foundActiveParty ActiveParty
+            db.First(&foundActiveParty, "id = ?", activePartyID)
+          if foundActiveParty == (ActiveParty{}) {
+            AddErrorMessageToResponseObj(responseObj, "Party with that ID not found.")
+          } else {
+                responseObj["active_party_id"] = activePartyID
+                db.Model(&foundActiveParty).Update("party_size", int(newPartySize.(float64)))
+            }
+          }
+        }
+      }
+    RenderJSONFromMap(w, responseObj)
+  }
+}
+
 // GetBuzzerObjFromName is a back-end method to return all information (as object) on a buzzer based on buzzerName.
 // Passed reqBodyObj contains 'buzzer_name' which is the buzzerName to query by.
 func GetBuzzerObjFromName(reqBodyObj map[string] interface{}, responseObj map[string] interface {}, buzzer *Buzzer) bool {
-  buzzerName := reqBodyObj["bn"]
+  buzzerName := reqBodyObj[buzzerAPIBuzzerNameField]
   if buzzerName == nil {
     AddErrorMessageToResponseObjBuzzer(responseObj, "buzzer_name field required.")
     return false
@@ -463,7 +646,7 @@ func GetActivePartyFromBuzzerID(responseObj map[string] interface{}, buzzer Buzz
 // Returns false if party does not exist, else returns true and sets passed activeParty
 // pointer to found party.
 func GetActivePartyFromID(reqBodyObj map[string] interface{}, responseObj map[string] interface{}, activeParty *ActiveParty) bool {
-  db.First(activeParty, "id = ?", reqBodyObj["id"])
+  db.First(activeParty, "id = ?", reqBodyObj[buzzerAPIPartyIDField])
   if *activeParty == (ActiveParty{}) {
     AddErrorMessageToResponseObjBuzzer(responseObj, "Party with that ID not found.")
     return false
@@ -486,17 +669,17 @@ func GetAvailablePartyHandler(w http.ResponseWriter, r *http.Request) {
     if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
       var activeParty ActiveParty
       db.First(&activeParty, "restaurant_id = ? and buzzer_id is null and phone_ahead is false", buzzer.RestaurantID)
-      responseObj["p_a"] = 1;
+      responseObj[buzzerAPIIsPartyAvailField] = 1;
       if activeParty != (ActiveParty{}) {
-        responseObj["n"] = activeParty.PartyName
+        responseObj[buzzerAPIPartyNameField] = activeParty.PartyName
         // Only send 20 chars of the party name to the buzzer.
         if len(activeParty.PartyName) > 20 {
-          responseObj["n"] = activeParty.PartyName[:20]
+          responseObj[buzzerAPIPartyNameField] = activeParty.PartyName[:20]
         }
-        responseObj["t"] = activeParty.WaitTimeExpected
-        responseObj["id"] = activeParty.ID
+        responseObj[buzzerAPIPartyEstimatedWaitTimeField] = activeParty.WaitTimeExpected
+        responseObj[buzzerAPIPartyIDField] = activeParty.ID
       } else {
-        responseObj["p_a"] = 0;
+        responseObj[buzzerAPIIsPartyAvailField] = 0;
       }
     }
   }
@@ -512,7 +695,7 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
   responseObj := map[string] interface{} {}
   reqBodyObj := map[string] interface{}{}
   if ParseReqBodyBuzzer(r, responseObj, reqBodyObj) {
-    if reqBodyObj["bn"] == nil || reqBodyObj["id"] == nil {
+    if reqBodyObj[buzzerAPIBuzzerNameField] == nil || reqBodyObj[buzzerAPIPartyIDField] == nil {
       AddErrorMessageToResponseObjBuzzer(responseObj, "Missing required fields.")
     } else {
       var activeParty ActiveParty
@@ -538,8 +721,8 @@ func AcceptPartyHandler(w http.ResponseWriter, r *http.Request) {
 // The 'i_a' field in the response indicates whether or not a party is active. In the future
 // this should return that a party is inactive if it's not in the ActiveParties DB as parties
 // that are no longer active will be moved to HistoricalParties.
-// The "t" field represents the expected wait time.
-// When the "b" field is 1 the buzzer will buzz.
+// The buzzerAPIPartyEstimatedWaitTimeField field represents the expected wait time.
+// When the buzzerAPIBuzzField field is 1 the buzzer will buzz.
 func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[HeartbeatHandler] ")
   responseObj := map[string] interface{} {}
@@ -548,18 +731,18 @@ func HeartbeatHandler(w http.ResponseWriter, r *http.Request) {
     log.Println(reqBodyObj)
     var buzzer Buzzer
     if GetBuzzerObjFromName(reqBodyObj, responseObj, &buzzer) {
-      responseObj["i_a"] = 0
+      responseObj[buzzerAPIIsPartyActiveField] = 0
       if buzzer.IsActive {
-        responseObj["i_a"] = 1
+        responseObj[buzzerAPIIsPartyActiveField] = 1
       }
       if buzzer.IsActive {
         db.Model(&buzzer).Update("last_heartbeat", time.Now().UTC())
         var activeParty ActiveParty
         if GetActivePartyFromBuzzerID(responseObj, buzzer, &activeParty) {
-          responseObj["t"] = activeParty.WaitTimeExpected
-          responseObj["b"] = 0
+          responseObj[buzzerAPIPartyEstimatedWaitTimeField] = activeParty.WaitTimeExpected
+          responseObj[buzzerAPIBuzzField] = 0
           if activeParty.IsTableReady {
-            responseObj["b"] = 1
+            responseObj[buzzerAPIBuzzField] = 1
           }
         }
       }
@@ -592,7 +775,6 @@ func IsBuzzerRegisteredHandler(w http.ResponseWriter, r *http.Request) {
 // given ID. Retrieves specified activePartyID from reqBodyObj 'active_party_id' and deletes from
 // activeParty table. Removed party and all related information is then stored in historicalParty
 // table by called fucntion.
-//TODO: Move the active parties into historical parties.
 func DeleteActivePartyHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[DeleteActivePartyHandler] ")
     responseObj := map[string] interface{} {}
@@ -654,8 +836,8 @@ func GetNewBuzzerNameHandler(w http.ResponseWriter, r *http.Request) {
   if err := db.Create(&buzzer).Error; err != nil {
     Handle500Error(w, err)
   }
-  obj_map := map[string] interface{} {"e": 0, "bn": buzzerName}
-  RenderJSONFromMap(w, obj_map)
+  objMap := map[string] interface{} {buzzerAPIErrorField: 0, buzzerAPIBuzzerNameField: buzzerName}
+  RenderJSONFromMap(w, objMap)
 }
 
 // HandleAuthErrorJson is a back-end method to handle authorization error message output.
@@ -694,6 +876,7 @@ func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
       partySize := reqBodyObj["party_size"]
       waitTimeExpected := reqBodyObj["wait_time_expected"]
       phoneAhead := reqBodyObj["phone_ahead"]
+      partyNotes := reqBodyObj["party_notes"]
       if partyName == nil || partySize == nil || waitTimeExpected == nil || phoneAhead == nil {
         responseObj["status"] = "failure"
         responseObj["error_message"] = "Missing parameters."
@@ -703,7 +886,7 @@ func CreateNewPartyHandler(w http.ResponseWriter, r *http.Request) {
         if restaurantID == -1 {
           Handle500Error(w, errors.New("Big problem: The user that is currently logged in does not have an entry in the users table."))
         } else {
-          activeParty := ActiveParty{RestaurantID: restaurantID, PartyName: partyName.(string), PartySize: int(partySize.(float64)), PhoneAhead: phoneAhead.(bool), WaitTimeExpected: int(waitTimeExpected.(float64))}
+          activeParty := ActiveParty{RestaurantID: restaurantID, PartyName: partyName.(string), PartySize: int(partySize.(float64)), PhoneAhead: phoneAhead.(bool), PartyNotes: partyNotes.(string),WaitTimeExpected: int(waitTimeExpected.(float64))}
           db.Create(&activeParty)
           responseObj["status"] = "success"
           responseObj["active_party_id"] = activeParty.ID
@@ -827,7 +1010,7 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
 
 
         // BREAKFAST
-        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND date_part('hour', time_created) >= 4 AND date_part('hour', time_created) < 11 AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND was_party_seated = TRUE AND date_part('hour', time_created) >= 4 AND date_part('hour', time_created) < 11 AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
         if err != nil {
           log.Println("Error")
         }
@@ -856,7 +1039,7 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
 
 
         // LUNCH
-        rows, err = db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND date_part('hour', time_created) >=11  AND date_part('hour', time_created) < 16 AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        rows, err = db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND was_party_seated = TRUE AND date_part('hour', time_created) >=11  AND date_part('hour', time_created) < 16 AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
         if err != nil {
           log.Println("Error")
         }
@@ -885,7 +1068,250 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
 
 
         // DINNER
-        rows, err = db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND (date_part('hour', time_created) >= 16  OR date_part('hour', time_created) < 3) AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        rows, err = db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, sum(party_size) as total").Where("restaurant_id = ? AND was_party_seated = TRUE AND (date_part('hour', time_created) >= 16  OR date_part('hour', time_created) < 3) AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+        var TotalDinnerArray []interface{}
+
+        dateToPartySizeMap = map[string]int{}
+
+        for rows.Next() {
+          var date time.Time
+          var tsize int
+          rows.Scan(&date, &tsize)
+          formatDate := date.Format("01/02/06")
+
+          dateToPartySizeMap[formatDate] = tsize
+        }
+
+        for d := 0; d < len(DateArray); d++ {
+            if val, ok := dateToPartySizeMap[DateArray[d]]; ok {
+              TotalDinnerArray = append(TotalDinnerArray, val)
+            } else {
+              TotalDinnerArray = append(TotalDinnerArray, nil)
+            }
+        }
+
+
+
+        resultData["date_data"] = DateArray
+        resultData["breakfast_data"] = TotalBreakfastArray
+        resultData["lunch_data"] = TotalLunchArray
+        resultData["dinner_data"] = TotalDinnerArray
+      }
+    }
+    RenderJSONFromMap(w, resultData)
+}
+
+// GetPartyLossChartHandler TODO: comment
+func GetPartyLossChartHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetPartyLossChartHandler]")
+    resultData := map[string]interface{}{}
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+    //confirms valid session
+    if !IsUserLoggedIn(session) {
+      http.Redirect(w, r, "/login", 302)
+      return
+    }
+    //get current session values
+    username, _ := session.Values["username"]
+    restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+    if r.Method == "POST" {
+      startEndInfo := map[string] interface{}{}
+      if ParseReqBody(r, returnObj, startEndInfo) {
+
+        if _, ok := startEndInfo["start_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "start date undefined"
+        }
+        if _, ok := startEndInfo["end_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "end date undefined"
+        }
+
+        startDate := startEndInfo["start_date"]
+        endDate := startEndInfo["end_date"]
+
+        var DateArray  []string
+
+        start, err := time.Parse("01/02/2006", startDate.(string))
+        end, err := time.Parse("01/02/2006", endDate.(string))
+
+        // set d to starting date and keep adding 1 day to it as long as month doesn't change
+        for d := start; d != end.AddDate(0, 0, 1); d = d.AddDate(0, 0, 1) {
+            dStr := d.Format("01/02/06")
+            DateArray = append(DateArray, dStr)
+        }
+
+        // Parties Seated
+        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, count(id) as total").Where("restaurant_id = ? AND was_party_seated = TRUE AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+        var TotalSeatedArray []interface{}
+
+        dateToPartyMap := map[string]int{}
+
+        for rows.Next() {
+          var date time.Time
+          var tsize int
+          rows.Scan(&date, &tsize)
+          formatDate := date.Format("01/02/06")
+
+          dateToPartyMap[formatDate] = tsize
+        }
+
+        for d := 0; d < len(DateArray); d++ {
+            if val, ok := dateToPartyMap[DateArray[d]]; ok {
+              TotalSeatedArray = append(TotalSeatedArray, val)
+            } else {
+              TotalSeatedArray = append(TotalSeatedArray, nil)
+            }
+        }
+
+        // Parties Lost
+        rows, err = db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, count(id) as total").Where("restaurant_id = ? AND was_party_seated = FALSE AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+        var TotalLostArray []interface{}
+
+        dateToPartyMap = map[string]int{}
+
+        for rows.Next() {
+          var date time.Time
+          var tsize int
+          rows.Scan(&date, &tsize)
+          formatDate := date.Format("01/02/06")
+
+          dateToPartyMap[formatDate] = tsize
+        }
+
+        for d := 0; d < len(DateArray); d++ {
+            if val, ok := dateToPartyMap[DateArray[d]]; ok {
+              TotalLostArray = append(TotalLostArray, val)
+            } else {
+              TotalLostArray = append(TotalLostArray, nil)
+            }
+        }
+
+        resultData["date_data"] = DateArray
+        resultData["seated_data"] = TotalSeatedArray
+        resultData["lost_data"] = TotalLostArray
+      }
+    }
+    RenderJSONFromMap(w, resultData)
+}
+
+// GetAvgWaittimeChartHandler TODO: comment
+func GetAvgWaittimeChartHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[GetTotalCustomersChartHandler]")
+    resultData := map[string]interface{}{}
+    returnObj := map[string] interface{} {"status": "success"}
+    session := GetSession(w, r)
+    //confirms valid session
+    if !IsUserLoggedIn(session) {
+      http.Redirect(w, r, "/login", 302)
+      return
+    }
+    //get current session values
+    username, _ := session.Values["username"]
+    restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+    if r.Method == "POST" {
+      startEndInfo := map[string] interface{}{}
+      if ParseReqBody(r, returnObj, startEndInfo) {
+
+        if _, ok := startEndInfo["start_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "start date undefined"
+        }
+        if _, ok := startEndInfo["end_date"].(string); !ok {
+            returnObj["status"] = "failure"
+            returnObj["error_message"] = "end date undefined"
+        }
+
+        startDate := startEndInfo["start_date"]
+        endDate := startEndInfo["end_date"]
+
+        var DateArray  []string
+
+        start, err := time.Parse("01/02/2006", startDate.(string))
+        end, err := time.Parse("01/02/2006", endDate.(string))
+
+        // set d to starting date and keep adding 1 day to it as long as month doesn't change
+        for d := start; d != end.AddDate(0, 0, 1); d = d.AddDate(0, 0, 1) {
+            dStr := d.Format("01/02/06")
+            DateArray = append(DateArray, dStr)
+        }
+
+
+        // BREAKFAST
+        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, ROUND(avg(wait_time_calculated), 0) as total").Where("restaurant_id = ? AND was_party_seated = TRUE AND date_part('hour', time_created) >= 4 AND date_part('hour', time_created) < 11 AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+
+        var TotalBreakfastArray []interface{}
+
+        dateToPartySizeMap := map[string]int{}
+
+        for rows.Next() {
+          var date time.Time
+          var tsize int
+          rows.Scan(&date, &tsize)
+          formatDate := date.Format("01/02/06")
+
+          dateToPartySizeMap[formatDate] = tsize
+        }
+
+        for d := 0; d < len(DateArray); d++ {
+            if val, ok := dateToPartySizeMap[DateArray[d]]; ok {
+              TotalBreakfastArray = append(TotalBreakfastArray, val)
+            } else {
+              TotalBreakfastArray = append(TotalBreakfastArray, nil)
+            }
+        }
+
+
+        // LUNCH
+        rows, err = db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, ROUND(avg(wait_time_calculated), 0) as total").Where("restaurant_id = ? AND was_party_seated = TRUE AND date_part('hour', time_created) >=11  AND date_part('hour', time_created) < 16 AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        if err != nil {
+          log.Println("Error")
+        }
+
+        var TotalLunchArray []interface{}
+
+        dateToPartySizeMap = map[string]int{}
+
+        for rows.Next() {
+          var date time.Time
+          var tsize int
+          rows.Scan(&date, &tsize)
+          formatDate := date.Format("01/02/06")
+
+          dateToPartySizeMap[formatDate] = tsize
+        }
+
+        // set d to starting date and keep adding 1 day to it as long as month doesn't change
+        for d := 0; d < len(DateArray); d++ {
+            if val, ok := dateToPartySizeMap[DateArray[d]]; ok {
+              TotalLunchArray = append(TotalLunchArray, val)
+            } else {
+              TotalLunchArray = append(TotalLunchArray, nil)
+            }
+        }
+
+
+        // DINNER
+        rows, err = db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, ROUND(avg(wait_time_calculated), 0) as total").Where("restaurant_id = ? AND was_party_seated = TRUE AND (date_part('hour', time_created) >= 16  OR date_part('hour', time_created) < 3) AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
         if err != nil {
           log.Println("Error")
         }
@@ -954,7 +1380,7 @@ func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
         startDate := startEndInfo["start_date"]
         endDate := startEndInfo["end_date"]
 
-        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, ROUND(avg(party_size), 0) as avgSize").Where("restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
+        rows, err := db.Order("date(time_created) asc").Table("historical_parties").Select("date(time_created) as date, ROUND(avg(party_size), 0) as avgSize").Where("restaurant_id = ? AND was_party_seated = TRUE AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date(time_created)").Rows()
         if err != nil {
           log.Println("Error")
         }
@@ -988,7 +1414,7 @@ func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
         }
 
         resultData["label_data"] = DateArray
-        resultData["graph_data"] = AvgSizeArray
+        resultData["date_data"] = AvgSizeArray
       }
     }
     RenderJSONFromMap(w, resultData)
@@ -1027,7 +1453,7 @@ func GetParitesPerHourChartHandler(w http.ResponseWriter, r *http.Request) {
         endDate := startEndInfo["end_date"]
 
         //select date_part('hour', time_created), count(id) from historical_parties group by date_part('hour', time_created)
-        rows, err := db.Raw("SELECT partyHour, round(avg(partyCount), 0) FROM (SELECT date_part('hour', time_created) AS partyHour, date(time_created) AS partyDate, count(id) AS partyCount FROM historical_parties WHERE restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ? GROUP BY date(time_created), date_part('hour', time_created)) AS query GROUP BY partyHour", restaurantID, startDate, endDate).Rows()
+        rows, err := db.Raw("SELECT partyHour, round(avg(partyCount), 0) FROM (SELECT date_part('hour', time_created) AS partyHour, date(time_created) AS partyDate, count(id) AS partyCount FROM historical_parties WHERE restaurant_id = ? AND was_party_seated = TRUE AND date(time_created) >= ? AND date(time_created) <= ? GROUP BY date(time_created), date_part('hour', time_created)) AS query GROUP BY partyHour", restaurantID, startDate, endDate).Rows()
         //db.Order("date_part('hour', time_created) asc").Table("historical_parties").Select("date_part('hour', time_created), count(id)").Where("restaurant_id = ? AND date(time_created) >= ? AND date(time_created) <= ?", restaurantID, startDate, endDate).Group("date_part('hour', time_created)").Rows()
         if err != nil {
           log.Println("Error")
@@ -1056,7 +1482,7 @@ func GetParitesPerHourChartHandler(w http.ResponseWriter, r *http.Request) {
         }
 
         resultData["label_data"] = HourArray
-        resultData["graph_data"] = TotalPartyArray
+        resultData["date_data"] = TotalPartyArray
       }
     }
     RenderJSONFromMap(w, resultData)

@@ -7,14 +7,6 @@
 <head>
 {{ template "header.html.tmpl" .}}
 </head>
-<script type='text/javascript'>
-//Function to disable the buzz button once clicked.
-$(document).ready(function () {
-  $('#buzzid').click(function() {
-     $(this).attr('disabled', true);
-  });
-});
-</script>
 <body>
 {{ template "navbar.html.tmpl" .}}
 <div class="row login-alert">
@@ -26,7 +18,9 @@ $(document).ready(function () {
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="buzzer-party-modal-label">Press button on buzzer to connect with party</h4>
+        <h4 class="modal-title" id="buzzer-party-modal-label">Press button on buzzer to connect with party
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </h4>
       </div>
       <div class="modal-body">
         <div id="buzzer-modal"></div>
@@ -68,7 +62,7 @@ $(document).ready(function () {
         </div>
 
         <!-- Rest of Add party stuff. Expected Wait time, phone ahead/in person selection, add button. -->
-        <div class="col-md-4 add-party-justify">
+        <div class="col-md-6 add-party-justify">
           <div class="btn-group phone-ahead-toggle" data-toggle="buttons" id="btnrocker">
             <label class="btn btn-default active" id="btnrocker">
                 <input type="radio" name="options" id="waitlist" width="20"><span class="glyphicon glyphicon-user"></span>
@@ -108,6 +102,9 @@ $(document).ready(function () {
                <li><a href="#">120</a></li>
              </ul>
           </div>
+          <div class="col-md-6">
+              <input type="text" class="form-control" id="party-notes-field" placeholder="Notes (Optional)"></input>
+          </div>
           <button class="btn btn-default add-party-button" type="button" disabled="disabled">ADD</button>
         </div>
 
@@ -127,6 +124,7 @@ $(document).ready(function () {
            <th>Estimated Wait</th>
            <th>Type</th>
            <th>Actions</th>
+           <th>Notes</th>
        </tr>
     </thead>
     <tbody>
@@ -134,7 +132,26 @@ $(document).ready(function () {
         <!--Iterate through waitlist data for each buzzer (or phone-ahead party)-->
         <tr activePartyID="{{.ID}}">
           <td>{{.PartyName}}</td>
-          <td>{{.PartySize}}</td>
+          <td><span class="input-group-btn dropdown">
+                <button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button-update" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = "">
+                  {{.PartySize}} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu">
+                  <li><a href="#">1</a></li>
+                  <li><a href="#">2</a></li>
+                  <li><a href="#">3</a></li>
+                  <li><a href="#">4</a></li>
+                  <li><a href="#">5</a></li>
+                  <li><a href="#">6</a></li>
+                  <li><a href="#">7</a></li>
+                  <li><a href="#">8</a></li>
+                  <li><a href="#">9</a></li>
+                  <li><a href="#">10</a></li>
+                  <li><a href="#">11</a></li>
+                  <li><a href="#">12</a></li>
+                </ul>
+              </span>
+              </td>
           <td>{{ (call $.formatElapsedWaitingTime .TimeCreated) }}</td>
           <td>{{ (call $.formatEstimatedWaitingTime .WaitTimeExpected) }}</td>
           {{ if .PhoneAhead }}
@@ -158,6 +175,7 @@ $(document).ready(function () {
               <button class="btn btn-default delete-party-button" type="button">Delete</button>
             </div>
           </td>
+          <td>{{.PartyNotes}}</td>
         </tr>
       {{end}}
     </tbody>

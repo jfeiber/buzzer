@@ -1,4 +1,4 @@
-console.log("sup");
+console.log("Michaellllllllllll");
 
 // POST payload
 function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCallback) {
@@ -32,11 +32,32 @@ function addPartyErrorCallback(xhr, error) {
   errorAlert("Add party request failed");
 }
 
+// error callback for updating party size.
+function updatePartyErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Update party size request failed");
+}
+
 // error callback for delete party failure
 function deletePartyErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
   errorAlert("Delete party request failed");
+}
+
+// error callback for delete party failure
+function removeUserErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Remove user request failed");
+}
+
+// error callback for delete party failure
+function updateUsersErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Update user table request failed");
 }
 
 // error callback for buzz party failure
@@ -147,6 +168,10 @@ function refreshWaitlistTable() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
 }
 
+function updateUsersSuccessCallback() {
+  location.reload();
+}
+
 // repopulate waitlist table. This method is so jank it's crazy
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
@@ -154,7 +179,7 @@ function repopulateTable(activeParties) {
   for (var i in activeParties) {
     htmlStr = "<tr activePartyID="+ activeParties[i].ID + ">";
     htmlStr += "<td>" + activeParties[i].PartyName + "</td>";
-    htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
+    htmlStr += '<td><span class="input-group-btn dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button-update" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = ""> ' + activeParties[i].PartySize + ' <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu"><li><a href="#">1</a></li><li><a href="#">2</a></li><li><a href="#">3</a></li><li><a href="#">4</a></li><li><a href="#">5</a></li><li><a href="#">6</a></li><li><a href="#">7</a></li><li><a href="#">8</a></li><li><a href="#">9</a></li><li><a href="#">10</a></li><li><a href="#">11</a></li><li><a href="#">12</a></li></ul></span></td>';
     htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
@@ -175,19 +200,29 @@ function repopulateTable(activeParties) {
       }
       htmlStr += "</div></td>";
     }
+    htmlStr += "<td>" + activeParties[i].PartyNotes + "</td>";
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
+
+
+
   }
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
   registerSeatPartyClickHandlers();
   registerAssignBuzzerClickHandlers();
   registerBuzzClickHandlers();
+  registerUpdatePartySizeClickHandler();
 }
 
 // success callback for waitlist update
 function updateWaitlistSuccessCallback(xhr, data) {
   repopulateTable(xhr.waitlist_data);
+}
+
+// success callback for update party
+function updatePartySuccessCallback(xhr, data) {
+  console.log("Refresh Table Success");
 }
 
 // register click handlers for deleting a party
@@ -202,6 +237,14 @@ function registerSeatPartyClickHandlers() {
   $(".seat-party-button").click(function(){
     activePartyID = $(this).closest('tr').attr('activePartyID');
     AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated": true}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
+  });
+}
+
+// register click handlers for removing a user
+function registerDeletePartyClickHandlers() {
+  $(".remove-user-button").click(function(){
+    userID = $(this).closest('tr').attr('userID');
+    AjaxJSONPOST('/frontend_api/remove_user', JSON.stringify({"user_id": userID}), removeUserErrorCallback, updateUsersSuccessCallback, completeCallback);
   });
 }
 
@@ -245,6 +288,10 @@ function resetAddPartyFields() {
   // wait time in minutes
   $('.btn#minutes-dropdown').html('Minutes ' + '<span class="caret"></span>');
   $('.btn#minutes-dropdown').val(null);
+
+  // party notes
+  $('#party-notes-field').html('Notes (Optional)');
+  $('#party-notes-field').val(null);
 }
 
 function checkIfAddPartyFormComplete() {
@@ -256,6 +303,18 @@ function checkIfAddPartyFormComplete() {
   } else {
     $('.add-party-button').attr('disabled', 'disabled');
   }
+}
+
+//function to handle when user updates party size in table.
+function registerUpdatePartySizeClickHandler(){
+    $(".dropdown li a").click(function(){
+      $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+      $(this).parents(".dropdown").find('.btn').val($(this).text());
+      partySize = $(this).parents(".dropdown").find('.btn').val();
+      activePartyID = $(this).closest('tr').attr('activePartyID');
+      jsonStr = JSON.stringify({"new_party_size": parseInt(partySize), "active_party_id": parseInt(activePartyID)});
+      AjaxJSONPOST("/frontend_api/update_party_size", jsonStr, updatePartyErrorCallback, updatePartySuccessCallback, completeCallback);
+  });
 }
 
 // Registers click/type handlers for fields/dropdowns relating to the add party menu.
@@ -278,10 +337,11 @@ function registerAddPartyHandlers() {
     partyName = $('#party-name-field').val();
     partySize = $('.btn#party-dropdown-button').val();
     waitMins = $('.btn#minutes-dropdown').val();
+    partyNotes = $('#party-notes-field').val();
     phoneAhead = $('.phone-ahead-toggle .active input').attr('id') === "phone" ? true : false;
     $('#alert_placeholder').html('');
     waitTimeExpected = parseInt(waitMins);
-    jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead});
+    jsonStr = JSON.stringify({"party_name": partyName, "party_size": parseInt(partySize), "wait_time_expected": waitTimeExpected, "phone_ahead": phoneAhead, "party_notes": partyNotes});
     successCallback = (phoneAhead) ? addPartySuccessCallbackPA : addPartySuccessCallbackBuzzer;
     AjaxJSONPOST("/frontend_api/create_new_party", jsonStr, addPartyErrorCallback, successCallback, completeCallback);
     resetAddPartyFields();
@@ -299,8 +359,13 @@ function updateAnalyicsChartWithSelection(chartType) {
     AjaxJSONPOST("/analytics_api/get_total_customers_chart", jsonObj, getAnalyticsChartErrorCallback, getTotalCustomersChartSuccessCallback, completeCallback);
   } else if (chartType === "Parties Per Hour") {
     AjaxJSONPOST("/analytics_api/get_parties_hour_chart", jsonObj, getAnalyticsChartErrorCallback, getPartiesPerHourChartSuccessCallback, completeCallback);
+  } else if (chartType === "Parties Seated vs Lost") {
+    AjaxJSONPOST("/analytics_api/get_party_loss_chart", jsonObj, getAnalyticsChartErrorCallback, getPartyLossChartSuccessCallback, completeCallback);
+  } else if (chartType === "Average Wait Time") {
+    AjaxJSONPOST("/analytics_api/get_avg_wait_chart", jsonObj, getAnalyticsChartErrorCallback, getAvgWaitChartSuccessCallback, completeCallback);
   }
 }
+
 
 // Checks if all the elements that are needed to select a chart have been filled out. That would be
 // the chart type and the date range. If all the elements have been filled out, then the chart is
@@ -342,6 +407,7 @@ $(document).ready(function() {
   registerUnlinkBuzzerClickHandlers();
   registerAddPartyHandlers();
   registerChartTypeSelectionHandler();
+  registerUpdatePartySizeClickHandler();
 
   // spinner_buzzer_modal parameters
   var opts = {
@@ -420,7 +486,7 @@ $(document).ready(function() {
 
 function getAveragePartySizeChartSuccessCallback(xhr, success) {
   console.log(xhr);
-  updateAnalyticsChart(xhr.graph_data, xhr.label_data, 'Average Party Size by Date', '', 'Date', 'Avg. Customers in Party');
+  updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Party Size by Date', '', 'Date', 'Avg. Customers in Party');
   $('.datepicker-spinner').hide();
 }
 
@@ -430,11 +496,25 @@ function getTotalCustomersChartSuccessCallback(xhr, success) {
   $('.datepicker-spinner').hide();
 }
 
-function getPartiesPerHourChartSuccessCallback(xhr, success) {
+function getPartyLossChartSuccessCallback(xhr, success) {
   console.log(xhr);
-  updateAnalyticsChart(xhr.graph_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
+  updatePartyLostChart(xhr.date_data, xhr.seated_data, xhr.lost_data);
   $('.datepicker-spinner').hide();
 }
+
+function getPartiesPerHourChartSuccessCallback(xhr, success) {
+  console.log(xhr);
+  updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
+  $('.datepicker-spinner').hide();
+}
+
+function getAvgWaitChartSuccessCallback(xhr, success) {
+  console.log(xhr);
+  updateAvgWaitChart(xhr.date_data, xhr.breakfast_data, xhr.lunch_data, xhr.dinner_data);
+  $('.datepicker-spinner').hide();
+}
+
+
 
 function updateAnalyticsChart(graphData, labelData, titleString, labelString, xAxisString, yAxisString) {
     var ctx = document.getElementById("analyticsLineChart");
@@ -494,7 +574,6 @@ function updateAnalyticsChart(graphData, labelData, titleString, labelString, xA
       });
 }
 
-
 function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
@@ -548,6 +627,147 @@ function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
                 scaleLabel: {
                   display: true,
                   labelString: 'Number of Customers',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Date of Visit',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }]
+            }
+        };
+
+      var analyticsLineChart = Chart.Line(ctx, {
+        data:data,
+        options:options
+      });
+}
+
+function updateAvgWaitChart(dateData, breakfastData, lunchData, dinnerData) {
+    var ctx = document.getElementById("analyticsLineChart");
+    var data = {
+          labels: dateData,
+          datasets: [{
+              label: 'Breakfast',
+              data: breakfastData,
+              backgroundColor: [
+                  'rgba(66, 107, 231, 0.2)',
+              ],
+              borderColor: [
+                  'rgba(66, 107, 231, 1)',
+              ],
+              borderWidth: 1
+          },
+          {
+              label: 'Lunch',
+              data: lunchData,
+              backgroundColor: [
+                  'rgba(75, 192, 192, 0.2)',
+              ],
+              borderColor: [
+                  'rgba(75, 192, 192, 1)',
+              ],
+              borderWidth: 1
+          },
+          {
+              label: 'Dinner',
+              data: dinnerData,
+              backgroundColor: [
+                  'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
+                  'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1
+          }]
+      };
+
+      var options = {
+            title: {
+                display: true,
+                text: 'Average Wait Time by Date',
+                fontSize:25,
+                fontColor:'#000000',
+                fontFamily: 'Lato',
+                fontStyle: 'oblique'
+            },
+            scales: {
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Average Time in Waitlist',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Date of Visit',
+                  fontSize:16,
+                  fontColor:'#000000',
+                  fontFamily: 'Lato'
+                }
+              }]
+            }
+        };
+
+      var analyticsLineChart = Chart.Line(ctx, {
+        data:data,
+        options:options
+      });
+}
+
+function updatePartyLostChart(dateData, seatedData, lostData) {
+    var ctx = document.getElementById("analyticsLineChart");
+    var data = {
+          labels: dateData,
+          datasets: [{
+              label: 'Seated',
+              data: seatedData,
+              backgroundColor: [
+                  'rgba(66, 107, 231, 0.2)',
+              ],
+              borderColor: [
+                  'rgba(66, 107, 231, 1)',
+              ],
+              borderWidth: 1
+          },
+          {
+              label: 'Lost',
+              data: lostData,
+              backgroundColor: [
+                  'rgba(230, 46, 0, 0.2)',
+              ],
+              borderColor: [
+                  'rgba(230, 46, 0, 1)',
+              ],
+              borderWidth: 1
+          }]
+      };
+
+      var options = {
+            title: {
+                display: true,
+                text: 'Parties Seated vs Lost',
+                fontSize:25,
+                fontColor:'#000000',
+                fontFamily: 'Lato',
+                fontStyle: 'oblique'
+            },
+            scales: {
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Number of Parties',
                   fontSize:16,
                   fontColor:'#000000',
                   fontFamily: 'Lato'
