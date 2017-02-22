@@ -99,17 +99,25 @@ body {
 
 /* Center the login elements */
 .login {
+    padding: 40px 40px 30px 40px;
+    background: #fff;
+    color: #15003B;
+    border-radius: 1px;
+    min-height: 200px;
+    border: 1px solid #D0CCD8;
+    width: 400px;
 
     /* Horizontal */
     text-align: center;
     margin-left: auto;
     margin-right: auto;
-    width: 200px;
+    width: 300px;
+    height: 500px;
 
     /* Vertical */
     position: relative;
     top: 50%;
-    transform: translateY(50%);
+    transform: translateY(25%);
 }
 
 /* Center the login elements */
@@ -579,3 +587,28 @@ body {
 .demo-background {
     height: 400px;
     background-color: #F1F4F6;}
+
+.signup-title {
+    color: #426BE7;
+    font-family: 'Lato', light;
+    font-size: 30px;
+}
+
+.signup-line {
+    height: 1px;
+    width: 100%;
+    background: #E7E5EB;
+    position: relative;
+    opacity: 1;
+    color: white;
+    margin: 25px 0px;
+}
+
+.signup-top-half {
+    color: #A199B1;
+}
+
+.signup-action {
+    height:40px;
+    margin-bottom: 1px;
+}
