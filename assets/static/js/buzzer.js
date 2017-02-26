@@ -1,4 +1,4 @@
-console.log("Michaellllllllllll");
+console.log("JS Start");
 
 // POST payload
 function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCallback) {
@@ -18,6 +18,7 @@ function errorAlert(errorStr) {
   $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">'+errorStr+'</div>');
 }
 
+// error callback for failure to load analytics chart
 function getAnalyticsChartErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
@@ -168,6 +169,7 @@ function refreshWaitlistTable() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
 }
 
+// refresh callback to reload the admin page to show changes to user table
 function updateUsersSuccessCallback() {
   location.reload();
 }
@@ -233,6 +235,7 @@ function registerDeletePartyClickHandlers() {
   });
 }
 
+// register click handler for the seat party button
 function registerSeatPartyClickHandlers() {
   $(".seat-party-button").click(function(){
     activePartyID = $(this).closest('tr').attr('activePartyID');
@@ -294,6 +297,7 @@ function resetAddPartyFields() {
   $('#party-notes-field').val(null);
 }
 
+// confirm all fields in add party form are filled out appropriately
 function checkIfAddPartyFormComplete() {
   partyName = $('#party-name-field').val();
   partySize = $('.btn#party-dropdown-button').val();
@@ -462,7 +466,10 @@ $(document).ready(function() {
   setTimeout(refreshWaitlistTableRepeat, 2000);
 });
 
-//  ANALYTICS STUFF   ************************
+
+/////*******   ANALYTICS STUFF  ********/////
+
+// render the initial blank chart on analytics page load
 $(document).ready(function() {
   var ctx = document.getElementById("analyticsLineChart");
   var data = {
@@ -484,38 +491,48 @@ $(document).ready(function() {
     });
   });
 
+// success callback for chart selection, calls to load Average Party size chart
+// from the basic chart layout.
 function getAveragePartySizeChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Party Size by Date', '', 'Date', 'Avg. Customers in Party');
   $('.datepicker-spinner').hide();
 }
 
+// success callback for chart selection, calls to load Total Customers chart
+// from special Total Customers chart function.
 function getTotalCustomersChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateTotalCustChart(xhr.date_data, xhr.breakfast_data, xhr.lunch_data, xhr.dinner_data);
   $('.datepicker-spinner').hide();
 }
 
+// success callback for chart selection, calls to load Party Loss chart
+// from special Party Lost chart function.
 function getPartyLossChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updatePartyLostChart(xhr.date_data, xhr.seated_data, xhr.lost_data);
   $('.datepicker-spinner').hide();
 }
 
+// success callback for chart selection, calls to load Parties Per Housr chart
+// from the basic chart layout.
 function getPartiesPerHourChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
   $('.datepicker-spinner').hide();
 }
 
+// success callback for chart selection, calls to load Average Wait chart
+// from special Average Wait chart function.
 function getAvgWaitChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAvgWaitChart(xhr.date_data, xhr.breakfast_data, xhr.lunch_data, xhr.dinner_data);
   $('.datepicker-spinner').hide();
 }
 
-
-
+// generic chart.js line chart function to create analytics chart based on passed data and
+// fill canvas defined in analytics.html.tmpl
 function updateAnalyticsChart(graphData, labelData, titleString, labelString, xAxisString, yAxisString) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
@@ -574,6 +591,8 @@ function updateAnalyticsChart(graphData, labelData, titleString, labelString, xA
       });
 }
 
+// chart.js line chart function to create Total Customer chart based on passed data and
+// fill canvas defined in analytics.html.tmpl
 function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
@@ -650,6 +669,8 @@ function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
       });
 }
 
+// chart.js line chart function to create Average Wait chart based on passed data and
+// fill canvas defined in analytics.html.tmpl
 function updateAvgWaitChart(dateData, breakfastData, lunchData, dinnerData) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
@@ -726,6 +747,8 @@ function updateAvgWaitChart(dateData, breakfastData, lunchData, dinnerData) {
       });
 }
 
+// chart.js line chart function to create APrty Loss chart based on passed data and
+// fill canvas defined in analytics.html.tmpl
 function updatePartyLostChart(dateData, seatedData, lostData) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
