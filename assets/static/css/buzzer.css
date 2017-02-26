@@ -221,8 +221,25 @@ body {
    text-align: center;
 }*/
 
+/*Negative margin-top is key to align the party size with rest of row*/
+/*Test commit to tame the hounds*/
 #party-dropdown-button-update{
   border-radius: 4px;
+  background-color: transparent;
+  border-color: transparent;
+  color: black !important;
+  margin-top: -7px;
+}
+
+/*The important tag is needed in this case*/
+#party-dropdown-button-update:hover{
+  background-color: transparent !important;
+  border-color: transparent;
+}
+
+#party-dropdown-button-update:active{
+  background-color: transparent;
+  border-color: transparent;
 }
 
 .delete-party-button {
@@ -316,6 +333,11 @@ body {
 /* Dropdown toggle color */
 .btn-default dropdown-toggle {
     background-color: #FFFFFF !important;
+}
+
+/* Dropdown toggle color */
+.btn-default .caret {
+  margin-left:5px;
 }
 
 /* Blue buttons */
