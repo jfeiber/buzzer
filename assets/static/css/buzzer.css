@@ -240,14 +240,6 @@ body {
   border-color: transparent;
 }
 
-/*This is for the party size dropdown update
-Commented out because we want to keep caret but easy to change back. */
-#update-caret
-{
-/*  display: none;*/
-/*margin-left:5px !important;*/
-}
-
 .delete-party-button {
     background-color: #DD2A17;
     color: #FFFFFF;
@@ -331,6 +323,11 @@ Commented out because we want to keep caret but easy to change back. */
 /* Dropdown toggle color */
 .btn-default dropdown-toggle {
     background-color: #FFFFFF !important;
+}
+
+/* Dropdown toggle color */
+.btn-default .caret {
+  margin-left:5px;
 }
 
 /* Blue buttons */
