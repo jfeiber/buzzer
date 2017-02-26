@@ -224,6 +224,13 @@ body {
   border-radius: 4px;
 }
 
+/*This is for the party size dropdown update
+We have removed the carrot from the dropdown*/
+#update-caret
+{
+  display: none;
+}
+
 .delete-party-button {
     background-color: #DD2A17;
     color: #FFFFFF;
