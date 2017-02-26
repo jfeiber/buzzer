@@ -222,13 +222,27 @@ body {
 
 #party-dropdown-button-update{
   border-radius: 4px;
+  background-color: transparent;
+  border-color: transparent;
+  color: black !important;
+}
+
+#party-dropdown-button-update:hover{
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+
+#party-dropdown-button-update:active{
+  background-color: transparent !important;
+  border-color: transparent !important;
 }
 
 /*This is for the party size dropdown update
-We have removed the carrot from the dropdown*/
+Commented out because we want to keep caret but easy to change back. */
 #update-caret
 {
-  display: none;
+/*  display: none;*/
+/*margin-left:5px !important;*/
 }
 
 .delete-party-button {
