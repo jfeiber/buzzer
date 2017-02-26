@@ -1,4 +1,4 @@
-console.log("Hey y'all! It's me, Dirty Kev!");
+console.log("JS Start");
 
 // POST payload
 function AjaxJSONPOST(url, jsonStr, errorCallback, successCallback, completeCallback) {
@@ -18,6 +18,7 @@ function errorAlert(errorStr) {
   $('#alert_placeholder').html('<div class="alert alert-danger alert_place" role="alert">'+errorStr+'</div>');
 }
 
+// error callback for failure to load analytics chart
 function getAnalyticsChartErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
@@ -32,11 +33,32 @@ function addPartyErrorCallback(xhr, error) {
   errorAlert("Add party request failed");
 }
 
+// error callback for updating party size.
+function updatePartyErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Update party size request failed");
+}
+
 // error callback for delete party failure
 function deletePartyErrorCallback(xhr, error) {
   console.debug(xhr);
   console.debug(error);
   errorAlert("Delete party request failed");
+}
+
+// error callback for delete party failure
+function removeUserErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Remove user request failed");
+}
+
+// error callback for delete party failure
+function updateUsersErrorCallback(xhr, error) {
+  console.debug(xhr);
+  console.debug(error);
+  errorAlert("Update user table request failed");
 }
 
 // error callback for buzz party failure
@@ -147,6 +169,11 @@ function refreshWaitlistTable() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
 }
 
+// refresh callback to reload the admin page to show changes to user table
+function updateUsersSuccessCallback() {
+  location.reload();
+}
+
 // repopulate waitlist table. This method is so jank it's crazy
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
@@ -154,7 +181,7 @@ function repopulateTable(activeParties) {
   for (var i in activeParties) {
     htmlStr = "<tr activePartyID="+ activeParties[i].ID + ">";
     htmlStr += "<td>" + activeParties[i].PartyName + "</td>";
-    htmlStr += "<td>" + activeParties[i].PartySize + "</td>";
+    htmlStr += '<td><span class="input-group-btn dropdown"><button class="btn btn-default dropdown-toggle" type="button" id="party-dropdown-button-update" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true", value = ""> ' + activeParties[i].PartySize + ' <span class="caret"></span></button><ul class="dropdown-menu dropdown-menu"><li><a href="#">1</a></li><li><a href="#">2</a></li><li><a href="#">3</a></li><li><a href="#">4</a></li><li><a href="#">5</a></li><li><a href="#">6</a></li><li><a href="#">7</a></li><li><a href="#">8</a></li><li><a href="#">9</a></li><li><a href="#">10</a></li><li><a href="#">11</a></li><li><a href="#">12</a></li></ul></span></td>';
     htmlStr += "<td>" + parseTimeCreated(activeParties[i].TimeCreated) + "</td>";
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
@@ -179,17 +206,25 @@ function repopulateTable(activeParties) {
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
 
+
+
   }
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
   registerSeatPartyClickHandlers();
   registerAssignBuzzerClickHandlers();
   registerBuzzClickHandlers();
+  registerUpdatePartySizeClickHandler();
 }
 
 // success callback for waitlist update
 function updateWaitlistSuccessCallback(xhr, data) {
   repopulateTable(xhr.waitlist_data);
+}
+
+// success callback for update party
+function updatePartySuccessCallback(xhr, data) {
+  console.log("Refresh Table Success");
 }
 
 // register click handlers for deleting a party
@@ -200,10 +235,19 @@ function registerDeletePartyClickHandlers() {
   });
 }
 
+// register click handler for the seat party button
 function registerSeatPartyClickHandlers() {
   $(".seat-party-button").click(function(){
     activePartyID = $(this).closest('tr').attr('activePartyID');
     AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated": true}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
+  });
+}
+
+// register click handlers for removing a user
+function registerDeletePartyClickHandlers() {
+  $(".remove-user-button").click(function(){
+    userID = $(this).closest('tr').attr('userID');
+    AjaxJSONPOST('/frontend_api/remove_user', JSON.stringify({"user_id": userID}), removeUserErrorCallback, updateUsersSuccessCallback, completeCallback);
   });
 }
 
@@ -253,6 +297,7 @@ function resetAddPartyFields() {
   $('#party-notes-field').val(null);
 }
 
+// confirm all fields in add party form are filled out appropriately
 function checkIfAddPartyFormComplete() {
   partyName = $('#party-name-field').val();
   partySize = $('.btn#party-dropdown-button').val();
@@ -262,6 +307,18 @@ function checkIfAddPartyFormComplete() {
   } else {
     $('.add-party-button').attr('disabled', 'disabled');
   }
+}
+
+//function to handle when user updates party size in table.
+function registerUpdatePartySizeClickHandler(){
+    $(".dropdown li a").click(function(){
+      $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+      $(this).parents(".dropdown").find('.btn').val($(this).text());
+      partySize = $(this).parents(".dropdown").find('.btn').val();
+      activePartyID = $(this).closest('tr').attr('activePartyID');
+      jsonStr = JSON.stringify({"new_party_size": parseInt(partySize), "active_party_id": parseInt(activePartyID)});
+      AjaxJSONPOST("/frontend_api/update_party_size", jsonStr, updatePartyErrorCallback, updatePartySuccessCallback, completeCallback);
+  });
 }
 
 // Registers click/type handlers for fields/dropdowns relating to the add party menu.
@@ -354,6 +411,7 @@ $(document).ready(function() {
   registerUnlinkBuzzerClickHandlers();
   registerAddPartyHandlers();
   registerChartTypeSelectionHandler();
+  registerUpdatePartySizeClickHandler();
 
   // spinner_buzzer_modal parameters
   var opts = {
@@ -408,7 +466,10 @@ $(document).ready(function() {
   setTimeout(refreshWaitlistTableRepeat, 2000);
 });
 
-//  ANALYTICS STUFF   ************************
+
+/////*******   ANALYTICS STUFF  ********/////
+
+// render the initial blank chart on analytics page load
 $(document).ready(function() {
   var ctx = document.getElementById("analyticsLineChart");
   var data = {
@@ -430,38 +491,48 @@ $(document).ready(function() {
     });
   });
 
+// success callback for chart selection, calls to load Average Party size chart
+// from the basic chart layout.
 function getAveragePartySizeChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Party Size by Date', '', 'Date', 'Avg. Customers in Party');
   $('.datepicker-spinner').hide();
 }
 
+// success callback for chart selection, calls to load Total Customers chart
+// from special Total Customers chart function.
 function getTotalCustomersChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateTotalCustChart(xhr.date_data, xhr.breakfast_data, xhr.lunch_data, xhr.dinner_data);
   $('.datepicker-spinner').hide();
 }
 
+// success callback for chart selection, calls to load Party Loss chart
+// from special Party Lost chart function.
 function getPartyLossChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updatePartyLostChart(xhr.date_data, xhr.seated_data, xhr.lost_data);
   $('.datepicker-spinner').hide();
 }
 
+// success callback for chart selection, calls to load Parties Per Housr chart
+// from the basic chart layout.
 function getPartiesPerHourChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAnalyticsChart(xhr.date_data, xhr.label_data, 'Average Parties Per Hour', '', 'Time Party Arrived', 'Avg. Number of Parties');
   $('.datepicker-spinner').hide();
 }
 
+// success callback for chart selection, calls to load Average Wait chart
+// from special Average Wait chart function.
 function getAvgWaitChartSuccessCallback(xhr, success) {
   console.log(xhr);
   updateAvgWaitChart(xhr.date_data, xhr.breakfast_data, xhr.lunch_data, xhr.dinner_data);
   $('.datepicker-spinner').hide();
 }
 
-
-
+// generic chart.js line chart function to create analytics chart based on passed data and
+// fill canvas defined in analytics.html.tmpl
 function updateAnalyticsChart(graphData, labelData, titleString, labelString, xAxisString, yAxisString) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
@@ -520,6 +591,8 @@ function updateAnalyticsChart(graphData, labelData, titleString, labelString, xA
       });
 }
 
+// chart.js line chart function to create Total Customer chart based on passed data and
+// fill canvas defined in analytics.html.tmpl
 function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
@@ -596,6 +669,8 @@ function updateTotalCustChart(dateData, breakfastData, lunchData, dinnerData) {
       });
 }
 
+// chart.js line chart function to create Average Wait chart based on passed data and
+// fill canvas defined in analytics.html.tmpl
 function updateAvgWaitChart(dateData, breakfastData, lunchData, dinnerData) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {
@@ -672,6 +747,8 @@ function updateAvgWaitChart(dateData, breakfastData, lunchData, dinnerData) {
       });
 }
 
+// chart.js line chart function to create APrty Loss chart based on passed data and
+// fill canvas defined in analytics.html.tmpl
 function updatePartyLostChart(dateData, seatedData, lostData) {
     var ctx = document.getElementById("analyticsLineChart");
     var data = {

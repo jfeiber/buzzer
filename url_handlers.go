@@ -344,6 +344,134 @@ func GetLinkedBuzzersHandler(w http.ResponseWriter, r *http.Request) {
   RenderJSONFromMap(w, buzzerData)
 }
 
+//UserAdminHandler renders the Admin/User management page.
+func UserAdminHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[UserAdminHandler] ")
+  session := GetSession(w, r)
+
+  //verify session
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+
+  //get username and restaurantID from session
+  currUsername, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(currUsername.(string))
+
+  //process to add new user
+  if r.Method == "POST" {
+    usernameNew := r.FormValue("username")
+    password := r.FormValue("password")
+    if usernameNew != "" && password != "" {
+
+      //salt and hash the password
+      passSalt := MakeRandAlphaNumericStr(50)
+      hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password+passSalt), bcrypt.DefaultCost)
+      if err != nil {
+        log.Fatal(err)
+      }
+
+      var user User
+      db.First(&user, "username = ?", usernameNew)
+
+      if user != (User{}) {
+        AddFlashToSession(w, r, "Username already exists", session)
+      } else {
+        //add the user
+        user = User{RestaurantID: restaurantID, Username: usernameNew, Password: string(hashedPassword), PassSalt: passSalt}
+        db.NewRecord(user)
+        db.Create(&user)
+        AddFlashToSession(w, r, "User successfully added", session)
+      }
+    } else {
+      AddFlashToSession(w, r, "Could not add user. Did you forget a field?", session)
+    }
+    http.Redirect(w, r, "/admin", 302)
+  }
+
+  var persons []User
+
+  //query database for all buzzers with the current restaurantID, order by buzzerName asc
+  db.Order("username asc").Find(&persons, "restaurant_id = ? AND username NOT LIKE ?", restaurantID, currUsername)
+  userData := map[string]interface{}{}
+  userData["user_data"] = persons
+  if flashes := session.Flashes(); len(flashes) > 0 {
+    userData["failure_message"] = flashes[0]
+  }
+
+  //This function is called by the template to format the LastHeartbeat date
+  userData["formatDateCreated"] = func (datecreated time.Time) string {
+    return datecreated.Format("3/4/2006")
+  }
+
+  session.Save(r, w)
+
+  //render buzzer management page and pass along buzzer data
+  RenderTemplate(w, "assets/templates/admin.html.tmpl", userData)
+}
+
+// GetUsersHandler is a frontend API Call to update Table of Users.
+func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[GetActivePartiesHandler] ")
+  session := GetSession(w, r)
+  //confirms user session is valid
+  if !IsUserLoggedIn(session) {
+    http.Redirect(w, r, "/login", 302)
+    return
+  }
+  //retrieve username then restaurantID of current user
+  username, _ := session.Values["username"]
+  restaurantID := GetRestaurantIDFromUsername(username.(string))
+
+  var persons []User
+  //query database for all parties with currect restaurantID, order by time partied created asc
+  db.Order("username asc").Find(&persons, "restaurant_id = ?", restaurantID)
+
+  //create struct and store resuting data from query
+  userData := map[string]interface{}{}
+  userData["user_data"] = persons
+
+  //This function is called by the template to format the LastHeartbeat date
+  userData["formatDateCreated"] = func (datecreated time.Time) string {
+    return datecreated.Format("3/4/2006")
+  }
+  //send to format as JSON and return to frontend
+  RenderJSONFromMap(w, userData);
+}
+
+// RemoveUserHandler is a frontend API call to remove a user from database.
+// POST 'user_id' has userID to be removed.
+func RemoveUserHandler(w http.ResponseWriter, r *http.Request) {
+  log.SetPrefix("[RemoveUserHandler] ")
+  responseObj := map[string] interface{} {}
+  reqBodyObj := map[string] interface{}{}
+  session := GetSession(w, r)
+  if !IsUserLoggedIn(session) {
+    HandleAuthErrorJson(w, responseObj)
+  } else if ParseReqBody(r, responseObj, reqBodyObj) {
+      userID := reqBodyObj["user_id"]
+
+      if userID == nil {
+          responseObj["status"] = "failure"
+          responseObj["error_message"] = "Missing POST parameter."
+      } else {
+          var rmvUser User
+          db.First(&rmvUser, "ID=?", userID)
+
+          dbInfo := db.Delete(&rmvUser)
+          if dbInfo.Error == nil {
+              responseObj["status"] = "success"
+          } else {
+              responseObj["status"] = "failure"
+              responseObj["error_message"] = "db.Delete failed"
+            }
+        }
+    }
+
+  RenderJSONFromMap(w, responseObj)
+}
+
 // UnlinkBuzzerHandler is a frontend API call to unlink a buzzer from assigned restaurant.
 // POST 'buzzer_id' has buzzerID to be unlinked, restaurantID set to null.
 func UnlinkBuzzerHandler(w http.ResponseWriter, r *http.Request) {
@@ -825,7 +953,8 @@ func AddUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // AnalyticsHandler renders the analytics page and load data for default chart.
-//TODO: add comment
+// Renders the basic analytics page template which contains canvas for graph.
+// By default a blank chart is loaded initially, then updated on user selection.
 func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[AnalyticsHandler] ")
   session := GetSession(w, r)
@@ -838,7 +967,10 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/analytics.html.tmpl",  map[string]interface{}{})
 }
 
-// GetTotalCustomersChartHandler TODO: comment
+// GetTotalCustomersChartHandler executes the query for data for Total Customers chart.
+// Query is run to include date range set by user on analytics page.
+// Query is run three seperate times for each meal service (Breakfast, Lunch, Dinner).
+// POST contains "start_date" and "end_date", returned Result contains "date_data", "breakfast_data", "lunch_data", "dinner_data".
 func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetTotalCustomersChartHandler]")
     resultData := map[string]interface{}{}
@@ -856,15 +988,6 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "POST" {
       startEndInfo := map[string] interface{}{}
       if ParseReqBody(r, returnObj, startEndInfo) {
-
-        if _, ok := startEndInfo["start_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "start date undefined"
-        }
-        if _, ok := startEndInfo["end_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "end date undefined"
-        }
 
         startDate := startEndInfo["start_date"]
         endDate := startEndInfo["end_date"]
@@ -977,7 +1100,9 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, resultData)
 }
 
-// GetPartyLossChartHandler TODO: comment
+// GetPartyLossChartHandler executes the query for the Parties Lost chart.
+// One query is run for parties seated, one run for parties lost/not seated.
+// POST contains "start_date" and "end_date", returned Result contains "date_data", "seated_data", "lost_data".
 func GetPartyLossChartHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetPartyLossChartHandler]")
     resultData := map[string]interface{}{}
@@ -995,15 +1120,6 @@ func GetPartyLossChartHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "POST" {
       startEndInfo := map[string] interface{}{}
       if ParseReqBody(r, returnObj, startEndInfo) {
-
-        if _, ok := startEndInfo["start_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "start date undefined"
-        }
-        if _, ok := startEndInfo["end_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "end date undefined"
-        }
 
         startDate := startEndInfo["start_date"]
         endDate := startEndInfo["end_date"]
@@ -1081,7 +1197,9 @@ func GetPartyLossChartHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, resultData)
 }
 
-// GetAvgWaittimeChartHandler TODO: comment
+// GetAvgWaittimeChartHandler executes the quesry for the Average Wait Time chart.
+// Query is run three seperate times for each meal service (Breakfast, Lunch, Dinner).
+// POST contains "start_date" and "end_date", returned Result contains "date_data", "breakfast_data", "lunch_data", "dinner_data".
 func GetAvgWaittimeChartHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetTotalCustomersChartHandler]")
     resultData := map[string]interface{}{}
@@ -1099,15 +1217,6 @@ func GetAvgWaittimeChartHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "POST" {
       startEndInfo := map[string] interface{}{}
       if ParseReqBody(r, returnObj, startEndInfo) {
-
-        if _, ok := startEndInfo["start_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "start date undefined"
-        }
-        if _, ok := startEndInfo["end_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "end date undefined"
-        }
 
         startDate := startEndInfo["start_date"]
         endDate := startEndInfo["end_date"]
@@ -1220,8 +1329,9 @@ func GetAvgWaittimeChartHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, resultData)
 }
 
-// GetAveragePartySizeChartHandler returns the average Party size from all historical parties in between certain dates
-//TODO: add comment
+// GetAveragePartySizeChartHandler executes the query for the Average Party Size chart.
+// Data returned is between specified dates by user on analytics page.
+// POST contains "start_date" and "end_date", returned Result contains "date_data", "label_data".
 func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetAveragePartySizeChartHandler]")
     resultData := map[string]interface{}{}
@@ -1239,15 +1349,6 @@ func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "POST" {
       startEndInfo := map[string] interface{}{}
       if ParseReqBody(r, returnObj, startEndInfo) {
-
-        if _, ok := startEndInfo["start_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "start date undefined"
-        }
-        if _, ok := startEndInfo["end_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "end date undefined"
-        }
 
         startDate := startEndInfo["start_date"]
         endDate := startEndInfo["end_date"]
@@ -1292,8 +1393,9 @@ func GetAveragePartySizeChartHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, resultData)
 }
 
-// GetParitesPerHourChartHandler queries and returns the data for the chart of number of parties by hour
-//TODO: add comment
+// GetParitesPerHourChartHandler queries and returns the data for the chart of number of parties by hour.
+// Data returned is between specified dates by user on analytics page.
+// POST contains "start_date" and "end_date", returned Result contains "date_data", "label_data".
 func GetParitesPerHourChartHandler(w http.ResponseWriter, r *http.Request) {
     log.SetPrefix("[GetParitesPerHourChartHandler]")
     resultData := map[string]interface{}{}
@@ -1311,15 +1413,6 @@ func GetParitesPerHourChartHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "POST" {
       startEndInfo := map[string] interface{}{}
       if ParseReqBody(r, returnObj, startEndInfo) {
-
-        if _, ok := startEndInfo["start_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "start date undefined"
-        }
-        if _, ok := startEndInfo["end_date"].(string); !ok {
-            returnObj["status"] = "failure"
-            returnObj["error_message"] = "end date undefined"
-        }
 
         startDate := startEndInfo["start_date"]
         endDate := startEndInfo["end_date"]
@@ -1360,23 +1453,6 @@ func GetParitesPerHourChartHandler(w http.ResponseWriter, r *http.Request) {
     RenderJSONFromMap(w, resultData)
 }
 
-// validateStartEndDateJSON TODO: comment
-func validateStartEndDateJSON(startEndInfo map[string] interface{}, returnObj map[string] interface{}) bool {
-    if _, ok := startEndInfo["start_date"].(string); !ok {
-        returnObj["status"] = "failure"
-        returnObj["error_message"] = "start date undefined"
-        return false
-    }
-
-    if _, ok := startEndInfo["end_date"].(string); !ok {
-        returnObj["status"] = "failure"
-        returnObj["error_message"] = "end date undefined"
-        return false
-    }
-
-    return true
-}
-
 // IsPartyAssignedBuzzerHandler is a frontend API method to check if specified active party is
 // assigned buzzer. Passed object r contains 'active_party_id' to be quieried for, returnObj
 // contains response 'is_party_assigned_buzzer'. Used by fronted to check if buzzer has been
@@ -1408,6 +1484,13 @@ func IsPartyAssignedBuzzerHandler(w http.ResponseWriter, r *http.Request) {
     }
   }
   RenderJSONFromMap(w, returnObj)
+}
+
+// SplashPageHandler renders the splash page
+func SplashPageHandler(w http.ResponseWriter, r *http.Request) {
+    log.SetPrefix("[SplashPageHandler] ")
+
+    RenderTemplate(w, "assets/templates/splash.html.tmpl",  map[string]interface{}{})
 }
 
 // NotFoundHandler is a handler to render 404 Not Found page.
