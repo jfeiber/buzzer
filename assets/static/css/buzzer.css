@@ -99,7 +99,6 @@ body {
 
 /* Center the login elements */
 .login {
-
     /* Horizontal */
     text-align: center;
     margin-left: auto;
@@ -290,9 +289,9 @@ body {
 /* Scrollable dropdown for minutes */
 .scrollable-menu {
     height: auto;
-    max-height: 300px;
+    max-height: 320px;
     overflow-x: hidden;
-}
+  }
 
 .phone-ahead-toggle {
   margin-right: 10px;
@@ -351,11 +350,6 @@ body {
     /* Vertical */
     transform: translateY(-40%);
 }
-
-/*.img-responsive{
-    width:5%;
-    height:5%;
-}*/
 
 .datepicker-container{
   float: left;
