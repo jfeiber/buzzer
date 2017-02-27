@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--Buzzer management page (status info and admin functionality for buzzer fleet)-->
+
+<title>Device Management | Buzzer</title>
+
+
+<head>
+{{ template "header.html.tmpl" .}}
+<link href="/assets/static/css/splash.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+        <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/waitlist">Buzzer</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavBar">
+
+         <ul class="nav navbar-nav navbar-right">
+           <li class="dropdown">
+               <!--Cog with logout functionality and room for more links (currently a couple fun easter eggs)-->
+               <a href="#" class="glyphicon glyphicon-cog white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
+               <ul class="dropdown-menu">
+                 <li><a href="https://www.facebook.com/michael.machlin">Contact Buzzer</a></li>
+                 <li><a href="https://www.linkedin.com/in/michaelmachlin">Kevin's LinkedIn</a></li>
+                 <li><a href="/logout">Logout</a></li>
+               </ul>
+           </li>
+         </ul>
+        </div>
+    </nav>
+     <div class="banner-container">
+         <img class="banner" src="https://dl.dropboxusercontent.com/s/x8hew0n26cfw7gx/BuzzerShot.jpg?dl=0" width="600" height="400">
+         <div class="info">
+            <div class="splash-container">
+                <div class="text">
+                    Buzzer is your restaurant party management solution.
+                </div>
+            </div>
+         </div>
+     </div>
+     <div class="points-background">
+         <div class="points-container">
+            <div class="points">
+                <!-- find phone that matches buzzer -->
+                <img class="points-image" src="http://www.freeiconspng.com/uploads/office-phone-icon--25.png">
+                <div>Cellular communication so that your customers have flexibility</div>
+            </div>
+            <div class="points">
+                <img class="points-image" src="http://www.mrgeek.me/wp-content/uploads/2013/03/Chart-JS.png">
+                <div>Analytics to make better decisions in the future</div>
+            </div>
+            <div class="points">
+                <img class="points-image" src="http://www.iconshock.com/img_vista/MATERIAL/general/jpg/checkmark_icon.jpg">
+                <div>Easy interface for low training time.</div>
+            </div>
+         </div>
+     </div>
+     <div class="demo-background">
+        <div class="info-container">
+            <div class="padded-container">
+                <div class="info-text">Get started Now</div>
+            </div>
+            <form action='/login'>
+                <button type="submit" class="info-button">Login</button>
+            </form>
+        </div>
+     </div>
+<body>
