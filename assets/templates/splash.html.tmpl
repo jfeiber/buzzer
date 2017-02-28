@@ -1,75 +1,204 @@
+<!-- Heavily borrowed form this landing page template: http://news.visualsoldiers.com/snow-a-free-bootstrap-landing-page-theme/
+that is free to use/modify under the GPL license. -->
 <!DOCTYPE html>
-<html lang="en">
-<!--Buzzer management page (status info and admin functionality for buzzer fleet)-->
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <title>Buzzer</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Device Management | Buzzer</title>
+  <meta property="og:title" content="">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="">
+	<meta property="og:site_name" content="">
+	<meta property="og:description" content="">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/assets/static/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/assets/static/css/animate.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato:light,bold" rel="stylesheet">
 
 
-<head>
-{{ template "header.html.tmpl" .}}
-<link href="/assets/static/css/splash.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/assets/static/css/main.css">
+
+  <script src="/assets/static/js/modernizr-2.7.1.js"></script>
+
+  <!-- JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+  <script>
+    $(window).on("load", function() {
+      $('.hide-load').removeClass('hide-load');
+    });
+  </script>
+
+  <!-- JQuery UI -->
+  <!-- <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
 </head>
-<body>
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-        <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavBar">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/waitlist">Buzzer</a>
-        </div>
-        <div class="collapse navbar-collapse" id="myNavBar">
 
-         <ul class="nav navbar-nav navbar-right">
-           <li class="dropdown">
-               <!--Cog with logout functionality and room for more links (currently a couple fun easter eggs)-->
-               <a href="#" class="glyphicon glyphicon-cog white" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"></a>
-               <ul class="dropdown-menu">
-                 <li><a href="https://www.facebook.com/michael.machlin">Contact Buzzer</a></li>
-                 <li><a href="https://www.linkedin.com/in/michaelmachlin">Kevin's LinkedIn</a></li>
-                 <li><a href="/logout">Logout</a></li>
-               </ul>
-           </li>
-         </ul>
-        </div>
-    </nav>
-     <div class="banner-container">
-         <img class="banner" src="https://dl.dropboxusercontent.com/s/x8hew0n26cfw7gx/BuzzerShot.jpg?dl=0" width="600" height="400">
-         <div class="info">
-            <div class="splash-container">
-                <div class="text">
-                    Buzzer is your restaurant party management solution.
-                </div>
-            </div>
-         </div>
-     </div>
-     <div class="points-background">
-         <div class="points-container">
-            <div class="points">
-                <!-- find phone that matches buzzer -->
-                <img class="points-image" src="http://www.freeiconspng.com/uploads/office-phone-icon--25.png">
-                <div>Cellular communication so that your customers have flexibility</div>
-            </div>
-            <div class="points">
-                <img class="points-image" src="http://www.mrgeek.me/wp-content/uploads/2013/03/Chart-JS.png">
-                <div>Analytics to make better decisions in the future</div>
-            </div>
-            <div class="points">
-                <img class="points-image" src="http://www.iconshock.com/img_vista/MATERIAL/general/jpg/checkmark_icon.jpg">
-                <div>Easy interface for low training time.</div>
-            </div>
-         </div>
-     </div>
-     <div class="demo-background">
-        <div class="info-container">
-            <div class="padded-container">
-                <div class="info-text">Get started Now</div>
-            </div>
-            <form action='/login'>
-                <button type="submit" class="info-button">Login</button>
-            </form>
-        </div>
-     </div>
 <body>
+
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-6 buzzer-logo">
+            <a href="index.html">Buzzer</a>
+          </div>
+          <div class="col-xs-6 signin text-right navbar-nav">
+            <a href="/login">Login</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <header>
+      <div class="header-slideshow">
+        <img class="hide-load" src="/assets/static/img/header-bg-7.jpg">
+        <img class="hide-load" src="/assets/static/img/header-bg-6.jpg">
+        <img class="hide-load" src="/assets/static/img/header-bg-5.jpg">
+        <img class="hide-load" src="/assets/static/img/header-bg-4.jpg">
+        <img class="hide-load" src="/assets/static/img/header-bg-3.jpg">
+        <img class="hide-load" src="/assets/static/img/header-bg-2.jpg">
+        <img class="hide-load" src="/assets/static/img/header-bg-1.jpg">
+        <img class="hide-load" src="/assets/static/img/header-bg.jpg">
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-6 buzzer-logo">
+            <a href="index.html">Buzzer</a>
+          </div>
+          <div class="col-xs-6 signin text-right navbar-nav">
+            <a href="/login">Login</a>
+          </div>
+        </div>
+
+        <div class="row header-info">
+          <div class="col-sm-10 col-sm-offset-1 text-center">
+            <h1 class="wow fadeIn">The complete solution for restaurant waitlist management</h1>
+            <br />
+            <!-- <p class="lead wow fadeIn" data-wow-delay="0.5s">It's lit (LA FLAME)</p> -->
+            <br />
+
+            <div class="row">
+              <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+                <div class="row">
+                  <div class="col-xs-6 text-right wow fadeInUp" data-wow-delay="1.3s">
+                    <a href="#main-preview" class="btn btn-secondary btn-lg scroll hide-load">Learn More</a>
+                  </div>
+                  <div class="col-xs-6 text-left wow fadeInUp" data-wow-delay="1.7s">
+                    <a href="#signup" class="btn btn-primary btn-lg scroll hide-load">Get Started</a>
+                  </div>
+                </div><!--End Button Row-->
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="main-preview" class="pad-xl">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-8 col-sm-offset-2 text-center margin-30 wow fadeIn" data-wow-delay="0.6s">
+            <h2>Introducing Buzzer</h2>
+            <!-- <p class="lead">Lorem ipsum dolor sit amet, consectetur adipis.</p> -->
+          </div>
+        </div>
+
+        <div class="mbp wow fadeInUp" data-wow-delay="1s">
+          <img src="/assets/static/img/mbp-2.png">
+          <img src="/assets/static/img/mbp-2.png">
+          <img src="/assets/static/img/mbp-1.png">
+	        <img src="/assets/static/img/mbp.png">
+        </div>
+      </div>
+    </section>
+
+    <section id="main-info" class="pad-xl">
+	    <div class="container">
+		    <div class="row">
+			    <div class="col-sm-4 wow fadeIn" data-wow-delay="0.4s">
+				    <hr class="line blue">
+				    <h3>State-of-the-art physical devices</h3>
+				    <p>Our phyiscal buzzers feature cellular connectivty allowing customers to explore your restaurants
+            locale while they wait and an easy-to-read OLED screen.</p>
+			    </div>
+			    <div class="col-sm-4 wow fadeIn" data-wow-delay="0.8s">
+				    <hr  class="line blue">
+				    <h3>Easy-to-use waitlist</h3>
+            <p>Buzzer features an intuitive system for waitlist management, making it easy
+            to add and handle new parties as they arrive and alert them when their table is ready.</p>
+			    </div>
+			    <div class="col-sm-4 wow fadeIn" data-wow-delay="1.2s">
+				    <hr  class="line blue">
+				    <h3>Advanced analytics functionaility</h3>
+				    <p>Discover insights about your restaurant's average waiting time, customer retention rate,
+            and customer volume.</p>
+			    </div>
+		    </div>
+	    </div>
+    </section>
+
+    <section id="signup" class="pad-lg light-gray-bg">
+      <!-- <div id="test"></div> -->
+      <div class= "row login">
+            <div class="signup-top-half">
+                <div class="signup-line"></div>
+                <div class="signup-action">Get started with your new restaurant management experience</div>
+                <div class="signup-line"></div>
+            </div>
+    		<form class="form-login">
+    		  <label for="contact-name" class="sr-only">Name</label>
+    		  <input id="contact-name" name="contact-name" class="form-control" placeholder="Name" required>
+    		  <label for="email" class="sr-only">Email</label>
+    		  <input type="text" id="email" class="form-control" name="email" placeholder="Email" required>
+    		  <label for="phone-number" class="sr-only">Phone Num</label>
+    		  <input type="text" id="phone_number" class="form-control" name="phone_number" placeholder="Phone Number" required>
+    		  <button class="btn btn-lg btn-primary btn-block" type="submit">Signup</button>
+    		</form>
+    	</div>
+    </section>
+
+
+    <!-- <footer>
+      <div class="container">
+
+        <div class="row">
+          <div class="col-sm-8 margin-20">
+            <ul class="list-inline social">
+              <li>Connect with us on</li>
+              <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+              <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+              <li><a href="#"><i class="fa fa-instagram"></i></a></li>
+            </ul>
+          </div>
+
+          <div class="col-sm-4 text-right">
+            <p><small>Copyright &copy; 2014. All rights reserved. <br>
+	            Created by <a href="http://visualsoldiers.com">Visual Soldiers</a></small></p>
+          </div>
+        </div>
+
+      </div>
+    </footer> -->
+
+
+    <!-- Javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/jquery-1.11.0.min.js"><\/script>')</script>
+    <script src="/assets/static/js/wow.min.js"></script>
+    <script src="/assets/static/js/bootstrap.min.js"></script>
+    <script src="/assets/static/js/main.js"></script>
+
+
+    </body>
+</html>

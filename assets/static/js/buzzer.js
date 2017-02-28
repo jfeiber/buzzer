@@ -230,6 +230,7 @@ function updatePartySuccessCallback(xhr, data) {
 // register click handlers for deleting a party
 function registerDeletePartyClickHandlers() {
   $(".delete-party-button").click(function(){
+    console.log("delete being clicked");
     activePartyID = $(this).closest('tr').attr('activePartyID');
     AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated" : false}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
   });
@@ -244,7 +245,7 @@ function registerSeatPartyClickHandlers() {
 }
 
 // register click handlers for removing a user
-function registerDeletePartyClickHandlers() {
+function registerRemoveUserClickHandlers() {
   $(".remove-user-button").click(function(){
     userID = $(this).closest('tr').attr('userID');
     AjaxJSONPOST('/frontend_api/remove_user', JSON.stringify({"user_id": userID}), removeUserErrorCallback, updateUsersSuccessCallback, completeCallback);
@@ -405,6 +406,7 @@ function registerChartTypeSelectionHandler() {
 $(document).ready(function() {
 
   registerDeletePartyClickHandlers();
+  registerRemoveUserClickHandlers();
   registerSeatPartyClickHandlers();
   registerBuzzClickHandlers();
   registerAssignBuzzerClickHandlers();
