@@ -30,6 +30,11 @@ const buzzerAPIBuzzField string = "b"
 // RootHandler Handles roots.
 func RootHandler(w http.ResponseWriter, r *http.Request) {
   log.SetPrefix("[RootHandler] ")
+  session := GetSession(w, r)
+  //confirms valid session
+  if !IsUserLoggedIn(session) {
+    RenderTemplate(w, "assets/templates/splash.html.tmpl",  map[string]interface{}{})
+  }
   http.Redirect(w, r, "/login", 302)
 }
 
@@ -962,7 +967,6 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/login", 302)
     return
   }
-
   RenderTemplate(w, "assets/templates/analytics.html.tmpl",  map[string]interface{}{})
 }
 
