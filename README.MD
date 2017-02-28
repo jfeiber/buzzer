@@ -103,3 +103,4 @@ the production database, run `goose -env production up`.
 * **Josh Feiber**
 
 ## Acknowledgements
+Many thanks to Tim Tregubov for his help and support throughout the project.
