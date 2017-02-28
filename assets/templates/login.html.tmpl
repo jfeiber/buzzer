@@ -57,15 +57,19 @@
           <div class="alert alert-danger" role="alert">{{ .failure_message }}</div>
         </div>
       {{ end }}
-      <div class="row login">
-        <h2>Log In</h2>
+      <div class= "row login login-page">
+        <div class="signup-top-half">
+            <div class="signup-title">Buzzer</div>
+            <div class="signup-line"></div>
+            <div class="signup-action">Login to the ultimate restaurant management system</div>
+            <div class="signup-line"></div>
+        </div>
         <form action="/login" method="POST" class="form-login">
           <label for="username" class="sr-only">Username</label>
           <input id="username" name="username" class="form-control" placeholder="Username" maxlength="50" required autofocus>
           <label for="inputPassword" class="sr-only">Password</label>
           <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" maxlength="50" required>
           <button class="btn btn-lg btn-primary btn-block" type="submit">Go</button>
-
         </form>
       </div>
     </div>
