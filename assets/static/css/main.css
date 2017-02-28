@@ -495,6 +495,10 @@ header {
   margin-bottom: 50px;
 }
 
+.hide-load {
+  visibility: hidden;
+}
+
 /* Login form element alignment */
 .form-login input {
     display: block;
