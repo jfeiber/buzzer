@@ -61,9 +61,9 @@
         <h2>Log In</h2>
         <form action="/login" method="POST" class="form-login">
           <label for="username" class="sr-only">Username</label>
-          <input id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+          <input id="username" name="username" class="form-control" placeholder="Username" maxlength="50" required autofocus>
           <label for="inputPassword" class="sr-only">Password</label>
-          <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" required>
+          <input type="password" id="inputPassword" class="form-control" name="password" placeholder="Password" maxlength="50" required>
           <button class="btn btn-lg btn-primary btn-block" type="submit">Go</button>
 
         </form>
