@@ -56,23 +56,23 @@
         <!--Alert for failed login attempts-->
           <div class="alert alert-danger" role="alert">{{ .failure_message }}</div>
         </div>
-        {{ end }}
-        <div class= "row login login-page">
-            <div class="signup-top-half">
-                <div class="signup-title">Buzzer</div>
-                <div class="signup-line"></div>
-                <div class="signup-action">Login to the ultimate restaurant management system</div>
-                <div class="signup-line"></div>
-            </div>
-            <form action="/login" method="POST" class="form-login">
-              <!--Input fields for username, password, and restaurant name-->
-              <label for="username" class="sr-only">Username</label>
-              <input id="username" name="username" class="form-control" placeholder="Username" required autofocus>
-              <label for="password" class="sr-only">Password</label>
-              <input type="password" id="password" class="form-control" name="password" placeholder="Password" required>
-              <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
-            </form>
+      {{ end }}
+      <div class= "row login login-page">
+        <div class="signup-top-half">
+            <div class="signup-title">Buzzer</div>
+            <div class="signup-line"></div>
+            <div class="signup-action">Login to the ultimate restaurant management system</div>
+            <div class="signup-line"></div>
         </div>
+        <form action="/login" method="POST" class="form-login">
+          <!--Input fields for username, password, and restaurant name-->
+          <label for="username" class="sr-only">Username</label>
+          <input id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+          <label for="password" class="sr-only">Password</label>
+          <input type="password" id="password" class="form-control" name="password" placeholder="Password" required>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+        </form>
+    </div>
     </div>
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
