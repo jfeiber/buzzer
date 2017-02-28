@@ -120,6 +120,10 @@ body {
     transform: translateY(25%);
 }
 
+.login-page {
+    padding-top: 70px;
+}
+
 /* Center the login elements */
 .add-user {
 
