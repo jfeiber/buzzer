@@ -124,16 +124,6 @@ body {
     padding-top: 70px;
 }
 
-.login-container h2 {
-    margin-bottom: 50px;
-}
-
-/* Center login element vertically */
-.login-container {
-    align-self: center;
-    height: 70%;
-}
-
 /* Center the login elements */
 .add-user {
 
