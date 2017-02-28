@@ -322,6 +322,12 @@ function registerUpdatePartySizeClickHandler(){
   });
 }
 
+function registerCloseModalClickHandler() {
+  $(".close").click(function(){
+    refreshWaitlistTable();
+  });
+}
+
 // Registers click/type handlers for fields/dropdowns relating to the add party menu.
 function registerAddPartyHandlers() {
   // set dropdown button value and text to reflect selected value
@@ -405,6 +411,7 @@ function registerChartTypeSelectionHandler() {
 // get party info when ADD button is selected
 $(document).ready(function() {
 
+  registerCloseModalClickHandler();
   registerDeletePartyClickHandlers();
   registerRemoveUserClickHandlers();
   registerSeatPartyClickHandlers();
