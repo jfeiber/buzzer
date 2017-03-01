@@ -407,7 +407,7 @@ func UserAdminHandler(w http.ResponseWriter, r *http.Request) {
 
   //This function is called by the template to format the LastHeartbeat date
   userData["formatDateCreated"] = func (datecreated time.Time) string {
-    return datecreated.Format("3/4/2006")
+    return datecreated.Format("1/2/2006")
   }
 
   session.Save(r, w)
