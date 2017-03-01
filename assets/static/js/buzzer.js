@@ -158,12 +158,6 @@ function parseEstimatedWait(estimatedWaitTime) {
   return hours + ":" + minutes;
 }
 
-// refresh waitlist table every 30 seconds
-function refreshWaitlistTableRepeat() {
-  AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
-  setTimeout(refreshWaitlistTable, 30000);
-}
-
 // refresh waitlist table (no built-in timeout)
 function refreshWaitlistTable() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
@@ -174,7 +168,9 @@ function updateUsersSuccessCallback() {
   location.reload();
 }
 
-// repopulate waitlist table. This method is so jank it's crazy
+// repopulate waitlist table. This method is so jank it's crazy.
+// Update 3/1/17: this method is now less jank than it was before but it's still jank. I'm feeling
+// a strong 6 to light 7 jank level on this one.
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
   $('#waitlist-table').append('<tbody>');
@@ -186,28 +182,24 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     } else {
-      htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar">';
-      if(activeParties[i].IsTableReady) {
-        htmlStr += '<button class="btn btn-default buzz-button" disabled="disabled" type="button">Buzz!</button>';
-      } else {
-        if (activeParties[i].BuzzerID !== 0){
-          htmlStr += '<button class="btn btn-default buzz-button" type="button">Buzz!</button>';
-        } else {
-          htmlStr += '<button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>';
-        }
-        htmlStr += '<button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button>';
-      }
-      htmlStr += "</div></td>";
+       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
     }
+    htmlStr += '<td><div class="btn-toolbar">';
+    if(activeParties[i].IsTableReady) {
+      htmlStr += '<button class="btn btn-default buzz-button" disabled="disabled" type="button">Buzz!</button>';
+    } else {
+      if (activeParties[i].BuzzerID !== 0){
+        htmlStr += '<button class="btn btn-default buzz-button" type="button">Buzz!</button>';
+      } else {
+        htmlStr += '<button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>';
+      }
+    }
+    htmlStr += '<button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button>';
+    htmlStr += "</div></td>";
     htmlStr += "<td>" + activeParties[i].PartyNotes + "</td>";
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
-
-
-
   }
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
@@ -472,7 +464,7 @@ $(document).ready(function() {
   var spinner_datepicker = new Spinner(opts).spin(target);
   $('.datepicker-spinner').hide();
 
-  setTimeout(refreshWaitlistTableRepeat, 2000);
+  setInterval(refreshWaitlistTable, 30000);
 });
 
 
