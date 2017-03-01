@@ -971,6 +971,18 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/analytics.html.tmpl",  map[string]interface{}{})
 }
 
+func GetDateArray(start time.Time, end time.Time, DateArray *[]string) {
+  // set d to starting date and keep adding 1 day to it as long as month doesn't change
+  for d := start; d != end.AddDate(0, 0, 1); d = d.AddDate(0, 0, 1) {
+    dStr := d.Format("01/02/06")
+    *DateArray = append(*DateArray, dStr)
+  }
+}
+
+// function GetStartEndDateObjs(startDate string, endDate string) {
+//
+// }
+
 // GetTotalCustomersChartHandler executes the query for data for Total Customers chart.
 // Query is run to include date range set by user on analytics page.
 // Query is run three seperate times for each meal service (Breakfast, Lunch, Dinner).
@@ -995,17 +1007,10 @@ func GetTotalCustomersChartHandler(w http.ResponseWriter, r *http.Request) {
 
         startDate := startEndInfo["start_date"]
         endDate := startEndInfo["end_date"]
-
-        var DateArray  []string
-
         start, err := time.Parse("01/02/2006", startDate.(string))
         end, err := time.Parse("01/02/2006", endDate.(string))
-
-        // set d to starting date and keep adding 1 day to it as long as month doesn't change
-        for d := start; d != end.AddDate(0, 0, 1); d = d.AddDate(0, 0, 1) {
-            dStr := d.Format("01/02/06")
-            DateArray = append(DateArray, dStr)
-        }
+        var DateArray []string
+        GetDateArray(start, end, &DateArray)
 
 
         // BREAKFAST
