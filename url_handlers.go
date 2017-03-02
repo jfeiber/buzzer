@@ -972,7 +972,7 @@ func AnalyticsHandler(w http.ResponseWriter, r *http.Request) {
   RenderTemplate(w, "assets/templates/analytics.html.tmpl",  map[string]interface{}{})
 }
 
-// Populates a date array. Used by the analytics functions.
+// PopulateDateArray: Populates a date array. Used by the analytics functions.
 func PopulateDateArray(startDate string, endDate string, DateArray *[]string) error{
   start, err := time.Parse("01/02/2006", startDate)
   if err != nil {
@@ -990,7 +990,7 @@ func PopulateDateArray(startDate string, endDate string, DateArray *[]string) er
   return nil
 }
 
-// Populates a data array given a ptr to the result of a SQL query. Used by the analytics function.
+// PopulateDataArray: Populates a data array given a ptr to the result of a SQL query. Used by the analytics function.
 func PopulateDataArray(DataArray *[]interface{}, DateArray *[]string, rows *sql.Rows) {
   dateToPartySizeMap := map[string]int{}
   for rows.Next() {
