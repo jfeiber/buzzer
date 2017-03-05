@@ -315,7 +315,7 @@ func BuzzerManagementHandler(w http.ResponseWriter, r *http.Request) {
 
   //This function is called by the template to format the LastHeartbeat date
   buzzerData["formatLastHeartbeatDate"] = func (heartbeatTime time.Time) string {
-    return heartbeatTime.Format("15:04:05 3/4/2006")
+    return heartbeatTime.Format("15:04:05 1/2/2006")
   }
 
   session.Save(r, w)
