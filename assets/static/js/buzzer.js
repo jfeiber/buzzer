@@ -377,7 +377,10 @@ function checkIfChartSelectionComplete() {
   chartType = $('.btn#chart-type-dropdown').val();
   startDate = $('.form-control.startDate').val();
   endDate = $('.form-control.endDate').val();
-  if (chartType !== "" && startDate !== "Start Date" && endDate !== "End Date") {
+  if (startDate === "" || endDate === "") return;
+  startDateObj = new Date(startDate);
+  endDateObj = new Date(endDate);
+  if (chartType !== "" && startDateObj <= endDateObj) {
     updateAnalyicsChartWithSelection(chartType);
   }
 }
