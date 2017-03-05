@@ -20,6 +20,9 @@ We are allowing restaurants to manage their clients better with a web app that d
 ### Analytics
 ![Analytics](/Screenshots/Analytics.png?raw=true)
 
+### Admin Panel
+![Admin](/Screenshots/Admin.png?raw=true)
+
 ## Architecture
 
 Web App Stack:
