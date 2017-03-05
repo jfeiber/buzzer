@@ -982,11 +982,35 @@ func PopulateDateArray(startDate string, endDate string, DateArray *[]string) er
   if err != nil {
     return errors.New("Failed to parse end date")
   }
+
+  if end.Before(start) {
+    return errors.New("End date is before start date")
+  }
   // set d to starting date and keep adding 1 day to it as long as month doesn't change
   for d := start; d != end.AddDate(0, 0, 1); d = d.AddDate(0, 0, 1) {
     dStr := d.Format("01/02/06")
     *DateArray = append(*DateArray, dStr)
   }
+
+  return nil
+}
+
+// CheckDateRange validates analytics date range to prevent endDate from occuring before
+// startDate. Reinforces prevention on front end.
+func CheckDateRange(startDate string, endDate string) error {
+  start, err := time.Parse("01/02/2006", startDate)
+  if err != nil {
+    return errors.New("Failed to parse start date")
+  }
+  end, err := time.Parse("01/02/2006", endDate)
+  if err != nil {
+    return errors.New("Failed to parse end date")
+  }
+
+  if end.Before(start) {
+    return errors.New("End date is before start date")
+  }
+
   return nil
 }
 
@@ -1276,6 +1300,13 @@ func GetParitesPerHourChartHandler(w http.ResponseWriter, r *http.Request) {
       if ParseReqBody(r, returnObj, startEndInfo) {
         startDate := startEndInfo["start_date"].(string)
         endDate := startEndInfo["end_date"].(string)
+
+        err := CheckDateRange(startDate, endDate)
+        if err != nil {
+          AddErrorMessageToResponseObj(returnObj, err.Error())
+          RenderJSONFromMap(w, returnObj)
+          return
+        }
 
         rows, err := db.Raw("SELECT partyHour, round(avg(partyCount), 0) FROM (SELECT date_part('hour', time_created) AS partyHour, date(time_created) AS partyDate, count(id) AS partyCount FROM historical_parties WHERE restaurant_id = ? AND was_party_seated = TRUE AND date(time_created) >= ? AND date(time_created) <= ? GROUP BY date(time_created), date_part('hour', time_created)) AS query GROUP BY partyHour", restaurantID, startDate, endDate).Rows()
         if err != nil {
