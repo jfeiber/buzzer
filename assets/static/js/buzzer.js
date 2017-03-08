@@ -158,12 +158,6 @@ function parseEstimatedWait(estimatedWaitTime) {
   return hours + ":" + minutes;
 }
 
-// refresh waitlist table every 30 seconds
-function refreshWaitlistTableRepeat() {
-  AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
-  setTimeout(refreshWaitlistTable, 30000);
-}
-
 // refresh waitlist table (no built-in timeout)
 function refreshWaitlistTable() {
   AjaxJSONPOST("/frontend_api/get_active_parties", "", addPartyErrorCallback, updateWaitlistSuccessCallback, completeCallback);
@@ -174,7 +168,9 @@ function updateUsersSuccessCallback() {
   location.reload();
 }
 
-// repopulate waitlist table. This method is so jank it's crazy
+// repopulate waitlist table. This method is so jank it's crazy.
+// Update 3/1/17: this method is now less jank than it was before but it's still jank. I'm feeling
+// a strong 6 to light 7 jank level on this one.
 function repopulateTable(activeParties) {
   $('#waitlist-table tbody').remove();
   $('#waitlist-table').append('<tbody>');
@@ -186,28 +182,24 @@ function repopulateTable(activeParties) {
     htmlStr += "<td>" + parseEstimatedWait(activeParties[i].WaitTimeExpected) + "</td>";
     if (activeParties[i].PhoneAhead) {
       htmlStr += "<td><span class=\"glyphicon glyphicon-earphone\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar"><button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button><button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button></div></td>';
     } else {
-      htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
-      htmlStr += '<td><div class="btn-toolbar">';
-      if(activeParties[i].IsTableReady) {
-        htmlStr += '<button class="btn btn-default buzz-button" disabled="disabled" type="button">Buzz!</button>';
-      } else {
-        if (activeParties[i].BuzzerID !== 0){
-          htmlStr += '<button class="btn btn-default buzz-button" type="button">Buzz!</button>';
-        } else {
-          htmlStr += '<button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>';
-        }
-        htmlStr += '<button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button>';
-      }
-      htmlStr += "</div></td>";
+       htmlStr += "<td><span class=\"glyphicon glyphicon-user\"></span></td>";
     }
+    htmlStr += '<td><div class="btn-toolbar">';
+    if(activeParties[i].IsTableReady) {
+      htmlStr += '<button class="btn btn-default buzz-button" disabled="disabled" type="button">Buzz!</button>';
+    } else {
+      if (activeParties[i].BuzzerID !== 0){
+        htmlStr += '<button class="btn btn-default buzz-button" type="button">Buzz!</button>';
+      } else {
+        htmlStr += '<button class="btn btn-default assign-buzzer-button" type="button">Assign Buzzer</button>';
+      }
+    }
+    htmlStr += '<button class="btn btn-default seat-party-button" type="button">Seat Party</button><button class="btn btn-default delete-party-button" type="button">Delete</button>';
+    htmlStr += "</div></td>";
     htmlStr += "<td>" + activeParties[i].PartyNotes + "</td>";
     htmlStr += "</tr>";
     $('#waitlist-table').append(htmlStr);
-
-
-
   }
   $('#waitlist-table').append('</tbody>');
   registerDeletePartyClickHandlers();
@@ -230,6 +222,7 @@ function updatePartySuccessCallback(xhr, data) {
 // register click handlers for deleting a party
 function registerDeletePartyClickHandlers() {
   $(".delete-party-button").click(function(){
+    console.log("delete being clicked");
     activePartyID = $(this).closest('tr').attr('activePartyID');
     AjaxJSONPOST('/frontend_api/delete_party', JSON.stringify({"active_party_id": activePartyID, "was_party_seated" : false}), deletePartyErrorCallback, repopulateWaitlistSuccessCallback, completeCallback);
   });
@@ -244,7 +237,7 @@ function registerSeatPartyClickHandlers() {
 }
 
 // register click handlers for removing a user
-function registerDeletePartyClickHandlers() {
+function registerRemoveUserClickHandlers() {
   $(".remove-user-button").click(function(){
     userID = $(this).closest('tr').attr('userID');
     AjaxJSONPOST('/frontend_api/remove_user', JSON.stringify({"user_id": userID}), removeUserErrorCallback, updateUsersSuccessCallback, completeCallback);
@@ -321,6 +314,12 @@ function registerUpdatePartySizeClickHandler(){
   });
 }
 
+function registerCloseModalClickHandler() {
+  $(".close").click(function(){
+    refreshWaitlistTable();
+  });
+}
+
 // Registers click/type handlers for fields/dropdowns relating to the add party menu.
 function registerAddPartyHandlers() {
   // set dropdown button value and text to reflect selected value
@@ -378,7 +377,10 @@ function checkIfChartSelectionComplete() {
   chartType = $('.btn#chart-type-dropdown').val();
   startDate = $('.form-control.startDate').val();
   endDate = $('.form-control.endDate').val();
-  if (chartType !== "" && startDate !== "Start Date" && endDate !== "End Date") {
+  if (startDate === "" || endDate === "") return;
+  startDateObj = new Date(startDate);
+  endDateObj = new Date(endDate);
+  if (chartType !== "" && startDateObj <= endDateObj) {
     updateAnalyicsChartWithSelection(chartType);
   }
 }
@@ -404,7 +406,9 @@ function registerChartTypeSelectionHandler() {
 // get party info when ADD button is selected
 $(document).ready(function() {
 
+  registerCloseModalClickHandler();
   registerDeletePartyClickHandlers();
+  registerRemoveUserClickHandlers();
   registerSeatPartyClickHandlers();
   registerBuzzClickHandlers();
   registerAssignBuzzerClickHandlers();
@@ -463,7 +467,7 @@ $(document).ready(function() {
   var spinner_datepicker = new Spinner(opts).spin(target);
   $('.datepicker-spinner').hide();
 
-  setTimeout(refreshWaitlistTableRepeat, 2000);
+  setInterval(refreshWaitlistTable, 30000);
 });
 
 

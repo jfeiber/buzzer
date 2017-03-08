@@ -1,8 +1,11 @@
+* {
+  font-family: 'Lato', sans-serif;
+  font-weight: light;
+}
+
 /* Luscious slate background */
 body {
     background-color: #F1F4F6;
-    font-family: 'Lato', sans-serif;
-    font-weight: light;
 }
 
 /* Blue navbar */
@@ -115,9 +118,11 @@ body {
     height: 500px;
 
     /* Vertical */
-    position: relative;
-    top: 50%;
-    transform: translateY(25%);
+    margin-top: 50px;
+}
+
+.login-page {
+    padding-top: 70px;
 }
 
 /* Center the login elements */
@@ -638,3 +643,32 @@ body {
     height:40px;
     margin-bottom: 1px;
 }
+
+.form-login {
+  padding-top: 25px;
+}
+
+/*.signup-title {
+    color: #426BE7;
+    font-family: 'Lato', light;
+    font-size: 30px;
+}
+
+.signup-line {
+    height: 1px;
+    width: 100%;
+    background: #E7E5EB;
+    position: relative;
+    opacity: 1;
+    color: white;
+    margin: 25px 0px;
+}
+
+.signup-top-half {
+    color: #A199B1;
+}
+
+.signup-action {
+    height:40px;
+    margin-bottom: 1px;
+}*/

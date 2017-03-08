@@ -9,7 +9,7 @@ To see this live: http://restaur-anteater.herokuapp.com/. Username: anteater, pa
 We are allowing restaurants to manage their clients better with a web app that displays analytics registered by proprietary restaurant pagers.
 
 ### Login
-![Login Page](/Screenshots/Logout.png?raw_true)
+![Login Page](/Screenshots/Login.png?raw_true)
 
 ### Waitlist
 ![Login Page](/Screenshots/Waitlist.png?raw=true)
@@ -19,6 +19,9 @@ We are allowing restaurants to manage their clients better with a web app that d
 
 ### Analytics
 ![Analytics](/Screenshots/Analytics.png?raw=true)
+
+### Admin Panel
+![Admin](/Screenshots/Admin.png?raw=true)
 
 ## Architecture
 
@@ -103,3 +106,4 @@ the production database, run `goose -env production up`.
 * **Josh Feiber**
 
 ## Acknowledgements
+Many thanks to Tim Tregubov for his help and support throughout the project.
